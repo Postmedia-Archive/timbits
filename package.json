@@ -1,9 +1,26 @@
 {
-    "name": "timbits"
-  , "version": "0.0.1"
-  , "private": true
-  , "dependencies": {
-      "express": "2.4.2"
-    , "jade": ">= 0.0.1"
-  }
+  "name": "timbits",
+  "description": "Widget framework based on Express and CoffeeScript",
+  "version": "0.0.2",
+  "author": "Postmedia Network Inc.",
+  "contributors": [ 
+    { "name": "Edward de Groot", "email": "edegroot@postmedia.com" }, 
+    { "name": "Keith Benedict", "email": "kbenedict@postmedia.com" },
+    { "name": "Stephen Veerman", "email": "sveerman@postmedia.com" }
+  ],
+  "dependencies": {
+    "express": ">= 2.3.0",
+    "coffee-script": ">= 1.1.1",
+    "coffeekup": ">= 0.2.3"
+  },
+  "devDependencies": {
+  },
+  "keywords": ["framework", "widgets", "express", "coffeescript", "coffeekup"],
+  "repository": "git://github.com/postmedia/timbits",
+  "main": "./lib/timbits",
+  "bin": { "timbits": "./bin/timbits" },
+  "scripts": {
+    "build": "cake build"
+  },
+  "engines": { "node": ">= 0.4.7 < 0.5.0" }
 }
