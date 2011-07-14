@@ -11,3 +11,10 @@
   * Reworked areas towards convention over configuration
   * Uses the CoffeeKup view engine by default
   * Created Story timbit to be used as a real world prototype
+
+0.0.3 / 2011-07-05
+==================
+
+  * Fix some typos
+  * Started documentation
+  * Implement default help.coffee file

@@ -1,8 +1,8 @@
 # Plain Timbit
-# Example of the simplist timbit that could possibly be created.  
+# Example of the simplest timbit that could possibly be created.  
 # This timbit will simply render a view using data from the query string
-# pass in 'item' via the querystring
-# e.g. /plain?item=World
+# pass in 'who' via the querystring
+# e.g. /plain?who=World
 
 # load the timbits module
 timbits = require '../../src/timbits'

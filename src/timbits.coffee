@@ -3,10 +3,10 @@ http = require 'http'
 fs = require 'fs'
 
 # creates, configures, and returns a standard express server instance
-@serve = (engine = 'coffee', port = 5678) ->
+@serve = (@appName = 'Timbits', engine = 'coffee', port = 5678) ->
 	@server = express.createServer()
 	
-	# optionally support coffekup
+	# support coffekup
 	@server.register '.coffee', require('coffeekup')
 	
 	# configure server (still needs some thought) 	
@@ -24,6 +24,10 @@ fs = require 'fs'
 
 	@server.configure 'production', =>
 		@server.use express.errorHandler()
+		
+	# route help page
+	@server.get '/', (req, res) ->
+		res.render 'help'
 	
 	#automagically load timbits found in the ./timbits folder	
 	path = "#{process.cwd()}/timbits"
