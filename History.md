@@ -12,9 +12,14 @@
   * Uses the CoffeeKup view engine by default
   * Created Story timbit to be used as a real world prototype
 
-0.0.3 / 2011-07-05
+0.0.3 / 2011-07-14
 ==================
 
   * Fix some typos
   * Started documentation
   * Implement default help.coffee file
+
+0.0.4 / 2011-07-14
+==================
+
+  * Updated package.json and published the package
