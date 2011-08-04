@@ -18,8 +18,7 @@ timbit.eat = (context) ->
 	
 	# specify the data source
 	src = {
-		host: 'search.twitter.com'
-		path: "/search.json?q=#{context.q}"		
+		uri: "http://search.twitter.com/search.json?q=#{context.q}"
 	}
 	
 	# use the helper method to @fetch the data

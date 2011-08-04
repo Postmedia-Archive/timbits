@@ -21,12 +21,11 @@ timbit.eat = (context) ->
 	
 	# specify the data source
 	src = {
-		host: 'search.twitter.com'
-		path: "/search.json?q=#{context.q}"		
+		uri: "http://search.twitter.com/search.json?q=#{context.q}"
 	}
 	
 	# use the helper method to @fetch the data
 	# @fetch will call @render once we have the data			
 	@fetch context, 'tweets', src, (context) ->
 		# let's just re-use the chocolate timbit views
-		context.response.render "chocolate/#{context.view}", context: context
+		context.response.render "chocolate/#{context.view}", context

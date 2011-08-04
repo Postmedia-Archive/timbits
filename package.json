@@ -1,27 +1,22 @@
 {
 	"name": "timbits",
 	"description": "Widget framework based on Express and CoffeeScript",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"homepage": "https://github.com/Postmedia/timbits",
-	"author": "Postmedia Network Inc.",
+	"author": "Edward de Groot <edegroot@postmedia.com> (http://mred9.wordpress.com)",
 	"contributors": [ 
-		{ "name": "Edward de Groot", "email": "edegroot@postmedia.com" }, 
-		{ "name": "Keith Benedict", "email": "kbenedict@postmedia.com" },
-		{ "name": "Stephen Veerman", "email": "sveerman@postmedia.com" }
-	],
-	"maintainers": [ 
-		{ "name": "Edward de Groot", "email": "edegroot@postmedia.com" }, 
 		{ "name": "Keith Benedict", "email": "kbenedict@postmedia.com" },
 		{ "name": "Stephen Veerman", "email": "sveerman@postmedia.com" }
 	],
 	"dependencies": {
-		"express": ">= 2.3.0",
+		"express": ">= 2.4.3",
 		"coffee-script": ">= 1.1.1",
-		"coffeekup": ">= 0.2.3"
+		"coffeekup": ">= 0.3.0beta",
+		"pantry": ">= 0.0.3"
 	},
 	"devDependencies": {
 	},
-	"bugs": "https://github.com/Postmedia/timbits/issues",
+	"bugs": { "web": "https://github.com/Postmedia/timbits/issues"},
 	"licenses": [
 		{ "type": "MIT", "url": "https://github.com/Postmedia/timbits/blob/master/LICENSE"}
 	],
