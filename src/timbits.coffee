@@ -1,5 +1,5 @@
 express = require 'express'		
-http = require 'http'
+pantry = require 'pantry'
 fs = require 'fs'
 
 # creates, configures, and returns a standard express server instance
@@ -71,21 +71,16 @@ class @Timbit
 
 	# default render implemenetation
 	render: (context) ->
-		context.response.render "#{context.name}/#{context.view}", context: context
+		context.response.render "#{context.name}/#{context.view}", context
 	
 	# helper method to retrieve data via REST	
-	fetch: (context, key, url, next = @render) ->
+	fetch: (context, key, options, callback = @render) ->
 
-		http.get url, (client) =>	
-			console.log "#{key} STATUS: #{client.statusCode}"
-			body = ""
-			client.on 'data', (chunk) =>
-				body += chunk.toString()
-			client.on 'end', =>
-				context[key] = JSON.parse(body)
+		pantry.fetch options, (error, results) =>
+			context[key] = results
 				
-				# we're done, will now execute rendor method unless otherwise specified
-				next(context)
+			# we're done, will now execute rendor method unless otherwise specified
+			callback(context)
 	
 	# this is the method exectuted after a matching route.  overwritten on most implementations				
 	eat: (context) ->
