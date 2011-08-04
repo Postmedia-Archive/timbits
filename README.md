@@ -15,10 +15,7 @@ Just grab [node.js](http://nodejs.org/#download) and [npm](http://github.com/isa
 
 	npm install timbits
 	
-Timbits is simplistic and finds most of it's power by running on top of some very cool node libraries such as [express](http://expressjs.com/), [CoffeeScript](http://coffeescript.org) and [CoffeeKup](http://coffeekup.org/).  As such don't forget to install dependencies.
-
-	npm install -d
-
+Timbits is simplistic and finds most of it's power by running on top of some very cool node libraries such as [express](http://expressjs.com/), [CoffeeScript](http://coffeescript.org) and [CoffeeKup](http://coffeekup.org/).  It also now uses our [Pantry](https://github.com/Postmedia/pantry) package for JSON/XML data sources.  
 ## Using
 
 Yea, we're not even close to having useful documentation yet.  Stay tuned.  In the mean time, review the example.
@@ -53,7 +50,6 @@ Way too much at this time.  On the short list (and mostly in progress):
 * Command line code generator to scaffold a new project or timbit
 * Security considerations
 * Error handling of any sort
-* Refactor and expand data retrieval, including caching, conditional GETs, XML support
 * Support for alternate server configurations
 * More/Better examples
 * Documentation, Documentation, Documentation

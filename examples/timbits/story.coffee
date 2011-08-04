@@ -18,8 +18,7 @@ timbit.eat = (context) ->
 	
 	# specify the data source
 	src = {
-		host: 'app.canada.com'
-		path: "/southparc/query.svc/content/#{id}?format=json"		
+		uri: "http://app.canada.com/southparc/query.svc/content/#{id}?format=json"
 	}
 	
 	# use the helper method to @fetch the data

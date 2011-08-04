@@ -23,3 +23,10 @@
 ==================
 
   * Updated package.json and published the package
+
+0.0.5 / 2011-08-04
+==================
+
+  * Now uses Pantry for JSON/XML data retrieval
+  * Upgraded to Express 2.4.3 and CoffeeKup 0.3.0
+  * Examples updated to account for the above changes
