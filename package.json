@@ -12,7 +12,8 @@
 		"express": ">= 2.4.3",
 		"coffee-script": ">= 1.1.1",
 		"coffeekup": ">= 0.3.0beta",
-		"pantry": ">= 0.0.3"
+		"pantry": ">= 0.0.3",
+		"connect-esi": ">= 0.0.2"
 	},
 	"devDependencies": {
 	},
