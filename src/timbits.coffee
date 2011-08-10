@@ -1,6 +1,7 @@
 express = require 'express'		
 pantry = require 'pantry'
 fs = require 'fs'
+connectESI = require 'connect-esi'
 
 # creates, configures, and returns a standard express server instance
 @serve = (@appName = 'Timbits', engine = 'coffee', port = 5678) ->
@@ -15,6 +16,7 @@ fs = require 'fs'
 	@server.set 'view options', {layout: false}
 		
 	@server.configure =>
+		@server.use connectESI.setupESI()
 		@server.use express.static("#{process.cwd()}/public")
 		@server.use express.bodyParser()
 		@server.use express.cookieParser()
