@@ -1,5 +1,6 @@
 # Module dependencies.
 timbits = require '../src/timbits'
 
+homeFolder = "#{process.cwd()}/examples"
 # start serving timbits
-timbits.serve()
+server = timbits.serve( {home: homeFolder })
