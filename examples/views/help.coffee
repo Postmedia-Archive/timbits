@@ -51,6 +51,7 @@ html ->
 			This one will retrieve and display a story from our CMS (SouthPARC)'
 			
 		ul ->
-			(li -> a href: '/story/5102148', -> '/story/5102148')
-			(li -> a href: '/story/5089233', -> '/story/5089233')
+			(li -> a href: '/story/5196970', -> 'Egypt puts Mubarak, bedridden and caged, on trial')
+			(li -> a href: '/story/5239143', -> 'British PM pledges tough action to quell unrest')
+			(li -> a href: '/story/5240676', -> 'Montreal&rsquo;s Festival Mode & Design: The high street')
 		

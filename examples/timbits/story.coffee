@@ -17,10 +17,16 @@ timbit.eat = (context) ->
 	id = context.request.params.id
 	
 	# specify the data source
-	src = {
+	# specify the data source
+	story_src = {
 		uri: "http://app.canada.com/southparc/query.svc/content/#{id}?format=json"
+	}
+
+	related_src = {
+		uri: "http://app.canada.com/southparc/query.svc/relatedcontent/#{id}?format=json"
 	}
 	
 	# use the helper method to @fetch the data
 	# @fetch will call @render once we have the data			
-	@fetch context, 'story', src
+	@fetch context, 'story', story_src, (context) =>
+		@fetch context, 'related', related_src
