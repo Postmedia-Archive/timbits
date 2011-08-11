@@ -81,6 +81,8 @@ body {
 	z-index:101;
 }
 
+#slides .next:hover, #slides .prev:hover {cursor: pointer;}
+
 #slides .next {
 	left:500px;
 }

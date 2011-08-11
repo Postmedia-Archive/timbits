@@ -75,7 +75,12 @@ html ->
 													img (src: 'http://www.canada.com/technology/space-shuttle/' + related.ID + '.bin?size=620x400')
 													figcaption class:'caption', ->
 														p related.Abstract
-											
+											#div class:'slide', ->
+											#	figure ->
+											#		img (src: '/images/next.png')
+											#		figcaption class:'caption', ->
+											#			p 'CAPTION'
+
 								a href='#', class:'prev', -> img src:'/images/arrow-prev.png', alt:'Prev'
 								a href='#', class:'next', -> img src:'/images/arrow-next.png', alt:'Next'
 					
@@ -88,6 +93,7 @@ html ->
 										if isContentType(related, 'text/html')
 											li ->
 												a (href: '/story/' + related.ID), -> related.Title
+												
 							# RESERVED FOR 'AROUND THE WEB' STORIES; height of 'MORE' div is artificially inflated to compensate
 							# div id:'aroundweb', ->
 							#	span class:'asidetitle', -> 'more on this story'
