@@ -86,7 +86,7 @@ html ->
 					
 					if hasRelatedType(@related, 'text/html')
 						aside id:'sidebar', ->
-							div id:'more', style:"height:400px;", ->
+							div id:'more', ->
 								span class:'asidetitle', -> 'more on this story'
 								ul class:'sidebarlist', ->
 									for related in @related

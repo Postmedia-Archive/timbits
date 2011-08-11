@@ -153,9 +153,11 @@ body {
 	border-right: 1px solid #b4b4b4;
 	padding: 10px;
 	width: 630px;
-	margin: 5px 0;
+	margin: 5px 0 15px 0;
 	background-color: #f9f9f9;
 }
+
+
 
 .asidetitle {
 	font-size: 12px;
@@ -192,7 +194,7 @@ body {
 }
 
 #articletext {
-	float: left;
+	/*float: left;*/
 }
 
 article p {

@@ -151,8 +151,10 @@ body {
 	border-left: 1px solid #b4b4b4;
 	padding: 0 0 0 10px;
 	width: 210px;
-	margin: 15px 0 0 0;
+	margin: 15px 0 15px 15px;
 }
+
+#more {height: 400px;}
 
 .asidetitle {
 	font-size: 12px;
@@ -188,7 +190,7 @@ body {
 }
 
 #articletext {
-	float: left;
+	/*float: left;*/
 }
 
 article p {
