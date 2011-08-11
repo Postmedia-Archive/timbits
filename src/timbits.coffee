@@ -2,20 +2,23 @@ express = require 'express'
 pantry = require 'pantry'
 fs = require 'fs'
 
+config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd() }
+
 # creates, configures, and returns a standard express server instance
-@serve = (@appName = 'Timbits', engine = 'coffee', port = 5678) ->
+@serve = (options) ->
+	config[key] = value for key, value of options
 	@server = express.createServer()
 	
 	# support coffekup
 	@server.register '.coffee', require('coffeekup')
 	
 	# configure server (still needs some thought) 	
-	@server.set 'views', "#{process.cwd()}/views"
-	@server.set 'view engine', engine
+	@server.set 'views', "#{config.home}/views"
+	@server.set 'view engine', config.engine
 	@server.set 'view options', {layout: false}
 		
 	@server.configure =>
-		@server.use express.static("#{process.cwd()}/public")
+		@server.use express.static("#{config.home}/public")
 		@server.use express.bodyParser()
 		@server.use express.cookieParser()
 
@@ -30,7 +33,7 @@ fs = require 'fs'
 		res.render 'help'
 	
 	#automagically load timbits found in the ./timbits folder	
-	path = "#{process.cwd()}/timbits"
+	path = "#{config.home}/timbits"
 	fs.readdir path, (err, files) =>
 		throw err if err
 		for file in files
@@ -38,7 +41,7 @@ fs = require 'fs'
 			@add name, require("#{path}/#{name}")
 
 	# starts the server
-	@server.listen port
+	@server.listen config.port
 	console.log "Timbits server listening on port #{@server.address().port} in #{@server.settings.env} mode"
 	
 	return @server 
