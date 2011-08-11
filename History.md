@@ -28,5 +28,5 @@
 ==================
 
   * Now uses Pantry for JSON/XML data retrieval
-  * Upgraded to Express 2.4.3 and CoffeeKup 0.3.0
+  * Upgraded to Express 2.4.3 and CoffeeKup 0.3.0beta
   * Examples updated to account for the above changes

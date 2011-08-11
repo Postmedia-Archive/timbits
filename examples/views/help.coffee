@@ -51,7 +51,32 @@ html ->
 			This one will retrieve and display a story from our CMS (SouthPARC)'
 			
 		ul ->
+			
 			(li -> a href: '/story/5196970', -> 'Egypt puts Mubarak, bedridden and caged, on trial')
 			(li -> a href: '/story/5239143', -> 'British PM pledges tough action to quell unrest')
 			(li -> a href: '/story/5240676', -> 'Montreal&rsquo;s Festival Mode & Design: The high street')
+			
+		h2 'List Timbit'
+
+		p 'Our prototype of a "real world" widget.
+			This one will display a list of stories from our CMS (SouthPARC)'
+
+		ul ->
+			(li -> a href: '/list/764023', -> '/list/764023')
+			(li -> a href: '/list/5239143', -> '/list/5239143')
+			(li -> a href: '/list/5239143?type=STRY', -> '/list/5239143?type=STRY')
+			(li -> a href: '/list/5239143?type=PHOT', -> '/list/5239143?type=PHOT')
+			(li -> a href: '/list/764023/full', -> '/list/764023/full')
+			(li -> a href: '/list/5239143/full', -> '/list/5239143/full')
+			
+		h2 'Syndication Timbit'
+
+		p 'Our prototype of a "real world" widget.
+			This one will display a list of stories from an RSS or ATOM feed but uses the same templates as List'
+
+		ul ->
+			(li -> a href: '/syndication?source=http://rss.cbc.ca/lineup/topstories.xml', -> '/syndication?source=http://rss.cbc.ca/lineup/topstories.xml')
+			(li -> a href: '/syndication/full?source=http://rss.cbc.ca/lineup/topstories.xml', -> '/syndication/full?source=http://rss.cbc.ca/lineup/topstories.xml')
+			(li -> a href: '/syndication?source=http://search.twitter.com/search.atom?q=winning', -> '/syndication?source=http://search.twitter.com/search.atom?q=winning')
+>>>>>>> New examples - List and Syndication
 		
