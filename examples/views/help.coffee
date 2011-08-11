@@ -78,5 +78,4 @@ html ->
 			(li -> a href: '/syndication?source=http://rss.cbc.ca/lineup/topstories.xml', -> '/syndication?source=http://rss.cbc.ca/lineup/topstories.xml')
 			(li -> a href: '/syndication/full?source=http://rss.cbc.ca/lineup/topstories.xml', -> '/syndication/full?source=http://rss.cbc.ca/lineup/topstories.xml')
 			(li -> a href: '/syndication?source=http://search.twitter.com/search.atom?q=winning', -> '/syndication?source=http://search.twitter.com/search.atom?q=winning')
->>>>>>> New examples - List and Syndication
 		
