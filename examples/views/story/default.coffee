@@ -26,9 +26,9 @@ html ->
 		link href:'http://fonts.googleapis.com/css?family=Open+Sans:700', rel:'stylesheet', type:'text/css'
 		
 		comment 'jQuery Mobile'
-		link href:'http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.css', rel:'stylesheet'
+		# link href:'http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.css', rel:'stylesheet'
 		script src:'http://code.jquery.com/jquery-1.6.2.min.js'
-		script src:'http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.js'
+		# script src:'http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.js'
 		
 		comment 'jQuery WipeTouch'
 		script src: '/jquery/jquery.wipetouch.min.js'
@@ -44,10 +44,12 @@ html ->
 		link href:'/css/styles.css', rel:'stylesheet', type:'text/css', media:'only screen and (min-width:1280px)'
 		comment 'Small Resolution Web Browser'
 		link href:'/css/1024.css', rel:'stylesheet', type:'text/css', media:'only screen and (min-width:1025px) and (max-width:1279px)'
-		comment 'iPad/Playbook/Tab'
+		comment 'Playbook/Tab'
 		link href:'/css/tablets.css', rel:'stylesheet', type:'text/css', media:'only screen and (min-width:1024px) and (max-width:1024px)'
+		comment 'iPad'
+		link href:'/css/ipad.css', rel:'stylesheet', type:'text/css', media:'only screen and (min-width:750px) and (max-width:1023px)'
 		comment 'iPhone4'
-		link href:'/css/iphone4.css', rel:'stylesheet', type:'text/css', media:'only screen and (min-width:640px) and (max-width:1023px)'
+		link href:'/css/iphone4.css', rel:'stylesheet', type:'text/css', media:'only screen and (min-width:640px) and (max-width:749px)'
 		comment 'Galaxy'
 		link href:'/css/galaxy.css', rel:'stylesheet', type:'text/css', media:'only screen and (min-width:480px) and (max-width:639px)'
 		comment 'iPhone3'
@@ -104,7 +106,7 @@ html ->
 									for related in @related
 										if isContentType(related, 'text/html')
 											li ->
-												a (href: '/story/' + related.ID), -> related.Title
+												a (href: '/story/' + related.ID + '/'), -> related.Title
 												
 							# RESERVED FOR 'AROUND THE WEB' STORIES; height of 'MORE' div is artificially inflated to compensate
 							# div id:'aroundweb', ->
@@ -113,7 +115,7 @@ html ->
 							#		for related in @related
 							#			if isContentType(related, 'text/html')
 							#				li ->
-							#					a (href: '/story/' + related.ID), -> related.Title					
+							#					a (href: '/story/' + related.ID + '/'), -> related.Title					
 
 					article id:'articletext', ->					
 						div ->

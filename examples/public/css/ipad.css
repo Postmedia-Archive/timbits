@@ -14,41 +14,34 @@ body {
 
 #wrapper {
 	margin: 0 auto;
-	width: 1000px;
+	width: 710px;
 }
 
 #content {
-	width: 990px;
-	background: #ffffff; /* Old browsers */
-	background: -moz-linear-gradient(left, #ffffff 70%, #efefef 70%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, right top, color-stop(70%,#ffffff), color-stop(70%,#efefef)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(left, #ffffff 70%,#efefef 70%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(left, #ffffff 70%,#efefef 70%); /* Opera11.10+ */
-	background: -ms-linear-gradient(left, #ffffff 70%,#efefef 70%); /* IE10+ */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#efefef',GradientType=1 ); /* IE6-9 */
-	background: linear-gradient(left, #ffffff 70%,#efefef 70%); /* W3C */
-	box-shadow: 0 0px 20px #666;
+	width: 710px;
+	box-shadow: 0 0px 5px #666;
 	background-color: #fff;
 	margin: 0 auto;
-	padding: 10px 0 50px 10px;
+	padding: 10px 5px 50px 5px;
 	float: left;
 }
 
 #mainarticle {
-	padding: 0 20px;
-	width: 650px;
+	padding: 0 10px;
+	width: 690px;
 	float: left;
 }
 
 #rightside {
 	width: 300px;
 	float: left;
+	display: none;
 }
 
 .title {
 	font-family: 'Open Sans', sans-serif;
-	font-size: 30px;
-	line-height: 34px;
+	font-size: 24px;
+	line-height: 28px;
 }
 
 .author {
@@ -58,8 +51,8 @@ body {
 
 /* Carosel */
 #example {
-	width:590px;
-	height:430px;
+	width:620px;
+	height:421px;
 	position:relative;
 	float: left;
 }
@@ -67,28 +60,28 @@ body {
 #slides {
 	position:absolute;
 	top:15px;
-	left:25px;
+	left:35px;
 	z-index:100;
 }
 
 .slides_container {
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-	width:590px;
+	width:620px;
 	overflow:hidden;
 	position:relative;
 	display:none;
-	height: 400px;
+	height: 401px;
 }
 
 .slides_container div.slide {
-	width:590px;
-	height:400px;
+	width:620px;
+	height:401px;
 	display:block;
 }
 
 #slides .next, #slides .prev {
 	position:absolute;
-	top:175px;
+	top:125px;
 	left:-39px;
 	width:24px;
 	height:43px;
@@ -99,8 +92,10 @@ body {
 #slides .next:hover, #slides .prev:hover {cursor: pointer;}
 
 #slides .next {
-	left:590px;
+	left:620px;
 }
+
+.slide img {width: 620px; height: 401px;}
 
 .pagination {
 	margin:26px auto 0;
@@ -132,13 +127,13 @@ body {
 .caption {
 	z-index:500;
 	position:absolute;
-	bottom:-95px;
+	bottom:-105px;
 	left:0;
-	height:75px;
+	height:90px;
 	padding:10px;
 	background:#000;
 	background:rgba(0,0,0,.5);
-	width:570px;
+	width:600px;
 	
 	color:#fff;
 	text-shadow:none;
@@ -160,8 +155,8 @@ body {
 	border-left: 1px solid #b4b4b4;
 	border-right: 1px solid #b4b4b4;
 	padding: 10px;
-	width: 630px;
-	margin: 5px 0;
+	width: 670px;
+	margin: 15px 0 5px 0;
 	background-color: #f9f9f9;
 }
 
@@ -178,10 +173,10 @@ body {
 
 .sidebarlist li a {
 	color: #4e5989;
-	font-size: 12px;
-	/*float: left;*/
-	width: 145px;
-	line-height: 16px;
+	font-size: 14px;
+	float: left;
+	width: 670px;
+	line-height: 24px;
 	padding: 0 10px 0 0;
 }
 
@@ -190,13 +185,15 @@ body {
 	float: left;
 }
 
-.sidebarlist li span {
+.sidebarlist li a span {
 	color: #999;
-	margin: -5px 0 5px 0;
-	width: 200px;
+	margin: 3px 0 0 0;
+	width: 150px;
+	height: 14px;
 	text-decoration: none;
-	/*float: left;*/
-	font-size: 12px;
+	float: left;
+	font-size: 10px;
+	overflow: hidden
 }
 
 #articletext {
@@ -211,7 +208,7 @@ article p {
 
 #share {
 	float: left;
-	width: 640px;
+	width: 560px;
 	border-top: 1px solid #eee;
 	border-bottom: 1px solid #eee;
 	margin: 20px 0 0 20px;
@@ -220,7 +217,7 @@ article p {
 
 #fbshare, #twittershare, .addthis_toolbox, #emailshare, #printshare {
 	float: left;
-	width: 125px;
+	width: 150px;
 }
 
 #emailshare a, #printshare a {color: #4e5989;}
@@ -228,6 +225,7 @@ article p {
 #emailshare, #printshare {
 	padding: 3px 0 0 0;
 	width: 130px;
+	display: none;
 }
 
 /*** jQuery mobile overriding styles ***/
