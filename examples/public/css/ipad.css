@@ -1,5 +1,7 @@
 @charset "UTF-8";
 
+html {height: 100%;}
+
 body {
 	font: 12px Helvetica, Arial, san-serif;
 	background: #d2d5dc; /* Old browsers */
@@ -10,6 +12,9 @@ body {
 	background: -ms-linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* IE10+ */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d2d5dc', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
 	background: linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* W3C */
+	height: 100%;
+	margin: 0;
+	background-repeat: no-repeat;
 }
 
 #wrapper {
@@ -24,6 +29,8 @@ body {
 	margin: 0 auto;
 	padding: 10px 5px 50px 5px;
 	float: left;
+	border-left: 1px solid #aaa;
+	border-right: 1px solid #aaa;
 }
 
 #mainarticle {
