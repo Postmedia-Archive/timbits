@@ -30,6 +30,9 @@ html ->
 		script src:'http://code.jquery.com/jquery-1.6.2.min.js'
 		script src:'http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.js'
 		
+		comment 'jQuery WipeTouch'
+		script src: '/jquery/jquery.wipetouch.min.js'
+		
 		comment 'jQuery Slides'
 		script src:'/jquery/slides.min.jquery.js'
 		script src:'/jquery/slides.js'
@@ -83,6 +86,15 @@ html ->
 
 								a href='#', class:'prev', -> img src:'/images/arrow-prev.png', alt:'Prev'
 								a href='#', class:'next', -> img src:'/images/arrow-next.png', alt:'Next'
+								
+								#swipe integration
+								coffeescript ->
+									$(".gallery").wipetouch 
+									  wipeLeft: (result) ->
+									    jQuery(".next").click()
+
+									  wipeRight: (result) ->
+									    jQuery(".prev").click()
 					
 					if hasRelatedType(@related, 'text/html')
 						aside id:'sidebar', ->
