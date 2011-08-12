@@ -89,7 +89,7 @@ html ->
 								
 								#swipe integration
 								coffeescript ->
-									$(".gallery").wipetouch 
+									$(".slide").wipetouch 
 									  wipeLeft: (result) ->
 									    jQuery(".next").click()
 
