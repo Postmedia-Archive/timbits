@@ -1,7 +1,7 @@
 {
 	"name": "timbits",
 	"description": "Widget framework based on Express and CoffeeScript",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"homepage": "https://github.com/Postmedia/timbits",
 	"author": "Edward de Groot <edegroot@postmedia.com> (http://mred9.wordpress.com)",
 	"contributors": [ 
@@ -16,6 +16,7 @@
 		"connect-esi": ">= 0.0.2"
 	},
 	"devDependencies": {
+		"kitkat": ">= 0.1.1"
 	},
 	"bugs": { "web": "https://github.com/Postmedia/timbits/issues"},
 	"licenses": [

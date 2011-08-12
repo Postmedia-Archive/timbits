@@ -30,3 +30,14 @@
   * Now uses Pantry for JSON/XML data retrieval
   * Upgraded to Express 2.4.3 and CoffeeKup 0.3.0beta
   * Examples updated to account for the above changes
+
+0.0.6 / 2011-08-12
+==================
+
+  * Utilizes kitkat for testing
+	* Added test cases
+  * Utilizes env for port number if available
+  * Application options object replaces parameters
+  * Feature rich HTML5 story template in examples
+  * Added List and Syndication widgets to examples
+  * Incorporated connect-esi packaged
