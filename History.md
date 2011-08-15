@@ -41,3 +41,9 @@
   * Feature rich HTML5 story template in examples
   * Added List and Syndication widgets to examples
   * Incorporated connect-esi packaged
+
+0.0.6 / 2011-08-15
+==================
+
+  * Extracted Story, List, and Syndication examples to separate project (timbits-example)
+
