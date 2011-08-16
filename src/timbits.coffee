@@ -43,7 +43,7 @@ config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd()
 			@add name, require("#{path}/#{name}")
 
 	# starts the server
-	@server.listen process.env.PORT || config.port
+	@server.listen config.port
 	console.log "Timbits server listening on port #{@server.address().port} in #{@server.settings.env} mode"
 	
 	return @server 

@@ -47,3 +47,9 @@
 
   * Extracted Story, List, and Syndication examples to separate project (timbits-example)
 
+0.0.6 / 2011-08-16
+==================
+
+  * Updated test cases, added the fixtures folder to run tests against timbits within spec and not the examples folder of the project.  
+  * removed the automatic use of process.env.Port  if it exists and set it to whatever is configured, this was the wrong spot.
+	correct spot is in the call to timbits.serve the user can pass the port (be it process.env.Port or some other number/var).
