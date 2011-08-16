@@ -16,7 +16,7 @@
 		"connect-esi": ">= 0.0.2"
 	},
 	"devDependencies": {
-		"kitkat": ">= 0.1.1"
+		"kitkat-express": ">= 0.1.1"
 	},
 	"bugs": { "web": "https://github.com/Postmedia/timbits/issues"},
 	"licenses": [
