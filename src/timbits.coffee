@@ -76,7 +76,7 @@ class @Timbit
 
 	# default render implemenetation
 	render: (context) ->
-		context.response.render "#{context.name}/#{context.view}", context
+		context.response.render "#{context.name}/#{context.view}", context: context
 	
 	# helper method to retrieve data via REST	
 	fetch: (context, key, options, callback = @render) ->

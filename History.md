@@ -47,3 +47,7 @@
 
   * Extracted Story, List, and Syndication examples to separate project (timbits-example)
 
+0.0.7 / 2011-08-18
+==================
+
+  * Needed to revert to CoffeeKup 0.2.3 in order to support deploying to node < 0.4.7
