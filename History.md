@@ -51,3 +51,8 @@
 ==================
 
   * Needed to revert to CoffeeKup 0.2.3 in order to support deploying to node < 0.4.7
+
+0.1.0 / 2011-08-22
+==================
+
+  * Official 0.1 release
