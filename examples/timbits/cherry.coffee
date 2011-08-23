@@ -16,6 +16,6 @@ timbit.examples = [
 	{href: '/cherry', caption: 'Current Time'}
 ]
 
-timbit.eat = (context) ->
+timbit.eat = (req, res, context) ->
 	context.now = new Date() 
-	@render context
+	@render req, res, context

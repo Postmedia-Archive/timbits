@@ -17,6 +17,6 @@ timbit.examples = [
 	{href: '/plain?who=world', caption: 'Hello World'}
 ]
 
-timbit.params = [
-	{name: 'who', description: 'Name of person to greet', default: 'Anonymous', multiple: false, required: false, strict: false, values: ['Ed', 'World']}
-]
+timbit.params = {
+	who: {description: 'Name of person to greet', default: 'Anonymous', multiple: false, required: false, strict: false, values: ['Ed', 'World']}
+}

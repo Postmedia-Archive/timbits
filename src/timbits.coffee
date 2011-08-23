@@ -74,30 +74,30 @@ config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd()
 	
 	# configure the route
 	@server.get ("/#{name}/:view?"), (req, res) ->
+		
 		# initialize current request context
-		context = {
-			name: name
-			view: req.params.view ?= 'default'
-			request: req
-			response: res
-		}
+		context = {}
+		context[k] = v for k,v of req.query
+		
+		context.name = name
+		context.view = req.params.view ?= 'default'
 		
 		# validate the request
-		if timbit.params then for param in timbit.params
-			context.request.query[param.name] ?= param.default
-			value = context.request.query[param.name]
+		for key, attr of timbit.params
+			context[key] ?= attr.default
+			value = context[key]
 			
-			if param.required and not context.request.query[param.name]
-				throw "#{param.name} is a required parameter" 
+			if attr.required and not value
+				throw "#{key} is a required parameter" 
 				
-			if value and param.strict and param.values.indexOf(value) is -1
-				throw "#{value} is not a valid value for #{param.name}.  Must be one of [#{param.values.join()}]" 
+			if value and attr.strict and attr.values.indexOf(value) is -1
+				throw "#{value} is not a valid value for #{key}.  Must be one of [#{attr.values.join()}]" 
 				
-			if value instanceof Array and not param.multiple
-				throw "#{param.name} must be a single value"
+			if value instanceof Array and not attr.multiple
+				throw "#{key} must be a single value"
 
 		# with context created, it's time to consume this timbit
-		timbit.eat context
+		timbit.eat req, res, context
 		
 help = ->
 	h1 'Timbits - Help'
@@ -113,21 +113,21 @@ test = ->
 class @Timbit
 	
 	# default render implementation
-	render: (context) ->
-		context.response.render "#{context.name}/#{context.view}", context: context
+	render: (req, res, context) ->
+		res.render "#{context.name}/#{context.view}", context: context
 	
 	# helper method to retrieve data via REST	
-	fetch: (context, key, options, callback = @render) ->
+	fetch: (req, res, context, key, options, callback = @render) ->
 
 		pantry.fetch options, (error, results) =>
 			context[key] = results
 				
 			# we're done, will now execute rendor method unless otherwise specified
-			callback(context)
+			callback(req, res, context)
 	
 	# this is the method executed after a matching route.  overwritten on most implementations				
-	eat: (context) ->
-		@render context
+	eat: (req, res, context) ->
+		@render req, res, context
 			
 	help: ->
 		h1 @name
@@ -156,14 +156,14 @@ class @Timbit
 						th 'Multiple'
 						th 'Default'
 						th 'Values'
-					for param in @params
-						td param.name
-						td param.description
-						td param.type or 'String'
-						td (param.required or false).toString()
-						td (param.multiple or false).toString()
-						td param.default
-						td "#{if param.strict then 'One of:' else 'Examples:'} #{param.values.join()}"
+					for key, attr of @params
+						td key
+						td attr.description
+						td attr.type or 'String'
+						td (attr.required or false).toString()
+						td (attr.multiple or false).toString()
+						td attr.default
+						td "#{if attr.strict then 'One of:' else 'Examples:'} #{attr.values.join()}"
 		else
 			p 'None defined'
 	

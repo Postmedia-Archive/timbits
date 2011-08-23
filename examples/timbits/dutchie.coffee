@@ -6,9 +6,7 @@ timbits = require '../../src/timbits'
 # create and export the timbit
 timbit = module.exports = new timbits.Timbit()
 
-timbit.eat = (context) ->
-	
-	context.q = context.request.query.q || 'timbits'
+timbit.eat = (req, res, context) ->
 	
 	# specify the data source
 	src = {
@@ -17,6 +15,6 @@ timbit.eat = (context) ->
 	
 	# use the helper method to @fetch the data
 	# @fetch will call @render once we have the data			
-	@fetch context, 'tweets', src, (context) ->
+	@fetch req, res, context, 'tweets', src, (req, res, context) ->
 		# let's just re-use the chocolate timbit views
-		context.response.render "chocolate/#{context.view}", context: context
+		res.render "chocolate/#{context.view}", context: context

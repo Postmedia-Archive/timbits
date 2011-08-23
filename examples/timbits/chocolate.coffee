@@ -18,13 +18,11 @@ timbit.examples = [
 	{href: '/chocolate/alternate?q=winning', caption: 'Winning - Alternate View'}
 ]
 
-timbit.params = [
-	{name: 'q', description: 'Keyword to search for',required: true, strict: false, values: ['Coffee', 'Timbits']}
-]
+timbit.params = {
+	q: {description: 'Keyword to search for',required: true, strict: false, values: ['Coffee', 'Timbits']}
+}
 
-timbit.eat = (context) ->
-	
-	context.q = context.request.query.q
+timbit.eat = (req, res, context) ->
 	
 	# specify the data source
 	src = {
@@ -33,4 +31,4 @@ timbit.eat = (context) ->
 	
 	# use the helper method to @fetch the data
 	# @fetch will call @render once we have the data			
-	@fetch context, 'tweets', src
+	@fetch req, res, context, 'tweets', src
