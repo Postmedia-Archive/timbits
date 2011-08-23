@@ -56,3 +56,14 @@
 ==================
 
   * Official 0.1 release
+
+0.1.1 / 2011-08-23
+==================
+
+  * request and response separated from context (to support optional client side rendering in a later release)
+  * parameter validation
+  * dynamic help pages
+  * customized routes are no longer supported
+  * examples updated to reflect changes
+]
+

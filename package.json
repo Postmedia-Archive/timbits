@@ -1,12 +1,13 @@
 {
 	"name": "timbits",
 	"description": "Widget framework based on Express and CoffeeScript",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"homepage": "https://github.com/Postmedia/timbits",
 	"author": "Edward de Groot <edegroot@postmedia.com> (http://mred9.wordpress.com)",
 	"contributors": [ 
 		{ "name": "Keith Benedict", "email": "kbenedict@postmedia.com" },
-		{ "name": "Stephen Veerman", "email": "sveerman@postmedia.com" }
+		{ "name": "Stephen Veerman", "email": "sveerman@postmedia.com" },
+		{ "name": "Kevin Gamble", "email": "kgamble@postmedia.com" }
 	],
 	"dependencies": {
 		"express": ">= 2.4.3",

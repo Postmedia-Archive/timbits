@@ -46,10 +46,9 @@ Way too much at this time.  On the short list (and mostly in progress):
 
 * Integrated testing framework
 * Integrated benchmarks
-* Command line server with ability to automatically restart
 * Command line code generator to scaffold a new project or timbit
 * Security considerations
-* Error handling of any sort
+* Additional error handling
 * Support for alternate server configurations
 * More/Better examples
 * Documentation, Documentation, Documentation
@@ -59,3 +58,4 @@ Way too much at this time.  On the short list (and mostly in progress):
 * Edward de Groot
 * Keith Benedict
 * Stephen Veerman
+* Kevin Gamble
