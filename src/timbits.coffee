@@ -3,6 +3,7 @@ pantry = require 'pantry'
 fs = require 'fs'
 connectESI = require 'connect-esi'
 ck = require 'coffeekup'
+Log = require 'coloured-log'
 
 config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd() }
 
@@ -10,9 +11,11 @@ config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd()
 @serve = (options) ->
 	config[key] = value for key, value of options
 	@server = express.createServer()
+
+	@log = new Log(if @server.settings.env is 'development' then Log.DEBUG else Log.INFO)
 	
 	# support coffekup
-	@server.register '.coffee', require('coffeekup')
+	@server.register '.coffee', ck
 	
 	# configure server (still needs some thought) 	
 	@server.set 'views', "#{config.home}/views"
@@ -51,7 +54,7 @@ config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd()
 
 	# starts the server
 	@server.listen process.env.PORT || process.env.C9_PORT || config.port
-	console.log "Timbits server listening on port #{@server.address().port} in #{@server.settings.env} mode"
+	@log.info "Timbits server listening on port #{@server.address().port} in #{@server.settings.env} mode"
 	
 	return @server 
 
@@ -61,7 +64,7 @@ config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd()
 # use the 'add' method to place a timbit in the box
 @add = (name, timbit) ->
 	#place the timbit in the box
-	console.log "\t Placing #{name} in the box"
+	@log.notice "Placing #{name} in the box"
 	timbit.name = name
 	@box[name] = timbit
 	
@@ -75,29 +78,34 @@ config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd()
 	# configure the route
 	@server.get ("/#{name}/:view?"), (req, res) ->
 		
-		# initialize current request context
-		context = {}
-		context[k] = v for k,v of req.query
+		try
+			# initialize current request context
+			context = {}
+			context[k] = v for k,v of req.query
 		
-		context.name = name
-		context.view = req.params.view ?= 'default'
+			context.name = name
+			context.view = req.params.view ?= 'default'
 		
-		# validate the request
-		for key, attr of timbit.params
-			context[key] ?= attr.default
-			value = context[key]
+			# validate the request
+			for key, attr of timbit.params
+				context[key] ?= attr.default
+				value = context[key]
 			
-			if attr.required and not value
-				throw "#{key} is a required parameter" 
+				if attr.required and not value
+					throw "#{key} is a required parameter" 
 				
-			if value and attr.strict and attr.values.indexOf(value) is -1
-				throw "#{value} is not a valid value for #{key}.  Must be one of [#{attr.values.join()}]" 
+				if value and attr.strict and attr.values.indexOf(value) is -1
+					throw "#{value} is not a valid value for #{key}.  Must be one of [#{attr.values.join()}]" 
 				
-			if value instanceof Array and not attr.multiple
-				throw "#{key} must be a single value"
+				if value instanceof Array and not attr.multiple
+					throw "#{key} must be a single value"
+					
+			# with context created, it's time to consume this timbit
+			timbit.eat req, res, context
+		catch ex
+			log.error "#{req.url} - #{ex}"
+			throw ex
 
-		# with context created, it's time to consume this timbit
-		timbit.eat req, res, context
 		
 help = ->
 	h1 'Timbits - Help'
