@@ -165,13 +165,17 @@ class @Timbit
 						th 'Default'
 						th 'Values'
 					for key, attr of @params
-						td key
-						td attr.description
-						td attr.type or 'String'
-						td (attr.required or false).toString()
-						td (attr.multiple or false).toString()
-						td attr.default
-						td "#{if attr.strict then 'One of:' else 'Examples:'} #{attr.values.join()}"
+						tr ->
+							td key
+							td attr.description
+							td attr.type or 'String'
+							td (attr.required or false).toString()
+							td (attr.multiple or false).toString()
+							td attr.default
+							if attr.values then td ->
+								if attr.strict then text('One of:') else text('Examples:')
+								ul -> li value for value in attr.values
+								
 		else
 			p 'None defined'
 	
