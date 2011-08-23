@@ -1,10 +1,4 @@
-# Dutchie Timbit
-# Similar (in function, not taste) to the chocolate timbit
-# This timbit displays some more advanced features such as:
-# - specify a custom route
-# - overiding the render implementation with custom code
-# - um, that's it for now.  more to come...
-# e.g. /dutchie/postmedia/alternate
+# Chocolate Timbit
 
 # load the timbits module
 timbits = require '../../src/timbits'
@@ -12,12 +6,9 @@ timbits = require '../../src/timbits'
 # create and export the timbit
 timbit = module.exports = new timbits.Timbit()
 
-# additional timbit implementation code follows...
-timbit.route = "/dutchie/:q?/:view?"
-
 timbit.eat = (context) ->
 	
-	context.q = context.request.params.q || 'timbits'
+	context.q = context.request.query.q || 'timbits'
 	
 	# specify the data source
 	src = {

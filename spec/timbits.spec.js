@@ -111,7 +111,7 @@
       var calls;
       calls = 0;
       assert.response(server, {
-        url: "/dutchie/nodejs/alternate"
+        url: "/dutchie/alternate?q=nodejs"
       }, {
         body: /Alternate dutchie Timbit View/,
         status: 200

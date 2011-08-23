@@ -1,6 +1,4 @@
 # Cherry Timbit
-# Example of a timbit which actually does something.
-# This timbit will display the current server time
 
 # load the timbits module
 timbits = require '../../src/timbits'
@@ -9,6 +7,15 @@ timbits = require '../../src/timbits'
 timbit = module.exports = new timbits.Timbit()
 
 # additional timbit implementation code follows...
+timbit.about = '
+	Example of a timbit which actually does something.
+	This timbit will display the current server time.
+	'
+	
+timbit.examples = [
+	{href: '/cherry', caption: 'Current Time'}
+]
+
 timbit.eat = (context) ->
 	context.now = new Date() 
 	@render context

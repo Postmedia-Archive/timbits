@@ -102,7 +102,7 @@ module.exports =
 	"test the dutchie timbit which implements the fetch callback to re-route calls here to the chocolate timbit with views": (beforeExit) ->
 		calls = 0
 		assert.response server, 
-			url: "/dutchie/nodejs/alternate"
+			url: "/dutchie/alternate?q=nodejs"
 		,
 			body: /Alternate dutchie Timbit View/
 			status: 200

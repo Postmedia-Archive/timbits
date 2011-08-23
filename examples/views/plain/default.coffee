@@ -1,2 +1,2 @@
 h1 ->
-	"Hello #{@request.query.who || 'Anonymous'}"
+	"Hello #{@request.query.who}"
