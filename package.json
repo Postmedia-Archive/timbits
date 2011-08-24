@@ -15,7 +15,9 @@
 		"coffeekup": "= 0.2.3",
 		"pantry": ">= 0.1.1",
 		"connect-esi": ">= 0.1.1",
-		"coloured-log": ">=0.9.7"
+		"coloured-log": ">=0.9.7",
+		"async": ">=0.1.9",
+		"request": ">=2.1.1"
 	},
 	"devDependencies": {
 		"kitkat": ">= 0.1.1"

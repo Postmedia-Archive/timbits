@@ -1,11 +1,15 @@
 express = require 'express'		
 pantry = require 'pantry'
 fs = require 'fs'
+path = require 'path'
+request = require 'request'
+async = require 'async'
 connectESI = require 'connect-esi'
 ck = require 'coffeekup'
 Log = require 'coloured-log'
 
 config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd() }
+server = {}
 
 # creates, configures, and returns a standard express server instance
 @serve = (options) ->
@@ -55,7 +59,8 @@ config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd()
 	# starts the server
 	@server.listen process.env.PORT || process.env.C9_PORT || config.port
 	@log.info "Timbits server listening on port #{@server.address().port} in #{@server.settings.env} mode"
-	
+	server.address = @server.address().address
+	server.port = @server.address().port
 	return @server 
 
 # the box that holds each of the individual timbits created							
@@ -73,8 +78,10 @@ config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd()
 		res.send ck.render(timbit.help, context: timbit)
 	
 	@server.get ("/#{name}/test"), (req, res) ->
-		res.send ck.render(test, context: null)
-	
+		timbit.test server, timbit, (results) ->
+			results.timbit = timbit.name
+			res.send ck.render(test, context: results)
+
 	# configure the route
 	@server.get ("/#{name}/:view?"), (req, res) ->
 		
@@ -157,7 +164,27 @@ help = ->
 					li -> a href: "/#{k}/help", -> k + ' &raquo;'
 			
 test = ->
-	h1 'Testing? LOL!!!!!!'
+	h1 ->
+		"Timbits - #{@timbit}"
+
+	if @views
+		ul ->
+			for view in @views
+				li -> view
+	if @failed
+		p -> "Errors in testing #{@failed}"
+
+
+	if @response
+		@response
+
+	for k, v of @
+		p -> "#{k} [#{v}]"
+
+	if @.failures
+		ul ->	
+			for failure in @failures
+				li -> "#{failure.timbit} : #{failure.error}"
 
 # definition of a timbit
 class @Timbit
@@ -270,7 +297,103 @@ class @Timbit
 					p 'None defined'
 
 				div id:'return', -> a href: '/timbits/help', -> '&laquo; Help Index'
-		
-	test: () ->
-		console.log 'LOL!'
-		
+	
+	test: (server, context, callback) ->
+		results = {
+			timbit: ''
+			views: []
+			required: []
+			optional: []
+			failures: []
+			queries: []
+			failed: false
+		}
+		async.series
+			testViews: (callback) ->
+				# Retrieve list of views form the views directory for this timbit
+				fs.readdir "#{config.home}/views/#{context.name}", (err,list) ->
+					if err || list is undefined
+						failure = {
+							timbit: 		"#{context.name}"
+							view:			""
+							statusCode:		""
+							querystring:	""
+							error:			"Unable to retrieve a list of views"
+						}
+						results.failures.push failure
+						results.views.push 'default' # We will attempt the default view anyway and hope the timbit knows what it is doing.
+						callback null
+					else
+						pending = list.length
+						for file in list then do (file) ->
+							if file.match(/\.coffee/)?
+								results.views.push (require('path').basename(file, '.coffee'))
+								callback null unless --pending
+			testParams: (callback) ->
+				# Process parameters, seperate into required vs. optional
+				for k, v of context.params
+					param = "#{k}=#{v.values[0]}"
+					if v.required
+						results.required.push param
+					else
+						results.optional.push param
+				callback null 
+			testQueries: (callback) ->
+				# Determine whether we have optional and required parameters and build query strings.
+				if results.required?.length 
+					if results.optional?.length 
+						results.queries.push "#{results.required.join('&')}&#{results.optional.join('&')}"
+					results.queries.push results.required.join('&')
+				else
+					if results.optional?.length 
+						results.queries.push "#{results.optional.join('&')}"
+				callback null
+			testRunQueries: (callback) ->
+				# Execute the tests based on provided querystrings, views and examples.
+				console.log "\n\n\tTesting Timbit - #{context.name}\n\t-------------------------------------------------\n"
+				# If there are no paramters to test we just test the views
+				if not results.queries?.length
+					pending = results.views.length
+					for view in results.views then do (view) ->
+						console.log "\tTesting view: #{view} with \n\t\t uri: http://#{server.address}:#{server.port}/#{context.name}/#{view}"
+						request { uri: "http://#{server.address}:#{server.port}/#{context.name}/#{view}"}, (error, response, body) ->
+							if error
+								# Would like to see if we can reduce this by a function, however too much context and other object are in use
+								# it seems to work best to leave this bit in even thoguh I repeat it in the 'else' and for examples
+								failure = {	timbit: "#{context.name}", view: "#{view}", statusCode:	"#{response.statusCode}", querystring: "", error: "#{error}" }
+								console.log "\n** \t\t Errors: #{error || body}" 
+								results.failures.push failure
+								results.failed = true
+							callback null unless --pending
+				else
+					# Test each query for each view
+					pending = results.queries.length
+					for query in results.queries then do (query) ->
+						for view in results.views then do (view) ->
+							console.log "\tTesting view: #{view} with query #{query} \n\t\t uri: http://#{server.address}:#{server.port}/#{context.name}/#{view}?#{query}"
+							request { uri: "http://#{server.address}:#{server.port}/#{context.name}/#{view}?#{query}"}, (error, response, body) ->
+								if response?.statusCode >= 400 or error
+									failure = {	timbit: "#{context.name}", view: "#{view}", statusCode:	"#{response.statusCode}", querystring: "#{query}", error: "#{error || body}" }
+									console.log "\n** \t\t Errors: #{error || body}"
+									results.failures.push failure
+									results.failed = true
+								callback null unless --pending
+			testRunExamples: (callback) ->
+				# Test the example links provided.
+				if context.examples?
+					pending = context.examples.length
+					for example in context.examples then do (example) ->
+						console.log "\tTesting example: #{example.caption} with \n\t\t uri: http://#{server.address}:#{server.port}#{example.href}"
+						request { uri: "http://#{server.address}:#{server.port}#{example.href}"}, (error, response, body) ->
+							if response?.statusCode >= 400 or error
+								failure = {	timbit: "#{context.name}", view: "", statusCode:	"#{response.statusCode}", querystring: "", error: "Using example #{example.href} - #{error || body}" }
+								console.log "\n** \t\t Errors: #{error || body}"
+								results.failures.push failure
+								results.failed = true
+							callback null unless --pending
+				else
+				 	callback null
+		, (error) ->
+			console.log "Errors: #{error}" if error
+			callback results
+	
