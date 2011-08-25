@@ -65,5 +65,11 @@
   * dynamic help pages
   * customized routes are no longer supported
   * examples updated to reflect changes
-]
 
+0.1.2 / 2011-08-25
+==================
+
+  * dynamic help has been styled
+  * support for client side rendering
+  * initial support for automated testing
+  * better logging
