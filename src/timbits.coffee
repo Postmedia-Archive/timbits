@@ -29,6 +29,7 @@ server = {}
 	@server.configure =>
 		@server.use connectESI.setupESI()
 		@server.use express.static("#{config.home}/public")
+		@server.use express.static("#{config.home}/views")		
 		@server.use express.bodyParser()
 		@server.use express.cookieParser()
 
@@ -191,7 +192,20 @@ class @Timbit
 	
 	# default render implementation
 	render: (req, res, context) ->
-		res.render "#{context.name}/#{context.view}", context: context
+		if context.remote is 'true'
+			output = """
+					$().ready(function() {
+						return $.get("/#{context.name}/#{context.view}.coffee", function(data) {
+							context = #{JSON.stringify(context)};
+							return $('##{context.timbit_id}').html(CoffeeKup.render(data, context));
+						});
+					});
+			"""					
+			res.setHeader "Content-Type", "text/plain"
+			res.write output
+			res.end()
+		else
+			res.render "#{context.name}/#{context.view}", context: context
 	
 	# helper method to retrieve data via REST	
 	fetch: (req, res, context, key, options, callback = @render) ->
