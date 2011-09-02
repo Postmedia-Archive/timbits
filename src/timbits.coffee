@@ -3,7 +3,6 @@ pantry = require 'pantry'
 fs = require 'fs'
 path = require 'path'
 request = require 'request'
-async = require 'async'
 connectESI = require 'connect-esi'
 ck = require 'coffeekup'
 Log = require 'coloured-log'
@@ -46,19 +45,24 @@ log = new Log()
 		res.redirect '/timbits/help'
 
 	@server.get '/timbits/help', (req, res) =>
-		res.send ck.render(help, context: @box)
+		fs.readFile "#{config.home}/views/help.coffee", (err, data) ->
+			throw err if err
+			res.send ck.render(data.toString(), context: @box)
 
 	@server.get '/timbits/test', (req, res) =>
-		res.send ck.render(test, context: null)
+		# master test page to be completed
+		return
 
 	#automagically load timbits found in the ./timbits folder
 	path = "#{config.home}/timbits"
 	fs.readdir path, (err, files) =>
 		throw err if err
 		for file in files
-			name = file.replace('.coffee', '')
-			@add name, require("#{path}/#{name}")
-
+			file = file.split '.'
+			ext = file[file.length-1]
+			if ext == 'coffee' or ext == 'js'
+				@add file[0], require("#{path}/#{file[0]}")
+		
 	# starts the server
 	@server.listen process.env.PORT || process.env.C9_PORT || config.port
 	log.info "Timbits server listening on port #{@server.address().port} in #{@server.settings.env} mode"
@@ -78,16 +82,19 @@ log = new Log()
 
 	# configure help
 	@server.get ("/#{name}/help"), (req, res) ->
-		res.send ck.render(timbit.help, context: timbit)
+		fs.readFile "#{config.home}/views/timbit_help.coffee", (err, data) ->
+			throw err if err
+			res.send ck.render(data.toString(), context: timbit)
 
+	# configure test
 	@server.get ("/#{name}/test"), (req, res) ->
 		timbit.test server, timbit, (results) ->
-			#res.render "#{context.name}/#{context.view}", context: context
-			res.send ck.render(test, context: results)
+			fs.readFile "#{config.home}/views/timbit_test.coffee", (err, data) ->
+				throw err if err
+				res.send ck.render(data.toString(), context: results)
 
 	# configure the route
 	@server.get ("/#{name}/:view?"), (req, res) ->
-
 		try
 			# initialize current request context
 			context = {}
@@ -115,122 +122,6 @@ log = new Log()
 		catch ex
 			log.error "#{req.url} - #{ex}"
 			throw ex
-
-help = ->
-	style '''body {
-		background: #d2d5dc; /* Old browsers */
-		background: -moz-linear-gradient(top, #d2d5dc 0%, #ffffff 75%); /* FF3.6+ */
-		background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d2d5dc), color-stop(75%,#ffffff)); /* Chrome,Safari4+ */
-		background: -webkit-linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* Chrome10+,Safari5.1+ */
-		background: -o-linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* Opera11.10+ */
-		background: -ms-linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* IE10+ */
-		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d2d5dc', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
-		background: linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* W3C */
-		background-repeat: no-repeat;
-		margin: 0;
-		padding: 0;
-		font: 14px Tahoma, Geneva, sans-serif;
-	}
-	#content {
-	    background: #fff none;
-	    width: 750px;
-	    padding: 5px 20px 20px 20px;
-		box-shadow: 0 0px 20px #666;
-		min-height: 500px;
-	}
-
-	a {color: #4E5989; text-decoration: underline;}
-	a:hover {text-decoration: none;}
-
-	#wrapper {width: 750px; margin: 0 auto;}
-
-	h1 {border-bottom: 1px solid #999; width: 100%; font: 30px Tahoma, Geneva, sans-serif}
-
-	p, h3 {margin: 0 0 5px 0;}
-	h2 {margin: 40px 0 5px 0;}
-
-	ul {
-	    margin: 0 0 10px 0;
-	    list-style: none;
-		padding: 0;
-	}
-
-	li {padding: 0 0 10px 0; text-transform: uppercase;}
-	'''
-
-	div id:'wrapper', ->
-		div id:'content', ->
-			h1 'Timbits - Help'
-
-			ul ->
-				for k, v of @
-					li -> a href: "/#{k}/help", -> k + ' &raquo;'
-
-test = ->
-	div id:"test_#{@timbit}", ->
-		h1 class:'test_title', ->
-			"Test Timbit '#{@timbit}'"
-
-		h3 class:'test_summary', 'Testing Summary'
-
-		div class:'test_views', ->
-			h4 'Views'
-			ul ->
-				for view in @views
-					li -> view
-
-		if @required?.length > 0
-			div class:'test_required_params', ->
-				h4 'Required Parameters'
-				ul ->
-					for required in @required
-						li -> required
-
-		if @optional?.length > 0
-			div class:'test_optional_params', ->
-				h4 'Optional Parameters'
-				ul ->
-					for optional in @optional
-						li -> optional
-
-		passed = 0
-		failed = 0
-		for test in @tests
-			if test.status == 200 then passed++ else failed++
-
-		if passed > 0
-			div class:'test_passed', ->
-				h3 "Passed #{passed} of #{passed+failed}"
-				table ->
-					thead ->
-						tr ->
-							td 'Type'
-							td 'URL'
-					tbody ->
-						for test in @tests
-							if test.status is 200
-								tr ->
-									td test.type
-									td test.uri
-
-		if failed > 0
-			div class:'test_failed', ->
-				h3 "Failed #{failed} of #{passed+failed}"
-				table ->
-					thead ->
-						tr ->
-							td 'Type'
-							td 'URL'
-							td 'HTTP Status'
-							td 'Error Message'
-					tbody ->
-						for test in @tests
-							if test.status isnt 200
-								tr ->
-									td test.type
-									td test.uri
-									td test.status
-									td test.error
 
 # definition of a timbit
 class @Timbit
@@ -264,98 +155,6 @@ class @Timbit
 	# this is the method executed after a matching route.  overwritten on most implementations
 	eat: (req, res, context) ->
 		@render req, res, context
-
-	help: ->
-		style '''body {
-			background: #d2d5dc; /* Old browsers */
-			background: -moz-linear-gradient(top, #d2d5dc 0%, #ffffff 75%); /* FF3.6+ */
-			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d2d5dc), color-stop(75%,#ffffff)); /* Chrome,Safari4+ */
-			background: -webkit-linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* Chrome10+,Safari5.1+ */
-			background: -o-linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* Opera11.10+ */
-			background: -ms-linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* IE10+ */
-			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d2d5dc', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
-			background: linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* W3C */
-			background-repeat: no-repeat;
-			margin: 0;
-			padding: 0;
-			font: 14px Tahoma, Geneva, sans-serif;
-		}
-		#content {
-		    background: #fff none;
-		    width: 750px;
-		    padding: 5px 20px 20px 20px;
-			box-shadow: 0 0px 20px #666;
-			min-height: 500px;
-		}
-
-		a {color: #4E5989; text-decoration: underline;}
-		a:hover {text-decoration: none;}
-
-		#wrapper {width: 750px; margin: 0 auto;}
-
-		h1 {border-bottom: 1px solid #999; width: 100%; font: 30px Tahoma, Geneva, sans-serif}
-		h2 {font: 20px Tahoma, Geneva, sans-serif}
-
-		p, h3 {margin: 0 0 5px 0;}
-		h2 {margin: 40px 0 5px 0;}
-
-		ul {
-		    margin: 0 0 10px 0;
-		    list-style: none;
-			padding: 0;
-		}
-
-		li {padding: 0 0 10px 0; text-transform: uppercase;}
-		#return {margin-top: 20px;}
-		table {border: 1px solid #4E5989; width: 100%; border-collapse: collapse; border-spacing: 0;}
-		th, tr {text-align: left; border-bottom: 1px solid #4E5989;}
-		td, th {border-right: 1px solid #4E5989;}
-		td, th {padding: 5px;}
-		'''
-		div id:'wrapper', ->
-			div id:'content', ->
-				h1 @name
-
-				p @about or 'Developer was too lazy to describe this widget'
-
-				h2 'Examples:'
-
-				if @examples
-					ul ->
-						for example in @examples
-							li -> a href: example.href, -> example.caption
-				else
-					p 'Developer was too lazy to define any examples.'
-
-				h2 'Parameters'
-
-				if @params
-					table ->
-						tbody ->
-							tr ->
-								th 'Name'
-								th 'Description'
-								th 'Type'
-								th 'Required'
-								th 'Multiple'
-								th 'Default'
-								th 'Values'
-							for key, attr of @params
-								tr ->
-									td key
-									td attr.description
-									td attr.type or 'String'
-									td (attr.required or false).toString()
-									td (attr.multiple or false).toString()
-									td attr.default
-									if attr.values then td ->
-										if attr.strict then text('One of:') else text('Examples:')
-										ul -> li value for value in attr.values
-
-				else
-					p 'None defined'
-
-				div id:'return', -> a href: '/timbits/help', -> '&laquo; Help Index'
 
 	test: (server, context, callback) ->
 		results = {
