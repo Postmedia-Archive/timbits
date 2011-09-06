@@ -49,11 +49,21 @@ log = new Log()
 			throw err if err
 			res.send ck.render(data.toString(), context: @box)
 
+	# router master test page
 	@server.get '/timbits/test', (req, res) =>
-		# master test page to be completed
-		return
+		path = "#{config.home}/timbits"
+		fs.readdir path, (err, files) =>
+			throw err if err
+			res.setHeader 'Content-Type', 'text/html; charset=UTF-8'
+			master = ''
+			pending = files.length
+			for file in files
+				file = file.split '.'
+				request {uri: "http://#{server.address}:#{server.port}/#{file[0]}/test" }, (error, response, body) ->
+					master += body
+					res.end master unless --pending
 
-	#automagically load timbits found in the ./timbits folder
+	# automagically load timbits found in the ./timbits folder
 	path = "#{config.home}/timbits"
 	fs.readdir path, (err, files) =>
 		throw err if err
@@ -62,7 +72,13 @@ log = new Log()
 			ext = file[file.length-1]
 			if ext == 'coffee' or ext == 'js'
 				@add file[0], require("#{path}/#{file[0]}")
-		
+
+	###
+	# route 404s to help
+	@server.get '/*', (req, res) ->
+		res.redirect '/timbits/help'
+	####
+
 	# starts the server
 	@server.listen process.env.PORT || process.env.C9_PORT || config.port
 	log.info "Timbits server listening on port #{@server.address().port} in #{@server.settings.env} mode"
@@ -164,13 +180,14 @@ class @Timbit
 			optional: []
 			queries: []
 			tests: []
+			warnings: []
 		}
 
 		testViews = (callback) ->
 			# Retrieve list of views form the views directory for this timbit
 			fs.readdir "#{config.home}/views/#{context.name}", (err,list) ->
 				if err || list is undefined
-					results.tests.push { type: 'retrieve list', uri: '', status: '', error: "Unable to retrieve a list of views" }
+					results.warnings.push { message: "Unable to retrieve a list of views" }
 					results.views.push 'default' # We will attempt the default view anyway and hope the timbit knows what it is doing.
 				else
 					for file in list then do (file) ->
@@ -210,7 +227,7 @@ class @Timbit
 				for query in results.queries then do (query) ->
 					for view in results.views then do (view) ->
 						testRequest "queries", "http://#{server.address}:#{server.port}/#{context.name}/#{view}?#{query}", ->
-							callback() unless --pending							
+							callback() unless --pending
 
 		testRunExamples = (callback) ->
 			# Test the example links provided.
@@ -237,7 +254,9 @@ class @Timbit
 				if test.status >= 400 or error?
 					log.error "Test: #{test.type} URI: #{test.uri} Status: #{test.status} Error: #{test.error}"
 				else
-					log.info "Test: #{test.type} URI: #{test.uri} Status: #{test.status}"				
+					log.info "Test: #{test.type} URI: #{test.uri} Status: #{test.status}"
+			for warning in results.warnings
+					log.warning "Message: #{warning.message}"
 			callback results
 
 		runTests()

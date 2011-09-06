@@ -7,7 +7,7 @@ body {margin: 0; padding: 0; font-family: Tahoma, Geneva, sans-serif;}
 	width: 95%;
 	background-color: #fcfcfc;
 }
-.test_block:hover {background-color: #f6f6f6;}	
+.test_block:hover {background-color: #f6f6f6;}
 h1, h2, h3, h4, h5 {margin: 0; padding: 0;}
 h1 {margin: 0 0 20px 0;}
 
@@ -24,7 +24,7 @@ thead tr td {border-bottom: 1px solid #ddd; font-weight: bold;}
 ul {margin:0; list-style: none; font-size: 12px; padding: 0 0 0 20px;}
 li:before { content: "» ";}
 .test_required_params, .test_optional_params {margin-top: 30px;}
-h4 {margin-bottom: 5px; color: #001cc9;} 
+h4 {margin-bottom: 5px; color: #001cc9;}
 
 '''
 div class:"test_block", ->
@@ -96,3 +96,16 @@ div class:"test_block", ->
 								td test.uri
 								td test.status
 								td test.error
+
+	if @warnings.length > 0
+		div class:'warnings', ->
+			img src:'/images/error.png', class:'icon'
+			h3 "Warnings"
+			table ->
+				thead ->
+					tr ->
+						td 'Message'
+				tbody ->
+					for warning in @warnings
+						tr ->
+							td warning.message

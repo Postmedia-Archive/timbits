@@ -14,7 +14,7 @@ timbit.about = '
 	'
 
 timbit.examples = [
-	{href: '/chocolate?q=winning', caption: 'Winning - Default View'}
+	{href: '/chocolate/?q=winning', caption: 'Winning - Default View'}
 	{href: '/chocolate/alternate?q=winning', caption: 'Winning - Alternate View'}
 ]
 
