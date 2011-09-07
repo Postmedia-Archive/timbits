@@ -17,7 +17,8 @@
 		"connect-esi": ">= 0.1.3",
 		"coloured-log": ">=0.9.7",
 		"async": ">=0.1.9",
-		"request": ">=2.1.1"
+		"request": ">=2.1.1",
+		"optimist": ">=0.2.6"
 	},
 	"devDependencies": {
 		"kitkat": ">= 0.1.1"
@@ -29,6 +30,9 @@
 	"keywords": ["framework", "widgets", "express", "coffeescript", "coffeekup"],
 	"repository": "git://github.com/postmedia/timbits",
 	"main": "./lib/timbits",
+	"bin": {
+		"timbits": "./bin/timbits"
+	},
 	"scripts": {
 		"build": "cake build"
 	},

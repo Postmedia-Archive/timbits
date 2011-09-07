@@ -1,3 +1,106 @@
-#!/usr/bin/env node
+#!/usr/bin/env coffee
+fs = require 'fs'
+path = require 'path'
+exec = require("child_process").exec
+spawn = require("child_process").spawn
+node_modules = path.join(path.dirname(fs.realpathSync(__filename)),"../node_modules/")
+optimist = require (node_modules + 'optimist')
+Log = require (node_modules + 'coloured-log')
+log = new Log()
 
-console.log('Timbits command line stub');
+optimist.usage("\nTimbits Code Generation\n\n" +
+"timbits n[ew] [project]\n\tCreates new subfolders [project], [project]/timbits, and [project]/views.\n\tGenerates basic server.js, package.json, History.md, README.md, and LICENSE files.\n\n" +
+"timbits g[enerate] [timbit]\n\tScaffolds a new timbit at timbits/[timbit].coffee and a new view at views/[timbit]/default.coffee\n\n" +
+"timbits s[erver]\n\tLaunches runjs with server.js")
+
+lib = path.dirname(fs.realpathSync(__filename)) + '/template'
+
+mkdir = (directory, callback) ->
+	# Make directory
+	fs.mkdir directory, 0777, (e) ->
+		if e?.message?
+			log.error "#{e.message}"
+		else
+			log.info "Created #{directory} directory"
+		callback()
+
+cp = (file, destination, callback) ->
+	# Copy file
+	command = "cp -p -n #{file} #{destination}"
+	child = exec("cp -p -n #{file} #{destination}", (error, stdout, stderr) ->
+		if error isnt null
+			log.error "#{error} #{command}"
+		else
+			log.info "Copied #{file} to #{destination}"
+		return callback(true)
+	)
+
+runNPM = (directory) ->
+	# Run NPM
+	process.chdir directory
+	log.notice "Running command 'npm install -d'"
+	npm = spawn("npm", [ "install", "-d" ])
+	npm.stdout.on "data", (data) ->
+		console.log data.toString()
+	npm.on "exit", (code) ->
+		if (code == 0)
+			log.notice "Command 'npm install -d' was successful!"
+		else
+			log.warn "Command 'npm install -d' exited with code #{code}"
+
+newProject = (argv) ->
+	# Creates new subfolders [project], [project]/timbits, and [project]/views. 
+	# Generates basic server.js, package.json, History.md, README.md, and LICENSE files.
+	if argv.length < 2
+		log.error "New project requires two parameters (eg. './timbits new project')"
+	else
+		log.notice "Creating project '#{argv[1]}'"
+		directories = ["#{argv[1]}", "#{argv[1]}/timbits", "#{argv[1]}/views"]
+		files = ["server.js", "package.json", "History.md", "README.md", "LICENSE"]		
+		mkdir directories[0], ->
+			mkdir directories[1], ->
+				mkdir directories[2], ->
+					pending = files.length
+					for file in files	
+						cp "#{lib}/#{file}", argv[1], ->
+							runNPM directories[0] unless --pending
+
+generateTimbit = (argv) ->
+	# Scaffolds a new timbit at timbits/[timbit].coffee and a new view at views/[timbit]/default.coffee
+	if argv.length < 2
+		log.error "Generating timbit requires two parameters (eg. './timbits generate timbit')"
+	else
+		log.notice "Generating timbit '#{argv[1]}'"
+		fs.readdir "timbits", (e) ->
+			if e?.message?
+				log.error "#{e.message}: timbits"
+			else
+				cp "#{lib}/timbit.coffee", "timbits/#{argv[1]}.coffee", ->	
+		fs.readdir "views", (e) ->
+			if e?.message?
+				log.error "#{e.message}: views"
+			else
+				mkdir "views/#{argv[1]}", ->
+					fs.writeFile "views/#{argv[1]}/default.coffee", "#{argv[1]} Timbit", (err) ->
+					  throw err if err
+					  log.info "Created view in views/#{argv[1]}/default.coffee"
+
+startServer = (argv) ->
+	# Launches runjs with server.js
+	log.notice "Running command 'runjs server.js'"
+	runjs = spawn("runjs", [ "server.js" ])
+	runjs.stdout.on "data", (data) ->
+		console.log data.toString()
+	runjs.stderr.on "data", (data) ->
+		console.log data.toString()
+
+showHelp = (argv) ->
+	# Show usage help
+	console.log optimist.help()
+
+switch optimist.argv._[0]
+	when 'n', 'new' then newProject(optimist.argv._)
+	when 'g', 'generate' then generateTimbit(optimist.argv._)
+	when 's', 'server' then startServer()
+	else showHelp()
+
