@@ -45,6 +45,7 @@ log = new Log()
 		res.redirect '/timbits/help'
 
 	@server.get '/timbits/help', (req, res) =>
+		res.statusCode = 404
 		fs.readFile "#{config.home}/views/help.coffee", (err, data) ->
 			throw err if err
 			res.send ck.render(data.toString(), context: @box)
@@ -75,7 +76,7 @@ log = new Log()
 
 		# route 404s to help
 		@server.get '*', (req, res) ->
-			res.redirect '/timbits/help'
+			res.redirect '/timbits/help', 301
 
 	# starts the server
 	@server.listen process.env.PORT || process.env.C9_PORT || config.port
