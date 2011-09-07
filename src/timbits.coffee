@@ -41,28 +41,21 @@ log = new Log()
 		@server.use express.errorHandler()
 
 	# route help page
-	@server.get '/', (req, res) ->
-		res.redirect '/timbits/help'
-
 	@server.get '/timbits/help', (req, res) =>
 		res.statusCode = 404
 		fs.readFile "#{config.home}/views/help.coffee", (err, data) ->
 			throw err if err
 			res.send ck.render(data.toString(), context: @box)
 
-	# router master test page
+	# route master test page
 	@server.get '/timbits/test', (req, res) =>
-		path = "#{config.home}/timbits"
-		fs.readdir path, (err, files) =>
-			throw err if err
-			res.setHeader 'Content-Type', 'text/html; charset=UTF-8'
-			master = ''
-			pending = files.length
-			for file in files
-				file = file.split '.'
-				request {uri: "http://#{server.address}:#{server.port}/#{file[0]}/test" }, (error, response, body) ->
-					master += body
-					res.end master unless --pending
+		res.setHeader 'Content-Type', 'text/html; charset=UTF-8'
+		master = ''
+		pending = Object.keys(@box).length
+		for k,v of @box
+			request {uri: "http://#{server.address}:#{server.port}/#{k}/test" }, (error, response, body) ->
+				master += body
+				res.end master unless --pending
 
 	# automagically load timbits found in the ./timbits folder
 	path = "#{config.home}/timbits"
@@ -210,7 +203,7 @@ class @Timbit
 		testRequest = (type, uri, callback) ->
 			# Execute request for uri and store result
 			request {uri: "#{uri}" }, (error, response, body) ->
-				results.tests.push { type: type, uri: uri, status: response.statusCode, error: (if error? then error else (if body? then body else '')) }
+				results.tests.push { type: type, uri: uri, status: response.statusCode, error: (if error? then error else '') }
 				callback()
 
 		testRunQueries = (callback) ->
