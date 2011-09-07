@@ -49,19 +49,19 @@ runNPM = (directory) ->
 			log.warn "Command 'npm install -d' exited with code #{code}"
 
 newProject = (argv) ->
-	# Creates new subfolders [project], [project]/timbits, and [project]/views. 
+	# Creates new subfolders [project], [project]/timbits, and [project]/views.
 	# Generates basic server.js, package.json, History.md, README.md, and LICENSE files.
 	if argv.length < 2
 		log.error "New project requires two parameters (eg. './timbits new project')"
 	else
 		log.notice "Creating project '#{argv[1]}'"
 		directories = ["#{argv[1]}", "#{argv[1]}/timbits", "#{argv[1]}/views"]
-		files = ["server.js", "package.json", "History.md", "README.md", "LICENSE"]		
+		files = ["server.js", "package.json", "History.md", "README.md", "LICENSE"]
 		mkdir directories[0], ->
 			mkdir directories[1], ->
 				mkdir directories[2], ->
 					pending = files.length
-					for file in files	
+					for file in files
 						cp "#{lib}/#{file}", argv[1], ->
 							runNPM directories[0] unless --pending
 
@@ -75,7 +75,7 @@ generateTimbit = (argv) ->
 			if e?.message?
 				log.error "#{e.message}: timbits"
 			else
-				cp "#{lib}/timbit.coffee", "timbits/#{argv[1]}.coffee", ->	
+				cp "#{lib}/timbit.coffee", "timbits/#{argv[1]}.coffee", ->
 		fs.readdir "views", (e) ->
 			if e?.message?
 				log.error "#{e.message}: views"

@@ -73,11 +73,9 @@ log = new Log()
 			if ext == 'coffee' or ext == 'js'
 				@add file[0], require("#{path}/#{file[0]}")
 
-	###
-	# route 404s to help
-	@server.get '/*', (req, res) ->
-		res.redirect '/timbits/help'
-	####
+		# route 404s to help
+		@server.get '*', (req, res) ->
+			res.redirect '/timbits/help'
 
 	# starts the server
 	@server.listen process.env.PORT || process.env.C9_PORT || config.port
