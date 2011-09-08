@@ -45,7 +45,7 @@ exports.help = ->
 			h1 'Timbits - Help'
 
 			ul ->
-				for k, v of @
+				for k, v of @box
 					li -> a href: "/#{k}/help", -> k + ' &raquo;'
 
 exports.timbit_help = ->

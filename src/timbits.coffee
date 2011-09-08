@@ -48,7 +48,7 @@ log = new Log()
 
 	# route help page
 	@server.get '/timbits/help', (req, res) =>
-		res.send ck.render(views.help, @box)
+		res.send ck.render(views.help, {box: @box} )
 
 	# route master test page
 	@server.get '/timbits/test', (req, res) =>
