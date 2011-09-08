@@ -144,10 +144,11 @@ class @Timbit
 			res.render "#{context.name}/#{context.view}", context
 
 	# helper method to retrieve data via REST
-	fetch: (req, res, context, key, options, callback = @render) ->
+	fetch: (req, res, context, options, callback = @render) ->
 
+		name = options.name or 'data'
 		pantry.fetch options, (error, results) =>
-			context[key] = results
+			context[name] = results
 
 			# we're done, will now execute rendor method unless otherwise specified
 			callback(req, res, context)
