@@ -82,6 +82,7 @@ log = new Log()
 	#place the timbit in the box
 	log.notice "Placing #{name} in the box"
 	timbit.name = name
+	timbit.view_base ?= name
 	@box[name] = timbit
 
 	# configure help
@@ -100,8 +101,8 @@ log = new Log()
 			context = {}
 			context[k] = v for k,v of req.query
 
-			context.name = name
-			context.view = req.params.view ?= 'default'
+			context.name = timbit.name
+			context.view = "#{timbit.view_base}/#{req.params.view ?= 'default'}"
 
 			# validate the request
 			for key, attr of timbit.params
@@ -131,7 +132,7 @@ class @Timbit
 		if context.remote is 'true'
 			output = """
 					$().ready(function() {
-						return $.get("/#{context.name}/#{context.view}.coffee", function(data) {
+						return $.get("/#{context.view}.coffee", function(data) {
 							context = #{JSON.stringify(context)};
 							return $('##{context.timbit_id}').html(CoffeeKup.render(data, context));
 						});
@@ -141,7 +142,7 @@ class @Timbit
 			res.write output
 			res.end()
 		else
-			res.render "#{context.name}/#{context.view}", context
+			res.render context.view, context
 
 	# helper method to retrieve data via REST
 	fetch: (req, res, context, options, callback = @render) ->
