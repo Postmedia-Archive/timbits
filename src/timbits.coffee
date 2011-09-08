@@ -32,6 +32,7 @@ log = new Log()
 		@server.use connectESI.setupESI()
 		@server.use express.static("#{config.home}/public")
 		@server.use express.static("#{config.home}/views")
+		@server.use express.static(path.join(path.dirname(__filename),"../resources"))
 		@server.use express.bodyParser()
 		@server.use express.cookieParser()
 
@@ -46,7 +47,7 @@ log = new Log()
 		res.redirect '/timbits/help'
 
 	# route help page
-	@server.get '/timbits/help', (req, res) =>	
+	@server.get '/timbits/help', (req, res) =>
 		res.send ck.render(views.help, @box)
 
 	# route master test page
@@ -63,7 +64,7 @@ log = new Log()
 	path = "#{config.home}/timbits"
 	fs.readdir path, (err, files) =>
 		throw err if err
-		for file in files			
+		for file in files
 			if file.match(/\.(coffee|js)$/)?
 				@add file.substring(0, file.lastIndexOf(".")), require("#{path}/#{file}")
 
