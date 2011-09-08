@@ -88,7 +88,11 @@ log = new Log()
 
 	# configure help
 	@server.get ("/#{name}/help"), (req, res) ->
-		res.send ck.render(views.timbit_help, timbit)
+		renderHelp = ->
+			res.send ck.render(views.timbit_help, timbit)
+		timbit.listviews (views) ->
+			timbit.views = views
+			renderHelp()
 
 	# configure test
 	@server.get ("/#{name}/test"), (req, res) ->
@@ -147,7 +151,6 @@ class @Timbit
 
 	# helper method to retrieve data via REST
 	fetch: (req, res, context, options, callback = @render) ->
-
 		name = options.name or 'data'
 		pantry.fetch options, (error, results) =>
 			context[name] = results
@@ -159,6 +162,18 @@ class @Timbit
 	eat: (req, res, context) ->
 		@render req, res, context
 
+	# this method returns a list of views available to this timbit
+	listviews: (callback) ->
+		view = []
+		fs.readdir "#{config.home}/views/#{@view_base}", (err,list) ->
+			if err || list is undefined
+				view.push 'default' # We will attempt the default view anyway and hope the timbit knows what it is doing.
+			else
+				for file in list then do (file) ->
+					if file.match(/\.coffee/)?
+						view.push file.substring(0, file.lastIndexOf("."))
+			callback(view)
+
 	test: (server, context, callback) ->
 		results = {
 			timbit: context.name
@@ -169,18 +184,6 @@ class @Timbit
 			tests: []
 			warnings: []
 		}
-
-		testViews = (callback) ->
-			# Retrieve list of views from the views directory for this timbit
-			fs.readdir "#{config.home}/views/#{context.name}", (err,list) ->
-				if err || list is undefined
-					results.warnings.push { message: "Unable to retrieve a list of views" }
-					results.views.push 'default' # We will attempt the default view anyway and hope the timbit knows what it is doing.
-				else
-					for file in list then do (file) ->
-						if file.match(/\.coffee/)?
-							results.views.push (require('path').basename(file, '.coffee'))
-				callback()
 
 		testParams = ->
 			# Process parameters, seperate into required vs. optional
@@ -228,12 +231,11 @@ class @Timbit
 
 		runTests = ->
 			# Execute the tests based on provided querystrings, views and examples.
-			testViews ->
-				testParams()
-				testQueries()
-				testRunQueries ->
-					testRunExamples ->
-						displayTests()
+			testParams()
+			testQueries()
+			testRunQueries ->
+				testRunExamples ->
+					displayTests()
 
 		displayTests = ->
 			log.notice "Testing Timbit - #{context.name}"
@@ -246,4 +248,6 @@ class @Timbit
 					log.warning "Message: #{warning.message}"
 			callback results
 
-		runTests()
+		@listviews (views) ->
+			results.views = views
+			runTests()

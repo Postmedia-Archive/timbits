@@ -110,6 +110,13 @@ exports.timbit_help = ->
 			else
 				p 'Developer was too lazy to define any examples.'
 
+			h2 'Views'
+
+			if @views
+				ul ->
+					for view in @views
+						li -> view
+
 			h2 'Parameters'
 
 			if @params
@@ -139,7 +146,7 @@ exports.timbit_help = ->
 				p 'None defined'
 
 			div id:'return', -> a href: '/timbits/help', -> '&laquo; Help Index'
-			
+
 exports.timbit_test = ->
 	style '''
 	body {margin: 0; padding: 0; font-family: Tahoma, Geneva, sans-serif;}
