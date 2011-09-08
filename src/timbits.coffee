@@ -6,6 +6,7 @@ request = require 'request'
 connectESI = require 'connect-esi'
 ck = require 'coffeekup'
 Log = require 'coloured-log'
+views = require './timbits-views'
 
 config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd() }
 server = {}
@@ -42,18 +43,16 @@ log = new Log()
 
 	# route help page
 	@server.get '/timbits/help', (req, res) =>
-		res.statusCode = 404
-		fs.readFile "#{config.home}/views/help.coffee", (err, data) ->
-			throw err if err
-			res.send ck.render(data.toString(), context: @box)
+		res.statusCode = 404		
+		res.send ck.render(views.help, context: @box)
 
 	# route master test page
 	@server.get '/timbits/test', (req, res) =>
 		res.setHeader 'Content-Type', 'text/html; charset=UTF-8'
 		master = ''
 		pending = Object.keys(@box).length
-		for k,v of @box
-			request {uri: "http://#{server.address}:#{server.port}/#{k}/test" }, (error, response, body) ->
+		for timbit of @box
+			request {uri: "http://#{server.address}:#{server.port}/#{timbit}/test" }, (error, response, body) ->
 				master += body
 				res.end master unless --pending
 
@@ -69,7 +68,7 @@ log = new Log()
 
 		# route 404s to help
 		@server.get '*', (req, res) ->
-			res.redirect '/timbits/help', 301
+			res.redirect '/timbits/help'
 
 	# starts the server
 	@server.listen process.env.PORT || process.env.C9_PORT || config.port
@@ -90,16 +89,12 @@ log = new Log()
 
 	# configure help
 	@server.get ("/#{name}/help"), (req, res) ->
-		fs.readFile "#{config.home}/views/timbit_help.coffee", (err, data) ->
-			throw err if err
-			res.send ck.render(data.toString(), context: timbit)
+		res.send ck.render(views.timbit_help, context: timbit)
 
 	# configure test
 	@server.get ("/#{name}/test"), (req, res) ->
 		timbit.test server, timbit, (results) ->
-			fs.readFile "#{config.home}/views/timbit_test.coffee", (err, data) ->
-				throw err if err
-				res.send ck.render(data.toString(), context: results)
+			res.send ck.render(views.timbit_test, context: results)
 
 	# configure the route
 	@server.get ("/#{name}/:view?"), (req, res) ->
