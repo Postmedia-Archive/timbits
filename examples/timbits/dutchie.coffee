@@ -17,4 +17,4 @@ timbit.eat = (req, res, context) ->
 	# @fetch will call @render once we have the data			
 	@fetch req, res, context, 'tweets', src, (req, res, context) ->
 		# let's just re-use the chocolate timbit views
-		res.render "chocolate/#{context.view}", context: context
+		res.render "chocolate/#{context.view}", context

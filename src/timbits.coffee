@@ -41,9 +41,12 @@ log = new Log()
 	@server.configure 'production', =>
 		@server.use express.errorHandler()
 
+	# route root to help page
+	@server.get '/', (req, res) ->
+		res.redirect '/timbits/help'
+
 	# route help page
-	@server.get '/timbits/help', (req, res) =>
-		res.statusCode = 404		
+	@server.get '/timbits/help', (req, res) =>	
 		res.send ck.render(views.help, @box)
 
 	# route master test page
@@ -60,22 +63,16 @@ log = new Log()
 	path = "#{config.home}/timbits"
 	fs.readdir path, (err, files) =>
 		throw err if err
-		for file in files
-			file = file.split '.'
-			ext = file[file.length-1]
-			if ext == 'coffee' or ext == 'js'
-				@add file[0], require("#{path}/#{file[0]}")
-
-		# route 404s to help
-		@server.get '*', (req, res) ->
-			res.redirect '/timbits/help'
+		for file in files			
+			if file.match(/\.(coffee|js)$/)?
+				@add file.substring(0, file.lastIndexOf(".")), require("#{path}/#{file}")
 
 	# starts the server
 	@server.listen process.env.PORT || process.env.C9_PORT || config.port
 	log.info "Timbits server listening on port #{@server.address().port} in #{@server.settings.env} mode"
 	server.address = @server.address().address
 	server.port = @server.address().port
-	return @server
+	@server
 
 # the box that holds each of the individual timbits created
 @box = {}
@@ -171,7 +168,7 @@ class @Timbit
 		}
 
 		testViews = (callback) ->
-			# Retrieve list of views form the views directory for this timbit
+			# Retrieve list of views from the views directory for this timbit
 			fs.readdir "#{config.home}/views/#{context.name}", (err,list) ->
 				if err || list is undefined
 					results.warnings.push { message: "Unable to retrieve a list of views" }
