@@ -44,7 +44,7 @@ log = new Log()
 	# route help page
 	@server.get '/timbits/help', (req, res) =>
 		res.statusCode = 404		
-		res.send ck.render(views.help, context: @box)
+		res.send ck.render(views.help, @box)
 
 	# route master test page
 	@server.get '/timbits/test', (req, res) =>
@@ -89,12 +89,12 @@ log = new Log()
 
 	# configure help
 	@server.get ("/#{name}/help"), (req, res) ->
-		res.send ck.render(views.timbit_help, context: timbit)
+		res.send ck.render(views.timbit_help, timbit)
 
 	# configure test
 	@server.get ("/#{name}/test"), (req, res) ->
 		timbit.test server, timbit, (results) ->
-			res.send ck.render(views.timbit_test, context: results)
+			res.send ck.render(views.timbit_test, results)
 
 	# configure the route
 	@server.get ("/#{name}/:view?"), (req, res) ->
@@ -144,7 +144,7 @@ class @Timbit
 			res.write output
 			res.end()
 		else
-			res.render "#{context.name}/#{context.view}", context: context
+			res.render "#{context.name}/#{context.view}", context
 
 	# helper method to retrieve data via REST
 	fetch: (req, res, context, key, options, callback = @render) ->
