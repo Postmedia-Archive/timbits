@@ -84,3 +84,7 @@
   * revised fetch method by removing 'key' parameter
   * support for Timbits created in JavaScript
 
+0.2.0beta / 2011-09-09
+======================
+
+  * working towards a stable production 0.2.0 release
