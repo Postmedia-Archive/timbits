@@ -7,6 +7,7 @@ connectESI = require 'connect-esi'
 ck = require 'coffeekup'
 Log = require 'coloured-log'
 views = require './timbits-views'
+util = require 'util'
 
 config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd() }
 server = {}
@@ -55,10 +56,15 @@ log = new Log()
 		res.setHeader 'Content-Type', 'text/html; charset=UTF-8'
 		master = ''
 		pending = Object.keys(@box).length
-		for timbit of @box
-			request {uri: "http://#{server.address}:#{server.port}/#{timbit}/test" }, (error, response, body) ->
-				master += body
-				res.end master unless --pending
+		if pending
+			for timbit of @box
+				request {uri: "http://#{server.address}:#{server.port}/#{timbit}/test" }, (error, response, body) ->
+					master += body
+					res.end master unless --pending
+		else
+			master += ck.render(views.test, {})
+			res.end master
+
 
 	# automagically load timbits found in the ./timbits folder
 	path = "#{config.home}/timbits"
