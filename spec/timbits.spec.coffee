@@ -11,31 +11,25 @@ server = timbits.serve( {home: homeFolder, port: 8785 })
 module.exports =
 
 ## Test Case #1 - check we have a valid server running
-	"test that the express server object returned is functioning": (beforeExit)->
-		calls = 0
+	"test that the express server object returned is functioning, note by default the root redirects so hhtp status code should be 302": (beforeExit)->
 		assert.response server, 
 			url: "/"
 			method: "GET"
 		,
-			status: 200
-			headers: "Content-Type": "text/html; charset=utf-8"
+			status: 302
 		, (res) ->
-			++calls
 			assert.ok res, "Expected a response, perhaps something is wrong our status was: #{res.status}"
 
-		beforeExit ->
-			assert.equal 1, calls
 
 ## Test Case #2 - Plain timbit request
 	"test the plain timbit request, this is the simpliest request we could try": (beforeExit) ->
 		calls = 0
 		assert.response server, 
-			url: "/plain"
+			url: "/plain/"
 			method: "GET"
 		,
-			body: "<h1>Hello Anonymous</h1>"
+			body: /Hello Anonymous/
 			status: 200
-			headers: "Content-Type": "text/html; charset=utf-8"
 		, (res) ->
 			++calls
 			assert.ok res, "Expected a response, perhaps something is wrong our status was: #{res.status} and the response object has: #{res}"
@@ -47,7 +41,7 @@ module.exports =
 	"test the plain timbit request with the addition of a querystring": (beforeExit) ->
 		calls = 0
 		assert.response server, 
-			url: "/plain?who=cthulhu"
+			url: "/plain/?who=cthulhu"
 		,
 			body: /cthulhu/
 		, (res) ->
@@ -60,7 +54,7 @@ module.exports =
 	"test the cherry timbit, specifically we are vetting that the eat callback is working allowing us to customize the context rendered": (beforeExit) ->
 		calls = 0
 		assert.response server, 
-			url: "/cherry"
+			url: "/cherry/"
 		,
 			body: /The current server date\/time is/
 			status: 200
