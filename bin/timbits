@@ -81,7 +81,7 @@ generateTimbit = (argv) ->
 				log.error "#{e.message}: views"
 			else
 				mkdir "views/#{argv[1]}", ->
-					fs.writeFile "views/#{argv[1]}/default.coffee", "#{argv[1]} Timbit", (err) ->
+					fs.writeFile "views/#{argv[1]}/default.coffee", "h1 '#{argv[1]} Timbit'", (err) ->
 					  throw err if err
 					  log.info "Created view in views/#{argv[1]}/default.coffee"
 

@@ -73,3 +73,14 @@
   * support for client side rendering
   * initial support for automated testing
   * better logging
+
+0.1.3 / 2011-09-09
+==================
+
+  * command line for new projects and code generation
+  * dynamic test pages
+  * upgraded view engine to CoffeeKup 0.3.0
+  * easier sharing of views between timbits via Timbit.view_base
+  * revised fetch method by removing 'key' parameter
+  * support for Timbits created in JavaScript
+

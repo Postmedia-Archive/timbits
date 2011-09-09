@@ -1,8 +1,8 @@
 {
-	"name": "",
+	"name": "timbits-codegen",
 	"description": "Widgets built using Timbits",
 	"version": "0.0.1",
 	"dependencies": {
-		"timbits": ">= 0.1.2"
+		"timbits": ">= 0.1.3"
 	}
 }

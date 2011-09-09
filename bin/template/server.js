@@ -1,5 +1,3 @@
 var timbits = require('timbits');
-var server = timbits.serve({
-	port: process.env.PORT || process.env.C9_PORT || 5678
-});
+var server = timbits.serve();
 console.log("Press Ctrl+C to Exit");
