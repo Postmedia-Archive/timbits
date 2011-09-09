@@ -111,21 +111,19 @@ Ensure that the following javascript libraries have been loaded in the browser f
 
 Below is an example of rendering the plain timbit on the client. If you are rendering multiple timbits on a single page, the id (in this case timbit_1) must be unique for each timbit request.
 
-<script>
-	document.write('<div id="timbit_1"></div>');
-	$.getScript("/plain?who=World&timbit_id=timbit_1&remote=true");
-</script>
+	<script>
+		document.write('<div id="timbit_1"></div>');
+		$.getScript("/plain?who=World&timbit_id=timbit_1&remote=true");
+	</script>
 
 ## Road Map
 
-We have a number of items in the pipeline which we believe will provide a lot of power to this platform
+We have a number of items in the pipeline which we believe will provide a lot of power to this platform, such as:
 
 * Integrated benchmarks
-* Security considerations
-* Additional error handling
 * Support for alternate view engines
 * Real-time data updates via Socket.IO
-* Documentation, Documentation, Documentation
+
 
 ## Created by
 
