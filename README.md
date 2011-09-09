@@ -3,7 +3,7 @@ Widget framework based on Express and CoffeeScript
 
 ## Introduction
 
-Timbits is an attempt to build an easy and reusable widget framework on top of Express.  These widgets are meant to render independent HTML snippets based on REST based JSON/XML data sources and brought together on a page via ESI (Edge Side Includes)
+Timbits is an attempt to build an easy and reusable widget framework on top of Express.  These widgets are meant to render independent HTML snippets based on REST based JSON/XML data sources and brought together on a page via ESI (Edge Side Includes).
 
 It's primarily meant to serve internal purposes as Postmedia Network Inc, however it is being open sourced under the MIT License.  Others may find some use for what we are doing, and still others may be able to help turn this into a more generic and useful solution by contributing and/or correcting our ignorant ways.
 
@@ -93,7 +93,7 @@ There is also a built in help index that for any timbits project located at /tim
 
 ### Dynamic Testing
 
-The examples and params used to power the help pages is also used to power the automated test pages.  Each timbit has a 'test' view which will utilize this information to define and execute some basic testing of the timbit.  e.g. /plain/test
+The examples and params used to power the help pages are also used to power the automated test pages.  Each timbit has a 'test' view which will utilize this information to define and execute some basic testing of the timbit.  e.g. /plain/test
 
 There is also a master test page located at /timbits/test which will execute tests 
 Although not overly sophisticated, it will ensure your definitions, examples, and views are valid and compile properly.  It is also useful for remote monitoring of production systems.
@@ -102,7 +102,19 @@ Additional functional testing can and should be implemented via a testing librar
 
 ### Client Side Rendering
 
-Although Timbits was originally developed with the intent of serving out widgets via ESI (or other mechanisms of server to server requests) we now have built in support for client side rendering.  Simply pass a remote=true parameter and the timbit will render some JavaScript which provides the data context, requests the view, and renders on the client.  Just ensure that the CoffeeScript and CoffeKup libraries have been loaded in the browser first.
+Although Timbits was originally developed with the intent of serving out widgets via ESI (or other mechanisms of server to server requests) we now have built in support for client side rendering.  Simply pass a remote=true parameter and the timbit will render some JavaScript which provides the data context, requests the view, and renders on the client.
+
+Ensure that the following javascript libraries have been loaded in the browser first:
+- jQuery (http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js)
+- CoffeeScript (http://jashkenas.github.com/coffee-script/extras/coffee-script.js)
+- CoffeeKup (https://github.com/mauricemach/coffeekup)
+
+Below is an example of rendering the plain timbit on the client. If you are rendering multiple timbits on a single page, the id (in this case timbit_1) must be unique for each timbit request.
+
+<script>
+	document.write('<div id="timbit_1"></div>');
+	$.getScript("/plain?who=World&timbit_id=timbit_1&remote=true");
+</script>
 
 ## Road Map
 
