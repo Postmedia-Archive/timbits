@@ -138,6 +138,8 @@ log = new Log()
 # definition of a timbit
 class @Timbit
 
+	log: log
+	
 	# default render implementation
 	render: (req, res, context) ->
 		if context.remote is 'true'

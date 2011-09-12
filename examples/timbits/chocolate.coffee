@@ -30,6 +30,8 @@ timbit.eat = (req, res, context) ->
 		uri: "http://search.twitter.com/search.json?q=#{context.q}"
 	}
 	
+	@log.debug src.uri
+	
 	# use the helper method to @fetch the data
 	# @fetch will call @render once we have the data			
 	@fetch req, res, context, src
