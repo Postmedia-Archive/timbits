@@ -282,7 +282,7 @@ exports.timbit_test = ->
 							if test.status is 200
 								tr ->
 									td test.type
-									td test.uri
+									td -> a href: test.uri, target: '_blank', -> test.uri
 
 		if failed > 0
 			div class:'test_failed', ->
@@ -300,7 +300,7 @@ exports.timbit_test = ->
 							if test.status isnt 200
 								tr ->
 									td test.type
-									td test.uri
+									td -> a href: test.uri, target: '_blank', -> test.uri
 									td test.status
 									td test.error
 
