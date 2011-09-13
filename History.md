@@ -88,3 +88,12 @@
 ======================
 
   * working towards a stable production 0.2.0 release
+
+0.2.0beta2 / 2011-09-09
+=======================
+
+  * new projects now depend on installed version of timbits
+  * package.json for new projects now include project name
+  * support for timbits -v parameter
+  * added Timbit.log for logging/debug support
+  * new projects now support continuos testing via kitkat
