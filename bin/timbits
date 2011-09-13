@@ -12,7 +12,7 @@ optimist.usage("\nTimbits Code Generation\n\n" +
 "timbits n[ew] [project]\n\tCreates new subfolders [project], [project]/timbits, and [project]/views.\n\tGenerates basic server.js, package.json, History.md, README.md, and LICENSE files.\n\n" +
 "timbits g[enerate] [timbit]\n\tScaffolds a new timbit at timbits/[timbit].coffee and a new view at views/[timbit]/default.coffee\n\n" +
 "timbits s[erver]\n\tLaunches runjs with server.js\n\n" +
-"timbits v[ersion]\n\tDisplays installed timbits library version")
+"timbits [-]v[ersion]\n\tDisplays installed timbits library version")
 
 lib = path.dirname(fs.realpathSync(__filename)) + '/template'
 
@@ -124,5 +124,8 @@ switch optimist.argv._[0]
 	when 'g', 'generate' then generateTimbit(optimist.argv._)
 	when 's', 'server' then startServer()
 	when 'v', 'version' then showVersion()
-	else showHelp()
-
+	else 
+		if optimist.argv.v? # Also support -v for unix convention consistency
+			showVersion()
+		else
+			showHelp()
