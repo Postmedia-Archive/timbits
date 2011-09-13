@@ -75,10 +75,15 @@ log = new Log()
 				@add file.substring(0, file.lastIndexOf(".")), require("#{path}/#{file}")
 
 	# starts the server
-	@server.listen process.env.PORT || process.env.C9_PORT || config.port
-	log.info "Timbits server listening on port #{@server.address().port} in #{@server.settings.env} mode"
-	server.address = @server.address().address
-	server.port = @server.address().port
+	try
+		@server.listen process.env.PORT || process.env.C9_PORT || config.port
+		log.info "Timbits server listening on port #{@server.address().port} in #{@server.settings.env} mode"
+		server.address = @server.address().address
+		server.port = @server.address().port
+	catch err
+		log.error "Server could not start on port #{process.env.PORT || process.env.C9_PORT || config.port}. (#{err})"
+		console.log "\nPress Ctrl+C to Exit"
+		process.kill process.pid, 'SIGTERM'
 	@server
 
 # the box that holds each of the individual timbits created
