@@ -7,7 +7,7 @@ connectESI = require 'connect-esi'
 ck = require 'coffeekup'
 Log = require 'coloured-log'
 views = require './timbits-views'
-util = require 'util'
+url = require 'url'
 
 config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd() }
 server = {}
@@ -58,13 +58,12 @@ log = new Log()
 		pending = Object.keys(@box).length
 		if pending
 			for timbit of @box
-				request {uri: "http://#{server.address}:#{server.port}/#{timbit}/test" }, (error, response, body) ->
+				request {uri: "http://#{req.headers.host}/#{timbit}/test" }, (error, response, body) ->
 					master += body
 					res.end master unless --pending
 		else
 			master += ck.render(views.test, {})
 			res.end master
-
 
 	# automagically load timbits found in the ./timbits folder
 	path = "#{config.home}/timbits"
@@ -107,7 +106,7 @@ log = new Log()
 
 	# configure test
 	@server.get ("/#{name}/test"), (req, res) ->
-		timbit.test server, timbit, (results) ->
+		timbit.test "http://#{req.headers.host}", timbit, (results) ->
 			res.send ck.render(views.timbit_test, results)
 
 	# configure the route
@@ -144,7 +143,7 @@ log = new Log()
 class @Timbit
 
 	log: log
-	
+
 	# default render implementation
 	render: (req, res, context) ->
 		if context.remote is 'true'
@@ -187,7 +186,7 @@ class @Timbit
 						view.push file.substring(0, file.lastIndexOf("."))
 			callback(view)
 
-	test: (server, context, callback) ->
+	test: (host, context, callback) ->
 		results = {
 			timbit: context.name
 			views: []
@@ -222,14 +221,14 @@ class @Timbit
 				# Test each view if no query parameters present
 				pending = results.views.length
 				for view in results.views then do (view) ->
-					testRequest "views", "http://#{server.address}:#{server.port}/#{context.name}/#{view}", ->
+					testRequest "views", "#{host}/#{context.name}/#{view}", ->
 						callback() unless --pending
 			else
 				# Test each query for each view
 				pending = results.queries.length * results.views.length
 				for query in results.queries then do (query) ->
 					for view in results.views then do (view) ->
-						testRequest "queries", "http://#{server.address}:#{server.port}/#{context.name}/#{view}?#{query}", ->
+						testRequest "queries","#{host}/#{context.name}/#{view}?#{query}", ->
 							callback() unless --pending
 
 		testRunExamples = (callback) ->
@@ -237,7 +236,7 @@ class @Timbit
 			if context.examples?
 				pending = context.examples.length
 				for example in context.examples then do (example) ->
-					testRequest "example", "http://#{server.address}:#{server.port}#{example.href}", ->
+					testRequest "example", "#{host}#{example.href}", ->
 						callback() unless --pending
 			else
 			 	callback()
