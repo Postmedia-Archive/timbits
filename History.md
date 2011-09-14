@@ -89,7 +89,7 @@
 
   * working towards a stable production 0.2.0 release
 
-0.2.0beta2 / 2011-09-09
+0.2.0beta2 / 2011-09-13
 =======================
 
   * new projects now depend on installed version of timbits
@@ -97,3 +97,9 @@
   * support for timbits -v parameter
   * added Timbit.log for logging/debug support
   * new projects now support continuos testing via kitkat
+
+0.2.0beta3 / 2011-09-14
+=======================
+
+  * upgraded pantry to v0.2.0beta
+  * fixed issue with test page host name. Closes #8
