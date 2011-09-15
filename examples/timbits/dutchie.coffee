@@ -7,7 +7,7 @@ timbits = require '../../src/timbits'
 timbit = module.exports = new timbits.Timbit()
 
 # let's just re-use the chocolate timbit views
-timbit.view_base = 'chocolate'
+timbit.viewBase = 'chocolate'
 
 timbit.eat = (req, res, context) ->
 	

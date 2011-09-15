@@ -93,7 +93,7 @@ log = new Log()
 	#place the timbit in the box
 	log.notice "Placing #{name} in the box"
 	timbit.name = name
-	timbit.view_base ?= name
+	timbit.viewBase ?= name
 	@box[name] = timbit
 
 	# configure help
@@ -117,7 +117,7 @@ log = new Log()
 			context[k.toLowerCase()] = v for k,v of req.query
 
 			context.name = timbit.name
-			context.view = "#{timbit.view_base}/#{req.params.view ?= 'default'}"
+			context.view = "#{timbit.viewBase}/#{req.params.view ?= 'default'}"
 
 			# validate the request
 			for key, attr of timbit.params
@@ -178,7 +178,7 @@ class @Timbit
 	# this method returns a list of views available to this timbit
 	listviews: (callback) ->
 		view = []
-		fs.readdir "#{config.home}/views/#{@view_base}", (err,list) ->
+		fs.readdir "#{config.home}/views/#{@viewBase}", (err,list) ->
 			if err || list is undefined
 				view.push 'default' # We will attempt the default view anyway and hope the timbit knows what it is doing.
 			else
