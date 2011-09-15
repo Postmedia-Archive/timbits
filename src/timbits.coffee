@@ -151,7 +151,8 @@ class @Timbit
 					$().ready(function() {
 						return $.get("/#{context.view}.coffee", function(data) {
 							context = #{JSON.stringify(context)};
-							return $('##{context.timbit_id}').html(CoffeeKup.render(data, context));
+							render = CoffeeKup.render(data, context);
+							return #{if context.timbit_id? then "$('##{context.timbit_id}').html(render)" else "$('body').append(render)"};
 						});
 					});
 			"""
