@@ -66,12 +66,12 @@ log = new Log()
 			res.end master
 
 	# automagically load timbits found in the ./timbits folder
-	path = "#{config.home}/timbits"
-	fs.readdir path, (err, files) =>
+	timbit_path = "#{config.home}/timbits"
+	fs.readdir timbit_path, (err, files) =>
 		throw err if err
 		for file in files
 			if file.match(/\.(coffee|js)$/)?
-				@add file.substring(0, file.lastIndexOf(".")), require("#{path}/#{file}")
+				@add file.substring(0, file.lastIndexOf(".")), require("#{timbit_path}/#{file}")
 
 	# starts the server
 	try
