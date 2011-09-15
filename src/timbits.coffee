@@ -114,15 +114,15 @@ log = new Log()
 		try
 			# initialize current request context
 			context = {}
-			context[k] = v for k,v of req.query
+			context[k.toLowerCase()] = v for k,v of req.query
 
 			context.name = timbit.name
 			context.view = "#{timbit.view_base}/#{req.params.view ?= 'default'}"
 
 			# validate the request
 			for key, attr of timbit.params
-				context[key] ?= attr.default
-				value = context[key]
+				context[key.toLowerCase()] ?= attr.default
+				value = context[key.toLowerCase()]
 
 				if attr.required and not value
 					throw "#{key} is a required parameter"
