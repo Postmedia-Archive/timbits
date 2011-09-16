@@ -123,10 +123,28 @@ log = new Log()
 			context.maxAge = timbit.maxAge
 
 			# validate the request
-			for key, attr of timbit.params
-				context[key.toLowerCase()] ?= attr.default
-				value = context[key.toLowerCase()]
+			for k, attr of timbit.params
+				key = k.toLowerCase()
+				context[key] ?= attr.default
+				value = context[key]
 
+				if value
+					attr.type ?= 'String'
+					switch attr.type.toLowerCase()
+						when 'number'
+							context[key] = Number(value)
+							throw "#{value} is not a valid Number for #{key}" if isNaN(context[key])
+						when 'boolean'
+							if value.toLowerCase() is 'true'
+								context[key] = true
+							else if value.toLowerCase() is 'false'
+								context[key] = false
+							else
+								throw "#{value} is not a valid value for #{key}.  Must be true or false."
+						when 'date'
+							context[key] = Date.parse(value)
+							throw "#{value} is not a valid Date for #{key}" if isNaN(context[key])
+				
 				if attr.required and not value
 					throw "#{key} is a required parameter"
 

@@ -15,11 +15,12 @@ timbit.about = '
 
 timbit.examples = [
 	{href: '/chocolate/?q=winning', caption: 'Winning - Default View'}
-	{href: '/chocolate/alternate?q=winning', caption: 'Winning - Alternate View'}
+	{href: '/chocolate/alternate?q=winning&rpp=20', caption: 'Winning - Alternate View'}
 ]
 
 timbit.params = {
 	q: {description: 'Keyword to search for',required: true, strict: false, values: ['Coffee', 'Timbits']}
+	rpp: {description: 'Maximum number of tweets to display', type: 'Number', default: 10, values: [1, 8, 16]}
 }
 
 timbit.eat = (req, res, context) ->
@@ -27,7 +28,7 @@ timbit.eat = (req, res, context) ->
 	# specify the data source
 	src = {
 		name: 'tweets'
-		uri: "http://search.twitter.com/search.json?q=#{context.q}"
+		uri: "http://search.twitter.com/search.json?q=#{context.q}&rpp=#{context.rpp}"
 	}
 	
 	@log.debug src.uri
