@@ -8,6 +8,7 @@ timbit = module.exports = new timbits.Timbit()
 
 # let's just re-use the chocolate timbit views
 timbit.viewBase = 'chocolate'
+timbit.maxAge = 300
 
 timbit.eat = (req, res, context) ->
 	

@@ -8,8 +8,9 @@ ck = require 'coffeekup'
 Log = require 'coloured-log'
 views = require './timbits-views'
 url = require 'url'
+util = require 'util'
 
-config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd() }
+config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd(), maxAge: 60 }
 server = {}
 
 log = new Log()
@@ -94,6 +95,7 @@ log = new Log()
 	log.notice "Placing #{name} in the box"
 	timbit.name = name
 	timbit.viewBase ?= name
+	timbit.maxAge ?= config.maxAge
 	@box[name] = timbit
 
 	# configure help
@@ -118,6 +120,7 @@ log = new Log()
 
 			context.name = timbit.name
 			context.view = "#{timbit.viewBase}/#{req.params.view ?= 'default'}"
+			context.maxAge = timbit.maxAge
 
 			# validate the request
 			for key, attr of timbit.params
@@ -143,9 +146,14 @@ log = new Log()
 class @Timbit
 
 	log: log
-
+	
 	# default render implementation
 	render: (req, res, context) ->
+		
+		# add caching headers
+		res.setHeader "Cache-Control", "max-age=#{context.maxAge}"
+		res.setHeader "Edge-Control", "max-age=#{context.maxAge}"
+		
 		if context.remote is 'true'
 			output = """
 					$().ready(function() {
