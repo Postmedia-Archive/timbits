@@ -58,6 +58,7 @@ Create a new project, generate a timbit (and default view), or run the project w
 You can now define a list of parameters which are automatically validated during execution.  This also powers the automated help and test functions (see further below).  Parameter attributes you can manipulate are:
 
 * description
+* type - data type expected, one of String (default), Number, Boolean, or Date
 * default - default value to use if value not specified
 * multiple - true/false (defaults to false), indicates whether multiple values are allowed
 * required - true/false (defaults to false), indicates whether this is a required parameter
@@ -68,7 +69,7 @@ Example (from plain)
 
 	timbit.params = {
 		who: {description: 'Name of person to greet', default: 'Anonymous', multiple: false, required: false, strict: false, values: ['Ed', 'World']}
-		year: {description: 'To test multi parameters and drive Kevin crazy', values: [1999, 2011]}
+		year: {description: 'To test multi parameters and drive Kevin crazy', type: 'Number', values: [1999, 2011]}
 	}
 
 ### Dynamic Help
@@ -115,6 +116,22 @@ Below is an example of rendering the plain timbit on the client. If you are rend
 		document.write('<div id="timbit_1"></div>');
 		$.getScript("/plain?who=World&timbit_id=timbit_1&remote=true");
 	</script>
+
+### Sharing of views
+
+If you have two or more timbits for which you would like to share views, simply set the viewBase property on the timbit to the name of the timbit who's views you'd like to utilize (see the Dutchie timbit as an example)
+
+	# this timbit should use the views from the chocolate timbit
+	timbit.viewBase = 'chocolate'
+
+### Downstream Caching
+
+There is a maxAge property that can set the number of seconds client can/should cache the response for.  If not set, the default value will come from the Timbits configuration, which if not set, is currently 60 seconds by default.  You can also override this value on a request by request basis by setting the context.maxAge value to whatever is appropriate.
+
+	# timbit should be cached for 5 minutes
+	timbit.maxAge = 300
+	
+The maxAge value will be included in two response headers, the standard Cache-Control header as well as a special Edge-Control header (used by Akamai)
 
 ## Road Map
 

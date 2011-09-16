@@ -103,3 +103,15 @@
 
   * upgraded pantry to v0.2.0beta
   * fixed issue with test page host name. Closes #8
+
+0.2.0beta4 / 2011-09-15
+=======================
+
+  * upgraded pantry to v0.2.0beta2
+  * changed view_base to viewBase
+  * added parameter data type validation
+  * added downstream caching headers via maxAge
+  * npm init is now run after new project has been generated
+  * parameters are converted to lower case to ensure they are not case sensitive
+  * fixed bug with conflicting path variable
+  * added append to body if no timbit_id is provided when rendering client side
