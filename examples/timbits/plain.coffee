@@ -13,7 +13,7 @@ timbit.about = '
 	'
 
 timbit.examples = [
-	{href: '/plain', caption: 'Anonymous'}
+	{href: '/plain/', caption: 'Anonymous'}
 	{href: '/plain/?who=world', caption: 'Hello World'}
 	{href: '/plain/?who=Kevin&year=1999', caption: 'Flashback'}]
 

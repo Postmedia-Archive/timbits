@@ -13,7 +13,7 @@ timbit.about = '
 	'
 	
 timbit.examples = [
-	{href: '/cherry', caption: 'Current Time'}
+	{href: '/cherry/', caption: 'Current Time'}
 ]
 
 timbit.eat = (req, res, context) ->
