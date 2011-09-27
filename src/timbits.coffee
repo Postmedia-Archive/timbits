@@ -1,14 +1,14 @@
-express = require 'express'
-pantry = require 'pantry'
 fs = require 'fs'
 path = require 'path'
-request = require 'request'
-connectESI = require 'connect-esi'
+url = require 'url'
+views = require './timbits-views'
 ck = require 'coffeekup'
 Log = require 'coloured-log'
-views = require './timbits-views'
-url = require 'url'
-util = require 'util'
+assets = require 'connect-assets'
+connectESI = require 'connect-esi'
+express = require 'express'
+pantry = require 'pantry'
+request = require 'request'
 
 config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd(), maxAge: 60 }
 server = {}
@@ -29,12 +29,14 @@ log = new Log()
 	@server.set 'views', "#{config.home}/views"
 	@server.set 'view engine', config.engine
 	@server.set 'view options', {layout: false}
+	@server.set 'jsonp callback', true;
 
 	@server.configure =>
 		@server.use connectESI.setupESI()
 		@server.use express.static("#{config.home}/public")
-		@server.use express.static("#{config.home}/views")
 		@server.use express.static(path.join(path.dirname(__filename),"../resources"))
+		@server.use assets({src:"#{config.home}/public"}) # serve static files or compile coffee and serve js
+		@server.use assets({src:"#{config.home}/views"})
 		@server.use express.bodyParser()
 		@server.use express.cookieParser()
 
@@ -45,7 +47,7 @@ log = new Log()
 		@server.use express.errorHandler()
 
 	# route root to help page
-	@server.get '/', (req, res) ->
+	@server.get '/', (req, res) =>
 		res.redirect '/timbits/help'
 
 	# route help page
@@ -144,7 +146,7 @@ log = new Log()
 						when 'date'
 							context[key] = Date.parse(value)
 							throw "#{value} is not a valid Date for #{key}" if isNaN(context[key])
-				
+
 				if attr.required and not value
 					throw "#{key} is a required parameter"
 
@@ -164,27 +166,29 @@ log = new Log()
 class @Timbit
 
 	log: log
-	
+
 	# default render implementation
 	render: (req, res, context) ->
-		
+
 		# add caching headers
 		res.setHeader "Cache-Control", "max-age=#{context.maxAge}"
 		res.setHeader "Edge-Control", "max-age=#{context.maxAge}"
-		
+
 		if context.remote is 'true'
 			output = """
-					$().ready(function() {
-						return $.get("/#{context.view}.coffee", function(data) {
-							context = #{JSON.stringify(context)};
-							render = CoffeeKup.render(data, context);
-							return #{if context.timbit_id? then "$('##{context.timbit_id}').html(render)" else "$('body').append(render)"};
-						});
-					});
+					viewCallback = function(view) {
+						context = #{JSON.stringify(context)};
+						render = CoffeeKup.render(view, context);
+						#{if context.timbit_id? then "$('##{context.timbit_id}').html(render)" else "$('body').append(render)"};
+					}
+					callback = true;
+					$.getScript("http://#{req.headers.host}/#{context.view}.js");
 			"""
-			res.setHeader "Content-Type", "text/plain"
+			res.setHeader "Content-Type", "text/javascript"
 			res.write output
 			res.end()
+		else if /^\w+\/json$/.test(context.view)
+			res.json context
 		else
 			res.render context.view, context
 
