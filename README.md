@@ -112,10 +112,24 @@ Ensure that the following javascript libraries have been loaded in the browser f
 
 Below is an example of rendering the plain timbit on the client. If you are rendering multiple timbits on a single page, the id (in this case timbit_1) must be unique for each timbit request.
 
+	<div id="timbit_1"></div>
 	<script>
-		document.write('<div id="timbit_1"></div>');
 		$.getScript("/plain?who=World&timbit_id=timbit_1&remote=true");
 	</script>
+
+In this case, the result of the '/plain?who=World&timbit_id=timbit_1&remote=true' getScript call will be similar to the following:
+
+	viewCallback = function(view) {
+		context = {"who":"World","timbit_id":"timbit_1","remote":"true","name":"plain","view":"plain/default","maxAge":60};
+		render = CoffeeKup.render(view, context);
+		$('#timbit_1').html(render);
+	}
+	callback = true;
+	$.getScript("/plain/default.js");
+	
+When run, the results of the '/plain/default.js' getScript call will trigger the viewCallback method (with view passed in) whereby the context and view will then be rendered using CoffeeKup and inserted back into the timbit_1 div element.  Note: In this example, the request to '/plain/default.js' dynamically compiles /plain/default.coffee to javascript.  Dynamic compilation of .coffee files to .js is a feature of timbits.
+
+For a more detailed example of remote rendering, please see public/tests in the 'timbits-example' project. The 'timbits-example' project makes use of PMScriptManager which simplifies the process of rendering remotely by using javascript packages which contain all required libraries to display a particular timbit.
 
 ### Sharing of views
 
