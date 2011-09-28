@@ -176,11 +176,16 @@ class @Timbit
 
 		if context.remote is 'true'
 			output = """
-					$.getScript("http://#{req.headers.host}/#{context.view}.js",function(data, textStatus){
+				$.ajax({
+					url: "http://#{req.headers.host}/#{context.view}.js",
+					dataType: "script",
+					cache: true,
+					success: function(data, textStatus){
 						context = #{JSON.stringify(context)};
 						render = CoffeeKup.render(view, context);
 						#{if context.timbit_id? then "$('##{context.timbit_id}').html(render)" else "$('body').append(render)"};
-					});
+					}
+				});
 			"""
 			res.setHeader "Content-Type", "text/javascript"
 			res.write output
