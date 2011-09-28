@@ -14,7 +14,7 @@ view = ->
 		}
 		setInterval('blinkText()',400)
 	'''
-if callback ?= false
-	viewCallback(view)
+if window?
+	window.view = view
 else
 	view()

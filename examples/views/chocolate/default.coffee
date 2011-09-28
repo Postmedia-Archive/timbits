@@ -4,7 +4,7 @@ view = ->
 
 	ul ->
 		li result.text for result in @tweets.results
-if callback ?= false
-	viewCallback(view)
+if window?
+	window.view = view
 else
 	view()

@@ -7,7 +7,7 @@ view = ->
 			li ->
 				b "#{result.from_user}: "
 				result.text
-if callback ?= false
-	viewCallback(view)
+if window?
+	window.view = view
 else
 	view()
