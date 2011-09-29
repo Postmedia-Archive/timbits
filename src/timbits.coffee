@@ -9,6 +9,7 @@ connectESI = require 'connect-esi'
 express = require 'express'
 pantry = require 'pantry'
 request = require 'request'
+jsonp = require 'jsonp-filter'
 
 config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd(), maxAge: 60 }
 server = {}
@@ -32,6 +33,7 @@ log = new Log()
 	@server.set 'jsonp callback', true;
 
 	@server.configure =>
+		@server.use jsonp.setupJSONP()
 		@server.use connectESI.setupESI()
 		@server.use express.static("#{config.home}/public")
 		@server.use express.static(path.join(path.dirname(__filename),"../resources"))
