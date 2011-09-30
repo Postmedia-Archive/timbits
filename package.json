@@ -19,7 +19,7 @@
 		"request": ">=2.1.1",
 		"optimist": ">=0.2.6",
 		"connect-assets": ">=2.0.0-rc1",
-		"jsonp-filter: ">=0.0.1"
+		"jsonp-filter": ">=0.0.1"
 	},
 	"devDependencies": {
 		"kitkat": ">= 0.2.3"

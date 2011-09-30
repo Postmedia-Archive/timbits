@@ -178,16 +178,25 @@ class @Timbit
 
 		if context.remote is 'true'
 			output = """
-				$.ajax({
-					url: "http://#{req.headers.host}/#{context.view}.js",
-					dataType: "script",
-					cache: true,
-					success: function(data, textStatus){
-						context = #{JSON.stringify(context)};
-						render = CoffeeKup.render(view, context);
-						#{if context.timbit_id? then "$('##{context.timbit_id}').html(render)" else "$('body').append(render)"};
-					}
-				});
+				context_#{context.timbit_id} = #{JSON.stringify(context)};
+				var views = views || {};
+				if (views['#{context.view}'] || false) {
+					render = CoffeeKup.render(views['#{context.view}'], context_#{context.timbit_id});
+					#{if context.timbit_id? then "$('##{context.timbit_id}').html(render)" else "$('body').append(render)"};
+				}
+				else {
+					$.ajax({
+						url: "http://#{req.headers.host}/#{context.view}.coffee?json=true&callback=?",
+						dataType: "jsonp",
+						cache: true,
+						jsonpCallback: "#{context.view.replace(/\//,'_')}",
+						success: function(data, textStatus, jqXHR){
+							views['#{context.view}'] = data; //save view for reuse
+							render = CoffeeKup.render(views['#{context.view}'], context_#{context.timbit_id});
+							#{if context.timbit_id? then "$('##{context.timbit_id}').html(render)" else "$('body').append(render)"};
+						}
+					});
+				}
 			"""
 			res.setHeader "Content-Type", "text/javascript"
 			res.write output
