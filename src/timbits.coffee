@@ -1,5 +1,6 @@
 fs = require 'fs'
 path = require 'path'
+querystring = require 'querystring'
 url = require 'url'
 views = require './timbits-views'
 ck = require 'coffeekup'
@@ -47,6 +48,14 @@ log = new Log()
 
 	@server.configure 'production', =>
 		@server.use express.errorHandler()
+
+	# route post requests to get
+	@server.post '*', (req, res) =>
+		delete req.body.submit # remove submit type
+		for attrname of req.body # merge post and get params
+			req.query[attrname] = req.body[attrname]
+		if req.url.indexOf('?') != -1 then req.url = req.url.substring(0, req.url.indexOf('?')) # remove querystring if necessary
+		res.redirect "#{req.url}" + if req.query? then "?#{querystring.stringify(req.query)}" else "" # append new querystring to request url
 
 	# route root to help page
 	@server.get '/', (req, res) =>
