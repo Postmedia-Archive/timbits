@@ -49,24 +49,16 @@ log = new Log()
 	@server.configure 'production', =>
 		@server.use express.errorHandler()
 
-	# route post requests to get
-	@server.post '*', (req, res) =>
-		delete req.body.submit # remove submit type
-		for attrname of req.body # merge post and get params
-			req.query[attrname] = req.body[attrname]
-		if req.url.indexOf('?') != -1 then req.url = req.url.substring(0, req.url.indexOf('?')) # remove querystring if necessary
-		res.redirect "#{req.url}" + if req.query? then "?#{querystring.stringify(req.query)}" else "" # append new querystring to request url
-
 	# route root to help page
-	@server.get '/', (req, res) =>
+	@server.all '/', (req, res) ->
 		res.redirect '/timbits/help'
 
 	# route help page
-	@server.get '/timbits/help', (req, res) =>
+	@server.all '/timbits/help', (req, res) =>
 		res.send ck.render(views.help, {box: @box} )
 
 	# route master test page
-	@server.get '/timbits/test', (req, res) =>
+	@server.all '/timbits/test', (req, res) =>
 		res.setHeader 'Content-Type', 'text/html; charset=UTF-8'
 		master = ''
 		pending = Object.keys(@box).length
@@ -86,6 +78,14 @@ log = new Log()
 		for file in files
 			if file.match(/\.(coffee|js)$/)?
 				@add file.substring(0, file.lastIndexOf(".")), require("#{timbit_path}/#{file}")
+
+		# route remaining post requests to get
+		@server.post '*', (req, res) ->
+			delete req.body.submit # remove submit type
+			for attrname of req.body # merge post and get params
+				req.query[attrname] = req.body[attrname]
+			if req.url.indexOf('?') != -1 then req.url = req.url.substring(0, req.url.indexOf('?')) # remove old querystring if necessary
+			res.redirect "#{req.url}" + if req.query? then "?#{querystring.stringify(req.query)}" else "" # append new querystring to request url
 
 	# starts the server
 	try
@@ -112,7 +112,7 @@ log = new Log()
 	@box[name] = timbit
 
 	# configure help
-	@server.get ("/#{name}/help"), (req, res) ->
+	@server.all ("/#{name}/help"), (req, res) ->
 		renderHelp = ->
 			res.send ck.render(views.timbit_help, timbit)
 		timbit.listviews (views) ->
@@ -120,12 +120,12 @@ log = new Log()
 			renderHelp()
 
 	# configure test
-	@server.get ("/#{name}/test"), (req, res) ->
+	@server.all ("/#{name}/test"), (req, res) ->
 		timbit.test "http://#{req.headers.host}", timbit, (results) ->
 			res.send ck.render(views.timbit_test, results)
 
 	# configure the route
-	@server.get ("/#{name}/:view?"), (req, res) ->
+	@server.all ("/#{name}/:view?"), (req, res) ->
 		try
 			# initialize current request context
 			context = {}
