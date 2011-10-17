@@ -75,13 +75,14 @@ newProject = (argv) ->
 		log.error "New project requires two parameters (eg. './timbits new project')"
 	else
 		log.notice "Creating project '#{argv[1]}'"
-		directories = ["#{argv[1]}", "#{argv[1]}/timbits", "#{argv[1]}/views", "#{argv[1]}/spec"]
+		directories = ["#{argv[1]}", "#{argv[1]}/timbits", "#{argv[1]}/helpers", "#{argv[1]}/views", "#{argv[1]}/spec"]
 		files = ["server.js", "History.md", "README.md", "LICENSE", "kitkat.config.js"]
 
 		mkdir directories[0], ->
 			mkdir directories[1], ->
 			mkdir directories[2], ->
 			mkdir directories[3], ->
+			mkdir directories[4], ->
 				cp "#{lib}/spec/base.spec.coffee", "#{argv[1]}/spec/#{argv[1]}.spec.coffee", ->
 			pending = files.length
 			for file in files

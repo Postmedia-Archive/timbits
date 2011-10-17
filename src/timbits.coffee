@@ -71,6 +71,18 @@ log = new Log()
 			master += ck.render(views.test, {})
 			res.end master
 
+	# automagically load helpers found in the ./helpers folder
+	helper_path = "#{config.home}/helpers"
+	helpers = {}
+	fs.readdir helper_path, (err, files) =>
+		throw err if err
+		for file in files
+			if file.match(/\.(coffee|js)$/)?
+				helper_name = file.substring(0, file.lastIndexOf("."))
+				log.info "Loading dynamic helpers: #{helper_name}"
+				helpers[helper_name] = require("#{helper_path}/#{file}")
+				@server.helpers helpers
+		
 	# automagically load timbits found in the ./timbits folder
 	timbit_path = "#{config.home}/timbits"
 	fs.readdir timbit_path, (err, files) =>

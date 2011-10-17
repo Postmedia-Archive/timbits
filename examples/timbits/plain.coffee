@@ -15,7 +15,8 @@ timbit.about = '
 timbit.examples = [
 	{href: '/plain/', caption: 'Anonymous'}
 	{href: '/plain/?who=world', caption: 'Hello World'}
-	{href: '/plain/?who=Kevin&year=1999', caption: 'Flashback'}]
+	{href: '/plain/?who=Kevin&year=1999', caption: 'Flashback'}
+	{href: '/plain/with-help?who=Handy%20Manny', caption: 'With Help'}]
 
 timbit.params = {
 	who: {description: 'Name of person to greet', default: 'Anonymous', multiple: false, required: false, strict: false, values: ['Ed', 'World']}

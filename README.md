@@ -159,6 +159,12 @@ There is a maxAge property that can set the number of seconds client can/should 
 	
 The maxAge value will be included in two response headers, the standard Cache-Control header as well as a special Edge-Control header (used by Akamai)
 
+### Dynamic View Helpers
+
+New in v0.3.0, view helpers are now loaded automagically from the ./helpers folder upon startup.  To include new helpers, simply create a [helper_name].coffee or [helper_name].js file in the ./helpers folder and export one or more functions.
+
+For example, if you create a file called ./helpers/handy.coffee (like we did in examples), timbits will automatically include all the  exported functions from handy.coffee under the helper 'handy'.  See the 'with-help' view for the plain timbit as an example.
+
 ## Road Map
 
 We have a number of items in the pipeline which we believe will provide a lot of power to this platform, such as:
