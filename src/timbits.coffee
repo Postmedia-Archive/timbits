@@ -53,6 +53,11 @@ log = new Log()
 	@server.all '/', (req, res) ->
 		res.redirect '/timbits/help'
 
+	# route json page
+	
+	@server.get '/timbits/json', (req, res) =>
+		res.json @box
+		
 	# route help page
 	@server.all '/timbits/help', (req, res) =>
 		res.send ck.render(views.help, {box: @box} )
@@ -121,6 +126,8 @@ log = new Log()
 	timbit.name = name
 	timbit.viewBase ?= name
 	timbit.maxAge ?= config.maxAge
+	timbit.listviews (views) =>
+		timbit.views = views
 	@box[name] = timbit
 
 	# configure help
