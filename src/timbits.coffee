@@ -34,14 +34,15 @@ log = new Log()
 	@server.set 'jsonp callback', true;
 
 	@server.configure =>
+		@server.use express.bodyParser()
+		@server.use express.cookieParser()
+		@server.use express.session({ secret: "secret" })
 		@server.use jsonp.setupJSONP()
 		@server.use connectESI.setupESI()
 		@server.use express.static("#{config.home}/public")
 		@server.use express.static(path.join(path.dirname(__filename),"../resources"))
 		@server.use assets({src:"#{config.home}/public"}) # serve static files or compile coffee and serve js
 		@server.use assets({src:"#{config.home}/views"})
-		@server.use express.bodyParser()
-		@server.use express.cookieParser()
 
 	@server.configure 'development', =>
 		@server.use express.errorHandler({ dumpExceptions: true, showStack: true })
@@ -54,10 +55,9 @@ log = new Log()
 		res.redirect '/timbits/help'
 
 	# route json page
-	
 	@server.get '/timbits/json', (req, res) =>
 		res.json @box
-		
+
 	# route help page
 	@server.all '/timbits/help', (req, res) =>
 		res.send ck.render(views.help, {box: @box} )
@@ -87,7 +87,7 @@ log = new Log()
 				log.info "Loading dynamic helpers: #{helper_name}"
 				helpers[helper_name] = require("#{helper_path}/#{file}")
 				@server.helpers helpers
-		
+
 	# automagically load timbits found in the ./timbits folder
 	timbit_path = "#{config.home}/timbits"
 	fs.readdir timbit_path, (err, files) =>
@@ -95,14 +95,6 @@ log = new Log()
 		for file in files
 			if file.match(/\.(coffee|js)$/)?
 				@add file.substring(0, file.lastIndexOf(".")), require("#{timbit_path}/#{file}")
-
-		# route remaining post requests to get
-		@server.post '*', (req, res) ->
-			delete req.body.submit # remove submit type
-			for attrname of req.body # merge post and get params
-				req.query[attrname] = req.body[attrname]
-			if req.url.indexOf('?') != -1 then req.url = req.url.substring(0, req.url.indexOf('?')) # remove old querystring if necessary
-			res.redirect "#{req.url}" + if req.query? then "?#{querystring.stringify(req.query)}" else "" # append new querystring to request url
 
 	# starts the server
 	try
@@ -237,8 +229,17 @@ class @Timbit
 	# helper method to retrieve data via REST
 	fetch: (req, res, context, options, callback = @render) ->
 		name = options.name or 'data'
-		pantry.fetch options, (error, results) =>
-			context[name] = results
+		pantry.fetch options, (error, results) ->
+			if context[name]?
+				if Object::toString.call(context[name][0]) is "[object Array]" # check if first item is array
+					context[name].push results
+					context["#{name}_uri"].push options.uri
+				else
+					context[name] = [context[name], results]
+					context["#{name}_uri"] = [context["#{name}_uri"], options.uri]
+			else
+				context[name] = results
+				context["#{name}_uri"] = options.uri
 
 			# we're done, will now execute rendor method unless otherwise specified
 			callback(req, res, context)
