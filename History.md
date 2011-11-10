@@ -1,3 +1,12 @@
+0.3.1 / 2011-11-10
+==================
+
+  * added support for json directory of available timbits
+  * Timbit fetch method will store pantry result in array if context contains existing entry
+  * Timbit fetch method will store the requested uri in context[name_uri] (or array if context contains existing entry)
+  * added initial support for express sessions
+  * routing now works for both get and post methods
+
 0.3.0 / 2011-10-17
 ==================
 
