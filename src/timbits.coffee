@@ -11,6 +11,7 @@ express = require 'express'
 pantry = require 'pantry'
 request = require 'request'
 jsonp = require 'jsonp-filter'
+less = require 'connect-less'
 
 config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd(), maxAge: 60 }
 server = {}
@@ -43,6 +44,7 @@ log = new Log()
 		@server.use express.static(path.join(path.dirname(__filename),"../resources"))
 		@server.use assets({src:"#{config.home}/public"}) # serve static files or compile coffee and serve js
 		@server.use assets({src:"#{config.home}/views"})
+		@server.use less({src:"#{config.home}/public"})
 
 	@server.configure 'development', =>
 		@server.use express.errorHandler({ dumpExceptions: true, showStack: true })
