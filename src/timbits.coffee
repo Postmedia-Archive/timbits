@@ -142,7 +142,7 @@ log = new Log()
 		try
 			# initialize current request context
 			context = {}
-			context[k.toLowerCase()] = v for k,v of req.query
+			context[k.toLowerCase()] = v for k,v of req.query when v? and v isnt '' 
 
 			context.name = timbit.name
 			context.view = "#{timbit.viewBase}/#{req.params.view ?= 'default'}"
@@ -154,7 +154,7 @@ log = new Log()
 				context[key] ?= attr.default
 				value = context[key]
 
-				if value
+				if value?
 					attr.type ?= 'String'
 					switch attr.type.toLowerCase()
 						when 'number'
