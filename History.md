@@ -1,3 +1,8 @@
+0.3.2 / 2011-11-18
+==================
+
+  * added support for server-side less compilation
+
 0.3.1 / 2011-11-10
 ==================
 
