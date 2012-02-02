@@ -99,49 +99,7 @@ The examples and params used to power the help pages are also used to power the 
 There is also a master test page located at /timbits/test which will execute tests 
 Although not overly sophisticated, it will ensure your definitions, examples, and views are valid and compile properly.  It is also useful for remote monitoring of production systems.
 
-Additional functional testing can and should be implemented via a testing library, such as our very own [kitkat](https://github.com/Postmedia/kitkat)
-
-### Client Side Rendering
-
-Although Timbits was originally developed with the intent of serving out widgets via ESI (or other mechanisms of server to server requests) we now have built in support for client side rendering.  Simply pass a remote=true parameter and the timbit will render JavaScript which provides the data context, requests the view, and renders on the client.
-
-Ensure that the following javascript libraries have been loaded in the browser first:
-- jQuery (http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js)
-- CoffeeScript (http://jashkenas.github.com/coffee-script/extras/coffee-script.js)
-- CoffeeKup (https://github.com/mauricemach/coffeekup)
-
-Below is an example of rendering the plain timbit on the client. If you are rendering multiple timbits on a single page, the id (in this case esi_0) must be unique for each timbit request.
-
-	<div id="esi_0"></div>
-	<script>
-		$.getScript("/plain/?who=World&esi_id=esi_0&remote=true");
-	</script>
-
-In this case, the result of the '/plain/?who=World&esi_id=esi_0&remote=true' getScript call will be similar to the following:
-
-	context_esi_0 = {"who":"World","esi_id":"esi_0","remote":"true","name":"plain","view":"plain/default","maxAge":60};
-	var views = views || {};
-	if (views['plain/default'] || false) {
-		render = CoffeeKup.render(views['plain/default'], context_esi_0);
-		$('#esi_0').html(render);
-	}
-	else {
-		$.ajax({
-			url: "http://localhost:5678/plain/default.coffee?json=true&callback=?",
-			dataType: "jsonp",
-			cache: true,
-			jsonpCallback: "plain_default",
-			success: function(data, textStatus, jqXHR){
-				views['plain/default'] = data; //save view for reuse
-				render = CoffeeKup.render(views['plain/default'], context_esi_0);
-				$('#esi_0').html(render);
-			}
-		});
-	}
-	
-When run, this script will check if the current view requested has been stored. If the view has been stored, coffeekup will render the view along with the context. If the view has not been stored, it will send an ajax request for the view. On ajax callback, the view will be stored and then rendered along with the context.
-
-Alternatively to the above method, the parse-esi.js script (from the connect-esi project) will search for esi/csi tags on a page and then automatically append the required &esi_id=esi_id&remote=true parameters. For a more detailed example of this method of remote rendering, please see public/tests in the 'timbits-example' project. The 'timbits-example' project makes use of PMScriptManager which simplifies the process of rendering remotely by using javascript packages which contain all required libraries to display a particular timbit.
+Additional functional testing can and should be implemented via a testing library, such as vows [vows](http://vowsjs.org/)
 
 ### Sharing of views
 
