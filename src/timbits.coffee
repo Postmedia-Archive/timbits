@@ -13,7 +13,7 @@ request = require 'request'
 jsonp = require 'jsonp-filter'
 less = require 'connect-less'
 
-config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd(), maxAge: 60 }
+config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd(), maxAge: 60, secret: "secret" }
 server = {}
 
 log = new Log()
@@ -37,14 +37,13 @@ log = new Log()
 	@server.configure =>
 		@server.use express.bodyParser()
 		@server.use express.cookieParser()
-		@server.use express.session({ secret: "secret" })
+		@server.use express.session({ secret: config.secret })
 		@server.use jsonp.setupJSONP()
 		@server.use connectESI.setupESI()
-		@server.use express.static("#{config.home}/public")
+		@server.use express.static(path.join(config.home, "public"))
 		@server.use express.static(path.join(path.dirname(__filename),"../resources"))
-		@server.use assets({src:"#{config.home}/public"}) # serve static files or compile coffee and serve js
-		@server.use assets({src:"#{config.home}/views"})
-		@server.use less({src:"#{config.home}/public"})
+		@server.use assets({src: path.join(config.home, "public")}) # serve static files or compile coffee and serve js
+		@server.use less({src: path.join(config.home, "public")})
 
 	@server.configure 'development', =>
 		@server.use express.errorHandler({ dumpExceptions: true, showStack: true })
@@ -79,16 +78,16 @@ log = new Log()
 			res.end master
 
 	# automagically load helpers found in the ./helpers folder
-	helper_path = "#{config.home}/helpers"
+	helper_path = path.join(config.home, "helpers")
 	helpers = {}
 	fs.readdir helper_path, (err, files) =>
-		throw err if err
-		for file in files
-			if file.match(/\.(coffee|js)$/)?
-				helper_name = file.substring(0, file.lastIndexOf("."))
-				log.info "Loading dynamic helpers: #{helper_name}"
-				helpers[helper_name] = require("#{helper_path}/#{file}")
-				@server.helpers helpers
+		if not err?
+			for file in files
+				if file.match(/\.(coffee|js)$/)?
+					helper_name = file.substring(0, file.lastIndexOf("."))
+					log.info "Loading dynamic helpers: #{helper_name}"
+					helpers[helper_name] = require(path.join(helper_path, file))
+					@server.helpers helpers
 
 	# automagically load timbits found in the ./timbits folder
 	timbit_path = "#{config.home}/timbits"
@@ -96,7 +95,7 @@ log = new Log()
 		throw err if err
 		for file in files
 			if file.match(/\.(coffee|js)$/)?
-				@add file.substring(0, file.lastIndexOf(".")), require("#{timbit_path}/#{file}")
+				@add file.substring(0, file.lastIndexOf(".")), require( path.join(timbit_path, file))
 
 	# starts the server
 	try
@@ -198,32 +197,7 @@ class @Timbit
 		res.setHeader "Cache-Control", "max-age=#{context.maxAge}"
 		res.setHeader "Edge-Control", "max-age=#{context.maxAge}"
 
-		if context.remote is 'true'
-			output = """
-				context_#{context.esi_id} = #{JSON.stringify(context)};
-				var views = views || {};
-				if (views['#{context.view}'] || false) {
-					render = CoffeeKup.render(views['#{context.view}'], context_#{context.esi_id});
-					#{if context.esi_id? then "$('##{context.esi_id}').html(render)" else "$('body').append(render)"};
-				}
-				else {
-					$.ajax({
-						url: "http://#{req.headers.host}/#{context.view}.coffee?json=true&callback=?",
-						dataType: "jsonp",
-						cache: true,
-						jsonpCallback: "#{context.view.replace(/\//,'_')}",
-						success: function(data, textStatus, jqXHR){
-							views['#{context.view}'] = data; //save view for reuse
-							render = CoffeeKup.render(views['#{context.view}'], context_#{context.esi_id});
-							#{if context.esi_id? then "$('##{context.esi_id}').html(render)" else "$('body').append(render)"};
-						}
-					});
-				}
-			"""
-			res.setHeader "Content-Type", "text/javascript"
-			res.write output
-			res.end()
-		else if /^\w+\/json$/.test(context.view)
+		if /^\w+\/json$/.test(context.view)
 			res.json context
 		else
 			res.render context.view, context
@@ -253,7 +227,7 @@ class @Timbit
 	# this method returns a list of views available to this timbit
 	listviews: (callback) ->
 		view = []
-		fs.readdir "#{config.home}/views/#{@viewBase}", (err,list) ->
+		fs.readdir path.join(config.home, 'views', @viewBase), (err,list) ->
 			if err || list is undefined
 				view.push 'default' # We will attempt the default view anyway and hope the timbit knows what it is doing.
 			else
