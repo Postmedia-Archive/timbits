@@ -1,3 +1,11 @@
+0.4.0 / 2012-02-02
+==================
+
+  * Removed client side rendering (for now)
+  * Switched out kitkat for vows
+  * Supports alternate view engines
+  * No error if helpers aren't defined (missing folder)
+
 0.3.3 / 2011-11-23
 ==================
 
@@ -13,7 +21,7 @@
 
   * added support for json directory of available timbits
   * Timbit fetch method will store pantry result in array if context contains existing entry
-  * Timbit fetch method will store the requested uri in context[name_uri] (or array if context contains existing entry)
+  * Timbit fetch method will store the requested uri in context\[name_uri\] (or array if context contains existing entry)
   * added initial support for express sessions
   * routing now works for both get and post methods
 

@@ -1,7 +1,7 @@
 {
 	"name": "timbits",
 	"description": "Widget framework based on Express and CoffeeScript",
-	"version": "0.3.3",
+	"version": "0.4.0",
 	"homepage": "https://github.com/Postmedia/timbits",
 	"author": "Edward de Groot <edegroot@postmedia.com> (http://mred9.wordpress.com)",
 	"contributors": [ 
@@ -10,22 +10,23 @@
 		{ "name": "Kevin Gamble", "email": "kgamble@postmedia.com" }
 	],
 	"dependencies": {
-		"coffee-script": ">= 1.1.1",
-		"coffeekup": ">= 0.3.0",
+		"coffee-script": ">= 1.2.0",
+		"coffeekup": ">= 0.3.1",
 		"coloured-log": ">= 0.9.7",
 		"connect-assets": "= 2.0.0-rc1",
-		"connect-esi": ">= 0.1.6",
-		"connect-less": ">= 0.2.2",
-		"express": ">= 2.4.6",
-		"jsonp-filter": ">= 0.0.1",
+		"connect-esi": ">= 0.1.7",
+		"connect-less": ">= 0.2.3",
+		"express": ">= 2.5.6",
+		"jsonp-filter": ">= 0.0.2",
 		"pantry": ">= 0.2.0",
-		"request": ">= 2.1.1",
+		"request": ">= 2.9.1",
 		"optimist": ">= 0.2.6"
 	},
 	"devDependencies": {
-		"kitkat": ">= 0.3.0"
+		"vows": ">= 0.6.1",
+		"request": ">= 2.9.100"
 	},
-	"bugs": { "web": "https://github.com/Postmedia/timbits/issues"},
+	"bugs": { "url": "https://github.com/Postmedia/timbits/issues"},
 	"licenses": [
 		{ "type": "MIT", "url": "https://github.com/Postmedia/timbits/blob/master/LICENSE"}
 	],
