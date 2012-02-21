@@ -13,7 +13,16 @@ request = require 'request'
 jsonp = require 'jsonp-filter'
 less = require 'connect-less'
 
-config = { appName: "Timbits", engine: "coffee", port: 5678, home: process.cwd(), maxAge: 60, secret: "secret" }
+config = {
+	appName: 'Timbits'
+	engine: 'coffee'
+	base: ''
+	port: 5678
+	home: process.cwd()
+	maxAge: 60
+	secret: 'secret'
+}
+
 server = {}
 
 log = new Log()
@@ -52,25 +61,25 @@ log = new Log()
 		@server.use express.errorHandler()
 
 	# route root to help page
-	@server.all '/', (req, res) ->
-		res.redirect '/timbits/help'
+	@server.all "#{config.base}/", (req, res) ->
+		res.redirect "#{config.base}/timbits/help"
 
 	# route json page
-	@server.get '/timbits/json', (req, res) =>
+	@server.get "#{config.base}/timbits/json", (req, res) =>
 		res.json @box
 
 	# route help page
-	@server.all '/timbits/help', (req, res) =>
+	@server.all "#{config.base}/timbits/help", (req, res) =>
 		res.send ck.render(views.help, {box: @box} )
 
 	# route master test page
-	@server.all '/timbits/test', (req, res) =>
+	@server.all "#{config.base}/timbits/test", (req, res) =>
 		res.setHeader 'Content-Type', 'text/html; charset=UTF-8'
 		master = ''
 		pending = Object.keys(@box).length
 		if pending
 			for timbit of @box
-				request {uri: "http://#{req.headers.host}/#{timbit}/test" }, (error, response, body) ->
+				request {uri: "http://#{req.headers.host}#{config.base}/#{timbit}/test" }, (error, response, body) ->
 					master += body
 					res.end master unless --pending
 		else
@@ -124,7 +133,7 @@ log = new Log()
 	@box[name] = timbit
 
 	# configure help
-	@server.all ("/#{name}/help"), (req, res) ->
+	@server.all ("#{config.base}/#{name}/help"), (req, res) ->
 		renderHelp = ->
 			res.send ck.render(views.timbit_help, timbit)
 		timbit.listviews (views) ->
@@ -132,12 +141,12 @@ log = new Log()
 			renderHelp()
 
 	# configure test
-	@server.all ("/#{name}/test"), (req, res) ->
+	@server.all ("#{config.base}/#{name}/test"), (req, res) ->
 		timbit.test "http://#{req.headers.host}", timbit, (results) ->
 			res.send ck.render(views.timbit_test, results)
 
 	# configure the route
-	@server.all ("/#{name}/:view?"), (req, res) ->
+	@server.all ("#{config.base}/#{name}/:view?"), (req, res) ->
 		try
 			# initialize current request context
 			context = {}
@@ -184,6 +193,11 @@ log = new Log()
 		catch ex
 			log.error "#{req.url} - #{ex}"
 			throw ex
+			
+	# update example urls if base vpath specified
+	if config.base? and timbit.examples?
+		for example in timbit.examples
+			example.href = "#{config.base}#{example.href}"
 
 # definition of a timbit
 class @Timbit
@@ -271,14 +285,14 @@ class @Timbit
 				# Test each view if no query parameters present
 				pending = results.views.length
 				for view in results.views then do (view) ->
-					testRequest "views", "#{host}/#{context.name}/#{view}", ->
+					testRequest "views", "#{host}#{config.base}/#{context.name}/#{view}", ->
 						callback() unless --pending
 			else
 				# Test each query for each view
 				pending = results.queries.length * results.views.length
 				for query in results.queries then do (query) ->
 					for view in results.views then do (view) ->
-						testRequest "queries","#{host}/#{context.name}/#{view}?#{query}", ->
+						testRequest "queries","#{host}#{config.base}/#{context.name}/#{view}?#{query}", ->
 							callback() unless --pending
 
 		testRunExamples = (callback) ->

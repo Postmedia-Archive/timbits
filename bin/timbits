@@ -1,7 +1,7 @@
 #!/usr/bin/env coffee
 fs = require 'fs'
+util = require 'util'
 path = require 'path'
-exec = require("child_process").exec
 spawn = require("child_process").spawn
 node_modules = path.join(path.dirname(fs.realpathSync(__filename)),"../node_modules/")
 optimist = require (node_modules + 'optimist')
@@ -27,46 +27,9 @@ mkdir = (directory, callback) ->
 
 cp = (file, destination, callback) ->
 	# Copy file
-	command = "cp -p -n #{file} #{destination}"
-	child = exec("cp -p -n #{file} #{destination}", (error, stdout, stderr) ->
-		if error isnt null
-			log.error "#{error} #{command}"
-		else
-			log.info "Copied #{file} to #{destination}"
-		callback()
-	)
-
-runNPMinstall = (directory, callback) ->
-	# Run NPM intall
-	process.chdir directory
-	log.notice "Running command 'npm install -d'"
-	npm = spawn("npm", [ "install", "-d" ])
-	npm.stdout.on "data", (data) ->
-		console.log data.toString()
-	npm.on "exit", (code) ->
-		if (code == 0)
-			log.notice "Command 'npm install -d' was successful"
-		else
-			log.warning "Command 'npm install -d' failed"
-		callback()
-
-runNPMinit = (callback) ->
-	# Run NPM init
-	log.notice "Running command 'npm init'"
-	npm = spawn("npm", [ "init" ])
-	process.stdin.resume()
-	process.stdin.on "data", (chunk) ->
-		npm.stdin.write chunk
-	npm.stdout.on "data", (data) ->
-		console.log data.toString()
-	npm.stderr.on "data", (data) ->
-		log.error data.toString()
-	npm.on "exit", (code) ->
-		if (code == 0)
-			log.notice "Command 'npm init' was successful"
-		else
-			log.warning "Command 'npm init' failed"
-		callback()
+    templateFile = fs.createReadStream file
+    newFile = fs.createWriteStream destination
+    util.pump templateFile, newFile, callback
 
 newProject = (argv) ->
 	# Creates new subfolders [project], [project]/timbits, and [project]/views.
@@ -94,10 +57,9 @@ newProject = (argv) ->
 					fs.writeFile "#{directories[0]}/package.json", package_json, (err) ->
 						throw err if err
 						log.info "Created package.json in #{directories[0]}/package.json"
-						runNPMinstall directories[0], ->
-							runNPMinit ->
-								log.notice "Project '#{argv[1]}' has been created!"
-								process.kill process.pid, 'SIGTERM'
+						log.info "Run 'npm init' to update your package.json file"
+						log.info "Don't forget to run 'npm install -d' to install required packages"
+						process.kill process.pid, 'SIGTERM'
 
 generateTimbit = (argv) ->
 	# Scaffolds a new timbit at timbits/[timbit].coffee and a new view at views/[timbit]/default.coffee
