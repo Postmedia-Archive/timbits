@@ -27,9 +27,10 @@ mkdir = (directory, callback) ->
 
 cp = (file, destination, callback) ->
 	# Copy file
-    templateFile = fs.createReadStream file
-    newFile = fs.createWriteStream destination
-    util.pump templateFile, newFile, callback
+	templateFile = fs.createReadStream file
+	newFile = fs.createWriteStream destination
+	newFile.once 'open', =>
+		util.pump templateFile, newFile, callback
 
 newProject = (argv) ->
 	# Creates new subfolders [project], [project]/timbits, and [project]/views.
@@ -49,7 +50,7 @@ newProject = (argv) ->
 				cp "#{lib}/test/timbits-test.coffee", "#{argv[1]}/test/#{argv[1]}-test.coffee", ->
 			pending = files.length
 			for file in files
-				cp "#{lib}/#{file}", argv[1], ->
+				cp "#{lib}/#{file}", "#{argv[1]}/#{file}", ->
 					createPackage() unless --pending
 			createPackage = ->
 				getVersion (package) ->
