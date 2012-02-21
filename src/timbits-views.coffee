@@ -46,7 +46,7 @@ exports.help = ->
 
 			ul ->
 				for k, v of @box
-					li -> a href: "/#{k}/help", -> k + ' &raquo;'
+					li -> a href: "../#{k}/help", -> k + ' &raquo;'
 
 exports.test = ->
 	style '''body {

@@ -52,7 +52,27 @@ Create a new project, generate a timbit (and default view), or run the project w
 	timbits n[ew] [project]
 	timbits g[enerate] [timbit]
 	timbits s[erver]
-	
+
+### Server Configuration
+
+The server object can be configured during initialization as needed.  The only parameter we strongly suggest you specify is 'secret'.  The following is a list of possible configuration parameters and their [default value]
+
+* appName - Friendly name of the timbits application ['Timbits']
+* engine - Default view engine ['coffee']
+* base - A base path for nested servers.  e.g. '/my/nested/server' ['']
+* port - The server port to listen on if PORT or C9_PORT env labels are not present. [5678]
+* home - The physical path to the root project folder [process.cwd()]
+* maxAge - The default cache length in seconds [60]
+* secret - The string used to encrypt sessions ['secret']
+
+The following example shows how to run a nested application using the 'eco' view engine in place of CoffeeKup
+
+	var timbits = require('timbits');
+	var eco = require('eco');
+	var server = timbits.serve({appName: 'My Nested Timbits', engine: 'eco', base: '/nested/app', secret: '359#^#$KDKS'});
+	server.register('.eco', eco);
+	console.log("Press Ctrl+C to Exit");
+
 ### Parameter declaration and validation
 
 You can now define a list of parameters which are automatically validated during execution.  This also powers the automated help and test functions (see further below).  Parameter attributes you can manipulate are:
@@ -128,7 +148,6 @@ For example, if you create a file called ./helpers/handy.coffee (like we did in 
 We have a number of items in the pipeline which we believe will provide a lot of power to this platform, such as:
 
 * Integrated benchmarks
-* Support for alternate view engines
 * Real-time data updates via Socket.IO
 
 

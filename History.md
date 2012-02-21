@@ -1,3 +1,10 @@
+0.4.1 / 2012-02-21
+==================
+
+  * Added support for new config.base parameter to allow nested timbit servers
+  * timbits command line updated to use OS agnostic copy
+  * npm init and install removed from command line (doesn't work on windows)
+
 0.4.0 / 2012-02-02
 ==================
 
