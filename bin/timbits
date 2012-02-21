@@ -48,19 +48,17 @@ newProject = (argv) ->
 			mkdir directories[3], ->
 			mkdir directories[4], ->
 				cp "#{lib}/test/timbits-test.coffee", "#{argv[1]}/test/#{argv[1]}-test.coffee", ->
-			pending = files.length
+
 			for file in files
 				cp "#{lib}/#{file}", "#{argv[1]}/#{file}", ->
-					createPackage() unless --pending
-			createPackage = ->
-				getVersion (package) ->
-					package_json = "{\n\t\"name\": \"#{argv[1]}\",\n\t\"description\": \"Widgets built using Timbits\",\n\t\"version\": \"0.0.1\",\n\t\"dependencies\": {\n\t\t\"timbits\": \">= #{package.version}\"\n\t}\n}"
-					fs.writeFile "#{directories[0]}/package.json", package_json, (err) ->
-						throw err if err
-						log.info "Created package.json in #{directories[0]}/package.json"
-						log.info "Run 'npm init' to update your package.json file"
-						log.info "Don't forget to run 'npm install -d' to install required packages"
-						process.kill process.pid, 'SIGTERM'
+
+			getVersion (package) ->
+				package_json = "{\n\t\"name\": \"#{argv[1]}\",\n\t\"description\": \"Widgets built using Timbits\",\n\t\"version\": \"0.0.1\",\n\t\"dependencies\": {\n\t\t\"timbits\": \">= #{package.version}\"\n\t}\n}"
+				fs.writeFile "#{directories[0]}/package.json", package_json, (err) ->
+					throw err if err
+					log.info "Created package.json in #{directories[0]}/package.json"
+					log.notice "Run 'npm init' to update your package.json file"
+					log.notice "Don't forget to run 'npm install -d' to install required packages"
 
 generateTimbit = (argv) ->
 	# Scaffolds a new timbit at timbits/[timbit].coffee and a new view at views/[timbit]/default.coffee
