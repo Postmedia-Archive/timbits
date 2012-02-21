@@ -20,7 +20,8 @@
 		"jsonp-filter": ">= 0.0.2",
 		"pantry": ">= 0.2.0",
 		"request": ">= 2.9.1",
-		"optimist": ">= 0.2.6"
+		"optimist": ">= 0.2.6",
+		"run": ">= 0.2.3"
 	},
 	"devDependencies": {
 		"vows": ">= 0.6.1",
