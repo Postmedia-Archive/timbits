@@ -18,7 +18,7 @@
 		"connect-less": ">= 0.2.3",
 		"express": ">= 2.5.6",
 		"jsonp-filter": ">= 0.0.2",
-		"pantry": ">= 0.2.0 < 0.3.0",
+		"pantry": ">= 0.3.0",
 		"request": ">= 2.9.1",
 		"optimist": ">= 0.2.6",
 		"run": ">= 0.2.3"

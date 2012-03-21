@@ -8,7 +8,7 @@ Log = require 'coloured-log'
 assets = require 'connect-assets'
 connectESI = require 'connect-esi'
 express = require 'express'
-pantry = require 'pantry'
+@pantry = pantry = require 'pantry'
 request = require 'request'
 jsonp = require 'jsonp-filter'
 less = require 'connect-less'
@@ -31,10 +31,11 @@ log = new Log()
 @serve = (options) ->
 	config[key] = value for key, value of options
 	@server = express.createServer()
-
+	
+	# init log
 	log = new Log(if @server.settings.env is 'development' then Log.DEBUG else Log.INFO)
 
-	# support coffekup
+	# support coffeekup
 	@server.register '.coffee', ck
 
 	# configure server (still needs some thought)

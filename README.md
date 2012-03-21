@@ -143,6 +143,27 @@ New in v0.3.0, view helpers are now loaded automagically from the ./helpers fold
 
 For example, if you create a file called ./helpers/handy.coffee (like we did in examples), timbits will automatically include all the  exported functions from handy.coffee under the helper 'handy'.  See the 'with-help' view for the plain timbit as an example.
 
+### Advanced caching via pantry
+
+As of [Pantry](https://github.com/Postmedia/pantry) v0.3.0, you are now able to configure alternate storage caches. As of Timbits v0.5.0 one can now control the pantry configuration properties as well as substitute the default MemoryStorage caching via the exported timbits.pantry property.
+
+	var RedisStorage, server, timbits;
+
+	timbits = require('../src/timbits');
+
+	RedisStorage = require('pantry/lib/pantry-redis');
+
+	timbits.pantry.storage = new RedisStorage(null, null, null, 'DEBUG');
+
+	timbits.pantry.configure({
+	  verbosity: 'DEBUG'
+	});
+
+	server = timbits.serve({
+	  home: __dirname
+	});
+
+ 
 ## Road Map
 
 We have a number of items in the pipeline which we believe will provide a lot of power to this platform, such as:
