@@ -1,3 +1,9 @@
+0.5.2 / 2012-03-21
+==================
+
+  * Unstable experimental release (uses unstable pantry v0.3.x)
+  * Exposes pantry for additional configuration and use of optional storage engines
+
 0.4.2 / 2012-03-21
 ==================
 
