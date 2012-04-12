@@ -1,4 +1,9 @@
-0.5.2 / 2012-03-21
+0.5.0 / 2012-03-21
+==================
+
+  * Changes to bin/timbits for CoffeScript v.1.3.x support
+
+0.5.0 / 2012-03-21
 ==================
 
   * Unstable experimental release (uses unstable pantry v0.3.x)
