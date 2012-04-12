@@ -18,7 +18,7 @@ lib = path.dirname(fs.realpathSync(__filename)) + '/template'
 
 mkdir = (directory, callback) ->
 	# Make directory
-	fs.mkdir directory, 0777, (e) ->
+	fs.mkdir directory, 0o777, (e) ->
 		if e?.message?
 			log.error "#{e.message}"
 		else
@@ -52,8 +52,8 @@ newProject = (argv) ->
 			for file in files
 				cp "#{lib}/#{file}", "#{argv[1]}/#{file}", ->
 
-			getVersion (package) ->
-				package_json = "{\n\t\"name\": \"#{argv[1]}\",\n\t\"description\": \"Widgets built using Timbits\",\n\t\"version\": \"0.0.1\",\n\t\"dependencies\": {\n\t\t\"timbits\": \">= #{package.version}\"\n\t}\n}"
+			getVersion (pkg) ->
+				package_json = "{\n\t\"name\": \"#{argv[1]}\",\n\t\"description\": \"Widgets built using Timbits\",\n\t\"version\": \"0.0.1\",\n\t\"dependencies\": {\n\t\t\"timbits\": \">= #{pkg.version}\"\n\t}\n}"
 				fs.writeFile "#{directories[0]}/package.json", package_json, (err) ->
 					throw err if err
 					log.info "Created package.json in #{directories[0]}/package.json"
@@ -93,13 +93,13 @@ getVersion = (callback) ->
 	# Get version of installed timbits library
 	fs.readFile path.join(path.dirname(fs.realpathSync(__filename)),"../package.json"), (err, data) ->
 		throw err if err
-		package = JSON.parse(data)
-		callback package
+		pkg = JSON.parse(data)
+		callback pkg
 
 showVersion = (argv) ->
 	# Show version of installed timbits library
-	getVersion (package) ->
-		console.log package.version
+	getVersion (pkg) ->
+		console.log pkg.version
 
 showHelp = (argv) ->
 	# Show usage help
