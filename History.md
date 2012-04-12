@@ -1,4 +1,9 @@
-0.5.0 / 2012-03-21
+0.5.2 / 2012-04-12
+==================
+
+  * Fixed bug with making directories in bin/timbits
+
+0.5.0 / 2012-04-12
 ==================
 
   * Changes to bin/timbits for CoffeScript v.1.3.x support

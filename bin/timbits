@@ -18,7 +18,7 @@ lib = path.dirname(fs.realpathSync(__filename)) + '/template'
 
 mkdir = (directory, callback) ->
 	# Make directory
-	fs.mkdir directory, 0o777, (e) ->
+	fs.mkdir directory, (e) ->
 		if e?.message?
 			log.error "#{e.message}"
 		else
