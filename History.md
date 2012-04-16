@@ -1,3 +1,9 @@
+0.5.3 / 2012-04-16
+==================
+
+  * Fixed bug with minimum node version for previous changes that require node 0.6.1 or higher
+  * Added limitation to express version installed < 3.0 as this is in alpha and breaks timbits 
+
 0.5.2 / 2012-04-12
 ==================
 
