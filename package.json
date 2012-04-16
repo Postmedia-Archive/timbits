@@ -10,22 +10,22 @@
 		{ "name": "Kevin Gamble", "email": "kgamble@postmedia.com" }
 	],
 	"dependencies": {
-		"coffee-script": ">= 1.2.0",
-		"coffeekup": ">= 0.3.1",
-		"coloured-log": ">= 0.9.7",
+		"coffee-script": "1.2.x",
+		"coffeekup": "0.3.x",
+		"coloured-log": "0.9.x",
 		"connect-assets": "= 2.0.0-rc1",
 		"connect-esi": ">= 0.1.7",
-		"connect-less": ">= 0.2.3",
-		"express": ">= 2.5.6 < 3.0",
-		"jsonp-filter": ">= 0.0.2",
+		"connect-less": "0.2.x",
+		"express": "2.x.x",
+		"jsonp-filter": "0.0.x",
 		"pantry": ">= 0.3.0",
-		"request": ">= 2.9.1",
-		"optimist": ">= 0.2.6",
-		"run": ">= 0.2.3"
+		"request": "2.9.x",
+		"optimist": "0.2.x",
+		"run": "0.2.x"
 	},
 	"devDependencies": {
-		"vows": ">= 0.6.1",
-		"request": ">= 2.9.100"
+		"vows": "0.6.x",
+		"request": "2.9.x"
 	},
 	"bugs": { "url": "https://github.com/Postmedia/timbits/issues"},
 	"licenses": [
@@ -40,5 +40,5 @@
 	"scripts": {
 		"build": "cake build"
 	},
-	"engines": { "node": ">= 0.6.1" }
+	"engines": { "node": "0.6.x" }
 }
