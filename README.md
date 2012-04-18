@@ -201,6 +201,10 @@ There is a maxAge property that can set the number of seconds client can/should 
 	
 The maxAge value will be included in two response headers, the standard Cache-Control header as well as a special Edge-Control header (used by Akamai)
 
+### Built in JSON view
+
+If you're interested in rendering the data elsewhere (for example client side) or you simply want to see what's available to you in the current context for debugging purposes, Timbits includes a built in view named "json" that will render the context object as 'application/json'.   e.g.  /dutchie/json
+
 ### Dynamic View Helpers
 
 New in v0.3.0, view helpers are now loaded automagically from the ./helpers folder upon startup.  To include new helpers, simply create a [helper_name].coffee or [helper_name].js file in the ./helpers folder and export one or more functions.
