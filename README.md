@@ -43,6 +43,70 @@ The simplest of timbits takes the following form:
 
 That's it.  If you created this as /timbits/test.coffee and placed a default view at /views/test/default.coffee, you could "eat" this timbit by going to /test in a browser.  See the "plain" timbit for an example of this.
 
+## How it works
+
+So, how does this all work?
+
+When you start up a timbits based project, the framework will dynamically load each timbit from the /timbits/ folder.  A timbit is
+nothing more than a JS or CS file which creates and exports a new instance of the Timbit class.
+
+This Timbit class has one very important method named "eat" which is the entry point for every request.  This method is intended to
+be overwritten.   When called, the framework will pass in the following three variables
+
+* req - the http request object
+* res - the http response object
+* context - a hash of data properties
+
+The req and res parameters come straight from Express.js and are documented [here](http://expressjs.com/guide.html#routing).
+The context object originates within Timbits, and will initially contain the following properties:
+
+* name - the name of the timbit being executed
+* view - the name of the specified view
+* maxAge - the number of seconds the response should be cached for
+
+It's important to note that it is possible to override the view and/or the maxAge during the execution of the request if needed.
+
+In addition, each route, querystring and post parameter is also added to the context as a property.  So, if one included ?page=5 in the request url this value would be made available to you as context.page
+
+Within the eat method, the simplist of implementations will merely call the render method to, well, render the given view using the data found with the context.  The render method takes the same three parameters originally passed into the eat method.  Within the render method Timbits will pass to the context to the view rendering engine so that those values can be 
+referenced within the view.  So a very simple eat method could look like this
+
+	eat: (req, res, context) ->
+		@render req, res, context
+
+In fact, that's exactly what it looks like within the Timbit class, so if you don't override it, the timbit will simply pass on the request parameters for rendering.  But that's generally not very useful.  The intent in most cases is to add additional data to the context, whether it be generated on the local server (like a timestamp - see the cherry timbit example) or more likely from an external resource like a RSS or JSON feed/API.
+
+For those instances where you do need to pull in remote data, we've incorporated [Pantry](https://github.com/Postmedia/pantry) into Timbits to make fetching (and caching) those resources extra easy.  This is available to you via the built in fetch method.
+
+The fetch method takes five parameters.  The first three are the same as the render method: req, res, context.  It then adds two additional parameters
+
+* options - This is a hash of options passed directly to Pantry's fetch method.  It identifies the source URI of the resource you want to retrieve along with a host of other options as documented within Pantry
+* callback - This is an optional parameter which identifies the function to execute once the request has been completed.  It defaults to the render method
+
+The fetch method will automatically add the retrieved resource to context.data by default.  If that isn't acceptable, you can also add a property called "name" to the options parameter to specify an alternate property name to store the data in.  This is shown in the included "dutchie" example as follows:
+
+	# specify the data source
+	src = {
+		name: 'tweets'
+		uri: "http://search.twitter.com/search.json?q=#{context.q}"
+	}
+
+	# use the helper method to @fetch the data
+	# @fetch will call @render once we have the data			
+	@fetch req, res, context, src
+	
+Be aware that if (using the example above) context.tweets already exists, timbits will transform context.tweets into an array (if it isn't already) and append the retrieved resource to the array.
+
+Once the request has been completed and the data added to the context, and no callback is specified, the fetch method will then call the render method for you.  If you need to request some additional resources, or perhaps further manipulate the resource once it's been fetched, simply tack on the optional callback parameter and implement your follow up code.  Timbits will pass on the req, res, and context parameters to the callback, and just be sure to call the render method once you're done.
+
+	@fetch req, res, context, src, (req, res, context) ->
+		# run your custom code here
+		# ......
+		# ......
+		
+		# and then call render
+		@render req, res, context
+
 ## Additional Features
 
 ### Command Line
