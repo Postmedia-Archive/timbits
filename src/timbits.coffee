@@ -128,6 +128,7 @@ log = new Log()
 	log.notice "Placing #{name} in the box"
 	timbit.name = name
 	timbit.viewBase ?= name
+	timbit.defaultView ?= 'default'
 	timbit.maxAge ?= config.maxAge
 	timbit.listviews (views) =>
 		timbit.views = views
@@ -154,7 +155,7 @@ log = new Log()
 			context[k.toLowerCase()] = v for k,v of req.query when v? and v isnt '' 
 
 			context.name = timbit.name
-			context.view = "#{timbit.viewBase}/#{req.params.view ?= 'default'}"
+			context.view = "#{timbit.viewBase}/#{req.params.view ?= timbit.defaultView}"
 			context.maxAge = timbit.maxAge
 
 			# validate the request
@@ -244,7 +245,7 @@ class @Timbit
 		view = []
 		fs.readdir path.join(config.home, 'views', @viewBase), (err,list) ->
 			if err || list is undefined
-				view.push 'default' # We will attempt the default view anyway and hope the timbit knows what it is doing.
+				view.push @defaultView # We will attempt the default view anyway and hope the timbit knows what it is doing.
 			else
 				for file in list then do (file) ->
 					if file.match(/\.coffee/)?
