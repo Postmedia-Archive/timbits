@@ -1,3 +1,8 @@
+0.5.4 / 2012-04-25
+==================
+
+  * Added the ability to specify the name of the default view via .defaultView property
+
 0.5.3 / 2012-04-16
 ==================
 
