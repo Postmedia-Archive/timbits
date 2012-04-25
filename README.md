@@ -185,6 +185,13 @@ Although not overly sophisticated, it will ensure your definitions, examples, an
 
 Additional functional testing can and should be implemented via a testing library, such as vows [vows](http://vowsjs.org/)
 
+### Default view
+
+By default, the name of the default view is, well, default!  You do have the ability to specify something more descriptive if you so desire.  Simply set the defaultView property to whatever view name you'd like to use
+
+	# the name default is so booooring.  use my fancy view by default is instead
+	timbit.defaultView = 'fancy'
+	
 ### Sharing of views
 
 If you have two or more timbits for which you would like to share views, simply set the viewBase property on the timbit to the name of the timbit who's views you'd like to utilize (see the Dutchie timbit as an example)
