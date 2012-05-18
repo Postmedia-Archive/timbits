@@ -238,7 +238,28 @@ As of [Pantry](https://github.com/Postmedia/pantry) v0.3.0, you are now able to 
 	  home: __dirname
 	});
 
+### Client Side Rendering
+
+Not everyone will be able to utilize an ESI processor in front of their site, or more likely on their development workstation, so we've added a quick and easy way to pull in timbits client side.  Timbits supports an optional callback parameter which will package the rendered response as a simple JSONP package. 
+
+Example:
+
+	/chocolate?q=winning&callback=done
+
+Included with Timbits is a simple client-side JS library (/javascript/timbits-csi.js) which utilizes jQuery to post-process an HTML page for esi:include tags, automatically tacking on the callback parameter and pulling in the results client side.
+
+The timbits-csi.js allows for the use of both the regular esi: namespace OR our very own csi: (for client side include), as there may be times you want your ESI processor to handle some of the widgets while others you may want to only handle client side.  Since any ESI processor wouldn't handle the csi: namespace, they would skipped and delivered to the browser as is for handling there.
+
+Example:
+
+	<csi:include src="http://mytimbitserver.fake/plain/?who=world"></csi:include>
+	<esi:include src="http://mytimbitserver.fake/chocolate/?q=winning"></esi:include>
+
+
+In the example above, if the page was served through an ESI compatible proxy the first item would be rendered on the client (in the browser) while the second would be rendered within the proxy.  If there was no ESI compatible proxy in place, both would be rendered on the client.
  
+This feature is in its early infancy.  For example, we do not yet handle the ability to insert query string parameters client side, but that will be coming soon.
+
 ## Road Map
 
 We have a number of items in the pipeline which we believe will provide a lot of power to this platform, such as:

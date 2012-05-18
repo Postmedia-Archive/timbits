@@ -216,7 +216,17 @@ class @Timbit
 		if /^\w+\/json$/.test(context.view)
 			res.json context
 		else
-			res.render context.view, context
+			res.render context.view, context, (err, str) =>
+				if err
+					log.error err.toString()
+					res.send "There was an error processing this request.", 500
+				else
+					if context.callback?
+						# remote client side include
+						res.contentType 'application/javascript'
+						res.send "#{context.callback} ( #{JSON.stringify(str)} );"
+					else
+						res.send str
 
 	# helper method to retrieve data via REST
 	fetch: (req, res, context, options, callback = @render) ->
@@ -225,13 +235,10 @@ class @Timbit
 			if context[name]?
 				if Object::toString.call(context[name][0]) is "[object Array]" # check if first item is array
 					context[name].push results
-					context["#{name}_uri"].push options.uri
 				else
 					context[name] = [context[name], results]
-					context["#{name}_uri"] = [context["#{name}_uri"], options.uri]
 			else
 				context[name] = results
-				context["#{name}_uri"] = options.uri
 
 			# we're done, will now execute rendor method unless otherwise specified
 			callback(req, res, context)
