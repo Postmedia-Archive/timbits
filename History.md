@@ -1,3 +1,9 @@
+0.5.5 / 2012-05-18
+==================
+
+  * Added the ability render timbits client side via JSONP and callback parameter
+  * Removed the automatic insert of pantry URIs into context due to security concerns
+
 0.5.4 / 2012-04-25
 ==================
 
@@ -14,7 +20,7 @@
 
   * Fixed bug with making directories in bin/timbits
 
-0.5.0 / 2012-04-12
+0.5.1 / 2012-04-12
 ==================
 
   * Changes to bin/timbits for CoffeScript v.1.3.x support
