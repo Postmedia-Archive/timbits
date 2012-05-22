@@ -1,3 +1,8 @@
+0.5.6 / 2012-05-22
+==================
+
+  * Added ability to access to pantry directly from within a Timbit
+
 0.5.5 / 2012-05-18
 ==================
 
