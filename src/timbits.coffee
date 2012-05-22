@@ -205,6 +205,7 @@ log = new Log()
 class @Timbit
 
 	log: log
+	pantry: pantry
 
 	# default render implementation
 	render: (req, res, context) ->
