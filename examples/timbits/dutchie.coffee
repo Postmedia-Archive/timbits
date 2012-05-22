@@ -14,10 +14,10 @@ timbit.eat = (req, res, context) ->
 	
 	# specify the data source
 	src = {
-		name: 'tweets'
 		uri: "http://search.twitter.com/search.json?q=#{context.q}"
 	}
 	
-	# use the helper method to @fetch the data
-	# @fetch will call @render once we have the data			
-	@fetch req, res, context, src
+	# instead of using the helper method, let's show how to use pantry directly
+	@pantry.fetch src, (error, results) =>
+		context.tweets = results
+		@render req, res, context
