@@ -1,3 +1,9 @@
+0.5.7 / 2012-05-23
+==================
+
+  * Added support for onload event to client side esi/csi processing
+  * Allow for $(QUERY\_STRING{'name'}) syntax in client side esi/csi processing
+
 0.5.6 / 2012-05-22
 ==================
 
