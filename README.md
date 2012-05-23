@@ -257,8 +257,13 @@ Example:
 
 
 In the example above, if the page was served through an ESI compatible proxy the first item would be rendered on the client (in the browser) while the second would be rendered within the proxy.  If there was no ESI compatible proxy in place, both would be rendered on the client.
- 
-This feature is in its early infancy.  For example, we do not yet handle the ability to insert query string parameters client side, but that will be coming soon.
+
+To render these tags client side, include the jQuery library and the include /javascript/timbits-csi.js library on your page.
+
+We've also added support for the dynamic insertion of query string values into your client side ESI/CSI calls via the standard $(QUERY\_STRING{'name'}) syntax.  For example, the following will grab the query string parameter 'term' from the host page and insert it into the source url prior to making the request.
+
+	<esi:include src="http://mytimbitserver.fake/chocolate/?q=$(QUERY_STRING{'term'})"></esi:include>
+
 
 ## Road Map
 
