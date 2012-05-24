@@ -1,3 +1,8 @@
+0.5.8 / 2012-05-24
+==================
+
+  * Corrected method of returning remove render JSON
+
 0.5.7 / 2012-05-23
 ==================
 
