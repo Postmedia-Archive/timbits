@@ -224,8 +224,7 @@ class @Timbit
 				else
 					if context.callback?
 						# remote client side include
-						res.contentType 'application/javascript'
-						res.send "#{context.callback} ( #{JSON.stringify(str)} );"
+						res.json str
 					else
 						res.send str
 
