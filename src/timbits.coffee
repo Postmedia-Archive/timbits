@@ -191,7 +191,13 @@ log = new Log()
 					throw "#{key} must be a single value"
 
 			# with context created, it's time to consume this timbit
-			timbit.eat req, res, context
+			try
+				timbit.eat req, res, context
+			catch err
+				log.error "Error eating timbit #{timbit.name}: #{err.stack}"
+				res.send "There was an error processing this request.", 500
+				
+				
 		catch ex
 			log.error "#{req.url} - #{ex}"
 			throw ex
@@ -217,9 +223,10 @@ class @Timbit
 		if /^\w+\/json$/.test(context.view)
 			res.json context
 		else
+			#res.render context.view, context
 			res.render context.view, context, (err, str) =>
 				if err
-					log.error err.toString()
+					log.error "Error rendering view #{context.view}: #{err.stack}"
 					res.send "There was an error processing this request.", 500
 				else
 					if context.callback?
