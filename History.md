@@ -1,3 +1,9 @@
+0.5.9 / 2012-05-28
+==================
+
+  * Better handling of errors when eating or rendering
+  * Removed auto-capitalization css from help views
+
 0.5.8 / 2012-05-24
 ==================
 
