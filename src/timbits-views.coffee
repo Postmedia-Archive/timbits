@@ -37,7 +37,7 @@ exports.help = ->
 		padding: 0;
 	}
 
-	li {padding: 0 0 10px 0; text-transform: uppercase;}
+	li {padding: 0 0 10px 0;}
 	'''
 
 	div id:'wrapper', ->
@@ -145,7 +145,7 @@ exports.timbit_help = ->
 		padding: 0;
 	}
 
-	li {padding: 0 0 10px 0; text-transform: uppercase;}
+	li {padding: 0 0 10px 0;}
 	#return {margin-top: 20px;}
 	table {border: 1px solid #4E5989; width: 100%; border-collapse: collapse; border-spacing: 0;}
 	th, tr {text-align: left; border-bottom: 1px solid #4E5989;}
