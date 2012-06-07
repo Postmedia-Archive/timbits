@@ -223,7 +223,6 @@ class @Timbit
 		if /^\w+\/json$/.test(context.view)
 			res.json context
 		else
-			#res.render context.view, context
 			res.render context.view, context, (err, str) =>
 				if err
 					log.error "Error rendering view #{context.view}: #{err.stack}"
@@ -239,16 +238,20 @@ class @Timbit
 	fetch: (req, res, context, options, callback = @render) ->
 		name = options.name or 'data'
 		pantry.fetch options, (error, results) ->
-			if context[name]?
-				if Object::toString.call(context[name][0]) is "[object Array]" # check if first item is array
-					context[name].push results
-				else
-					context[name] = [context[name], results]
+			if error?
+				log.error "Error fenching resource '#{options.uri}': #{(error.stack || error)}"
+				res.send 'There was an error fetching the requested resource', 500
 			else
-				context[name] = results
+				if context[name]?
+					if Object::toString.call(context[name][0]) is "[object Array]" # check if first item is array
+						context[name].push results
+					else
+						context[name] = [context[name], results]
+				else
+					context[name] = results
 
-			# we're done, will now execute rendor method unless otherwise specified
-			callback(req, res, context)
+				# we're done, will now execute rendor method unless otherwise specified
+				callback(req, res, context)
 
 	# this is the method executed after a matching route.  overwritten on most implementations
 	eat: (req, res, context) ->
