@@ -239,7 +239,7 @@ class @Timbit
 		name = options.name or 'data'
 		pantry.fetch options, (error, results) ->
 			if error?
-				log.error "Error fenching resource '#{options.uri}': #{(error.stack || error)}"
+				log.error "Error fetching resource '#{options.uri}': #{(error.stack || error)}"
 				res.send 'There was an error fetching the requested resource', 500
 			else
 				if context[name]?
