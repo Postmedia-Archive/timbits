@@ -218,7 +218,7 @@ class @Timbit
 
 		# add caching headers
 		res.setHeader "Cache-Control", "max-age=#{context.maxAge}"
-		res.setHeader "Edge-Control", "max-age=#{context.maxAge}"
+		res.setHeader "Edge-Control", "!no-store, max-age=#{context.maxAge}"
 
 		if /^\w+\/json$/.test(context.view)
 			res.json context
