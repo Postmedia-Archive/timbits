@@ -152,8 +152,20 @@ log = new Log()
 		try
 			# initialize current request context
 			context = {}
-			context[k.toLowerCase()] = v for k,v of req.query when v? and v isnt '' 
-
+			
+			# add query string parameters to context
+			for k,v of req.query when v? and v isnt '' 
+				key = k.toLowerCase()
+				
+				# handle aliased parameters
+				has_alias = false
+				for p, attr of timbit.params when attr.alias is key
+					has_alias = true
+					context[p] = v
+				
+				# no alias found
+				context[key] = v if not has_alias
+				
 			context.name = timbit.name
 			context.view = "#{timbit.viewBase}/#{req.params.view ?= timbit.defaultView}"
 			context.maxAge = timbit.maxAge

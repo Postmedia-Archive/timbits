@@ -1,7 +1,7 @@
-0.5.11 / 2012-06-12
+0.5.12 / 2012-06-28
 ===================
 
-  * Ensure edge control header disables no-store
+  * Added alias name support to timbit parameters
 
 0.5.10 / 2012-06-07
 ===================

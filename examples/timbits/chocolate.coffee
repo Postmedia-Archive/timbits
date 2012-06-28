@@ -19,8 +19,8 @@ timbit.examples = [
 ]
 
 timbit.params = {
-	q: {description: 'Keyword to search for',required: true, strict: false, values: ['Coffee', 'Timbits']}
-	rpp: {description: 'Maximum number of tweets to display', type: 'Number', default: 10, values: [1, 8, 16]}
+	q: {description: 'Keyword to search for', required: true, strict: false, values: ['Coffee', 'Timbits']}
+	rpp: {description: 'Maximum number of tweets to display', alias: 'max', type: 'Number', default: 10, values: [1, 8, 16]}
 }
 
 timbit.eat = (req, res, context) ->
