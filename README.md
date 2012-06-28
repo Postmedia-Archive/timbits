@@ -141,6 +141,7 @@ The following example shows how to run a nested application using the 'eco' view
 
 You can now define a list of parameters which are automatically validated during execution.  This also powers the automated help and test functions (see further below).  Parameter attributes you can manipulate are:
 
+* alias - an alternate name for the parameter
 * description
 * type - data type expected, one of String (default), Number, Boolean, or Date
 * default - default value to use if value not specified
@@ -152,7 +153,7 @@ You can now define a list of parameters which are automatically validated during
 Example (from plain)
 
 	timbit.params = {
-		who: {description: 'Name of person to greet', default: 'Anonymous', multiple: false, required: false, strict: false, values: ['Ed', 'World']}
+		who: {description: 'Name of person to greet', alias: 'name', default: 'Anonymous', multiple: false, required: false, strict: false, values: ['Ed', 'World']}
 		year: {description: 'To test multi parameters and drive Kevin crazy', type: 'Number', values: [1999, 2011]}
 	}
 

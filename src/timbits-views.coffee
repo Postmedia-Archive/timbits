@@ -181,6 +181,7 @@ exports.timbit_help = ->
 					tbody ->
 						tr ->
 							th 'Name'
+							th 'Alias'
 							th 'Description'
 							th 'Type'
 							th 'Required'
@@ -190,6 +191,7 @@ exports.timbit_help = ->
 						for key, attr of @params
 							tr ->
 								td key
+								td attr.alias
 								td attr.description
 								td attr.type or 'String'
 								td (attr.required or false).toString()
