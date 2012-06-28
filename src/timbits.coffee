@@ -152,7 +152,23 @@ log = new Log()
 		try
 			# initialize current request context
 			context = {}
-			context[k.toLowerCase()] = v for k,v of req.query when v? and v isnt '' 
+			
+			# add query string parameters to context
+			for k,v of req.query when v? and v isnt '' 
+				key = k.toLowerCase()
+				
+				# handle aliased parameters
+				has_alias = false
+				for p, attr of timbit.params when attr.alias is key
+					has_alias = true
+					console.log "alias: #{attr.alias}, p: #{p}, v: #{v}"
+					context[p] = v
+				
+				# no alias found
+				context[key] = v if not has_alias
+				
+				console.log "key: #{key}, has_alias: #{has_alias}"
+				console.log context
 
 			context.name = timbit.name
 			context.view = "#{timbit.viewBase}/#{req.params.view ?= timbit.defaultView}"
