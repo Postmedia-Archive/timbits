@@ -5,13 +5,10 @@ url = require 'url'
 views = require './timbits-views'
 ck = require 'coffeekup'
 Log = require 'coloured-log'
-assets = require 'connect-assets'
-connectESI = require 'connect-esi'
 express = require 'express'
 @pantry = pantry = require 'pantry'
 request = require 'request'
 jsonp = require 'jsonp-filter'
-less = require 'connect-less'
 
 config = {
 	appName: 'Timbits'
@@ -49,11 +46,8 @@ log = new Log()
 		@server.use express.cookieParser()
 		@server.use express.session({ secret: config.secret })
 		@server.use jsonp.setupJSONP()
-		@server.use connectESI.setupESI()
 		@server.use express.static(path.join(config.home, "public"))
 		@server.use express.static(path.join(path.dirname(__filename),"../resources"))
-		@server.use assets({src: path.join(config.home, "public")}) # serve static files or compile coffee and serve js
-		@server.use less({src: path.join(config.home, "public")})
 
 	@server.configure 'development', =>
 		@server.use express.errorHandler({ dumpExceptions: true, showStack: true })

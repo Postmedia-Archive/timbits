@@ -5,6 +5,9 @@
   * Now requires node v0.8.x
   * Switch to mocha for testing (was using vows)
 
+0.5.14 / 2012-10-05
+===================
+  * Removed connect -esi, -assets, -less as requirements (but you can still add them to your project manually if needed)
 
 0.5.13 / 2012-10-05
 ===================
@@ -243,34 +246,4 @@
 ==================
 
   * Initial release
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
