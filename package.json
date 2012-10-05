@@ -1,7 +1,7 @@
 {
 	"name": "timbits",
 	"description": "Widget framework based on Express and CoffeeScript",
-	"version": "0.5.12",
+	"version": "0.5.13",
 	"homepage": "https://github.com/Postmedia/timbits",
 	"author": "Edward de Groot <edegroot@postmedia.com> (http://mred9.wordpress.com)",
 	"contributors": [ 
@@ -12,14 +12,11 @@
 	"dependencies": {
 		"coffee-script": "1.2.x",
 		"coffeekup": "0.3.x",
-		"coloured-log": "0.9.x",
-		"connect-assets": "= 2.0.0-rc1",
-		"connect-esi": ">= 0.1.7",
-		"connect-less": "0.2.x",
-		"express": "2.x.x",
-		"jsonp-filter": "0.0.x",
-		"pantry": ">= 0.3.0",
-		"request": "2.9.x",
+		"coloured-log": "~0.9.7",
+		"express": "2.5.x",
+		"jsonp-filter": "~0.0.3",
+		"pantry": "~0.3.4",
+		"request": "~2.11",
 		"optimist": "0.2.x",
 		"run": "0.2.x"
 	},
