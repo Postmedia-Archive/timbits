@@ -1,3 +1,11 @@
+0.6.0 / 2012-10-05
+==================
+
+  * Updated dependencies to latest libraries
+  * Now requires node v0.8.x
+  * Switch to mocha for testing (was using vows)
+
+
 0.5.13 / 2012-10-05
 ===================
 

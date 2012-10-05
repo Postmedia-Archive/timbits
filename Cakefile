@@ -5,5 +5,5 @@ task 'build', ->
     console.log err if err
 
 task 'test', ->
-  exec 'vows', (err) ->
+  exec 'mocha', (err) ->
     console.log err if err

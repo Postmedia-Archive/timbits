@@ -1,6 +1,5 @@
 timbits = require '../src/timbits'
-vows = require 'vows'
-assert = require 'assert'
+should = require 'should'
 path = require 'path'
 request = require 'request'
 
@@ -9,6 +8,7 @@ port = 8785
 
 server = timbits.serve( {home: homeFolder, port: port })
 
+###
 assertStatus = (code) ->
 	return (err, res) ->
 		assert.isNull err
@@ -29,44 +29,62 @@ respondsWith = (status) ->
 			
 	context["should respond with a #{status}"] = assertStatus(status)
 	return context
+###
 
-vows
-	.describe('timbits')
-	.addBatch
-		'inspect loaded timbits':
-			topic: timbits.box
-				
-			'should contain four timbits': (box) ->
-				assert.equal Object.keys(box).length, 4
-		
-		#test main help page
-		'GET /timbits/help': respondsWith 200
-		
-		#test json directory
-		'GET /timbits/json': respondsWith 200
-		
-		#test individual help pages
-		'GET /plain/help': respondsWith 200
-		'GET /cherry/help': respondsWith 200
-		'GET /chocolate/help': respondsWith 200
-		'GET /dutchie/help': respondsWith 200
+validateRequest = (path, expect = 'html') ->
+	describe path, ->
+		test_msg = "should respond with #{expect} and status 200"
+		if typeof expect isnt 'string'
+			test_msg = "should respond with status #{expect}"
 
-		#execute automated test pages
-		'GET /plain/test': respondsWith 200
-		'GET /cherry/test': respondsWith 200
-		'GET /chocolate/test': respondsWith 200
-		'GET /dutchie/test': respondsWith 200
-		
-		#retrieve json view
-		'GET /plain/json': respondsWith 200
-		
-		#retrieve an non-existant timbit
-		'GET /fake': respondsWith 404
-		
-		#use an non-existant view
-		'GET /plain/fake': respondsWith 500
-		
-		#enforcement of required parameters
-		'GET /chocolate': respondsWith 500
+		it test_msg, (done) ->
+			request "http://localhost:#{port}#{path}", (err, res) ->
+				should.not.exist err
+				if typeof expect is 'string'
+					res.should.have.status 200
+					if expect is 'json'
+						res.should.be.json
+					else
+						res.should.be.html
+				else
+					res.should.have.status expect
+				done()
+			
 
-	.export module
+describe 'timbits', ->
+	describe 'configuration and loading', ->
+		it 'should contain four timbits', ->
+			Object.keys(timbits.box).length.should.equal 4
+			timbits.box.should.have.property 'cherry'
+			timbits.box.should.have.property 'chocolate'
+			timbits.box.should.have.property 'dutchie'
+			timbits.box.should.have.property 'plain'
+	
+	
+	describe 'default resources', ->
+		validateRequest '/timbits/help'
+		validateRequest '/timbits/json', 'json'
+		
+	describe 'individual help pages', ->
+		validateRequest '/plain/help'
+		validateRequest '/cherry/help'
+		validateRequest '/chocolate/help'
+		validateRequest '/dutchie/help'
+		
+	describe 'individual test pages', ->
+		validateRequest '/plain/test'
+		validateRequest '/cherry/test'
+		validateRequest '/chocolate/test'
+		validateRequest '/dutchie/test'
+	
+	describe 'individual json views', ->
+		validateRequest '/plain/json', 'json'
+		validateRequest '/cherry/json', 'json'
+		validateRequest '/chocolate/json?q=winning', 'json'
+		validateRequest '/dutchie/json', 'json'
+		
+	describe 'expected errors', ->
+		validateRequest '/fake', 404
+		validateRequest '/fake/json', 404
+		validateRequest '/plain/fake', 500	
+		validateRequest '/chocolate', 500	
