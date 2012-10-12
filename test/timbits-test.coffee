@@ -1,3 +1,8 @@
+# reduce logging levels to provide clean test feedback
+process.env.TIMBITS_VERBOSITY = 'critical'
+process.env.PANTRY_VERBOSITY = 'critical'
+
+# Module dependencies.
 timbits = require '../src/timbits'
 should = require 'should'
 path = require 'path'
@@ -5,40 +10,18 @@ request = require 'request'
 
 homeFolder = path.join("#{process.cwd()}", "examples")
 port = 8785
+alltests = process.env.TIMBITS_TEST_WHICH is 'all'
 
-server = timbits.serve( {home: homeFolder, port: port })
+server = timbits.serve( {home: homeFolder, port: port, verbosity: 'critical' })
 
-###
-assertStatus = (code) ->
-	return (err, res) ->
-		assert.isNull err
-		assert.equal res.statusCode, code
-
-respondsWith = (status) ->
-	context = {
-		topic: ->
-			req = @context.name.split(' ')
-			method = req[0].toLowerCase()
-			path = req[1]
-			uri = "http://localhost:#{port}#{path}"
-			console.log uri
-			
-			request[method] uri, @callback
-			return
-	}
-			
-	context["should respond with a #{status}"] = assertStatus(status)
-	return context
-###
-
-validateRequest = (path, expect = 'html') ->
-	describe path, ->
+validateRequest = (vpath, expect = 'html') ->
+	describe vpath, ->
 		test_msg = "should respond with #{expect} and status 200"
 		if typeof expect isnt 'string'
 			test_msg = "should respond with status #{expect}"
 
 		it test_msg, (done) ->
-			request "http://localhost:#{port}#{path}", (err, res) ->
+			request "http://localhost:#{port}#{vpath}", (err, res) ->
 				should.not.exist err
 				if typeof expect is 'string'
 					res.should.have.status 200
@@ -52,39 +35,28 @@ validateRequest = (path, expect = 'html') ->
 			
 
 describe 'timbits', ->
-	describe 'configuration and loading', ->
-		it 'should contain four timbits', ->
-			Object.keys(timbits.box).length.should.equal 4
-			timbits.box.should.have.property 'cherry'
-			timbits.box.should.have.property 'chocolate'
-			timbits.box.should.have.property 'dutchie'
-			timbits.box.should.have.property 'plain'
-	
-	
+
 	describe 'default resources', ->
 		validateRequest '/timbits/help'
 		validateRequest '/timbits/json', 'json'
 		
 	describe 'individual help pages', ->
-		validateRequest '/plain/help'
-		validateRequest '/cherry/help'
-		validateRequest '/chocolate/help'
-		validateRequest '/dutchie/help'
-		
+		for name of timbits.box
+			validateRequest "/#{name}/help"
+
 	describe 'individual test pages', ->
-		validateRequest '/plain/test'
-		validateRequest '/cherry/test'
-		validateRequest '/chocolate/test'
-		validateRequest '/dutchie/test'
-	
-	describe 'individual json views', ->
-		validateRequest '/plain/json', 'json'
-		validateRequest '/cherry/json', 'json'
-		validateRequest '/chocolate/json?q=winning', 'json'
-		validateRequest '/dutchie/json', 'json'
-		
-	describe 'expected errors', ->
-		validateRequest '/fake', 404
-		validateRequest '/fake/json', 404
-		validateRequest '/plain/fake', 500	
-		validateRequest '/chocolate', 500	
+		for name of timbits.box
+			validateRequest "/#{name}/test"
+			
+	describe 'automated test cases', ->
+		for name, timbit of timbits.box
+			if timbit.examples?
+				describe "specified examples for #{name}", ->
+					for example in timbit.examples
+						validateRequest example.href
+			
+			dynatests = timbit.generateTests(alltests)
+			if dynatests.length
+				describe "dynamic tests for #{name}", ->
+					for href in dynatests
+						validateRequest href

@@ -3,7 +3,11 @@
 
   * Updated dependencies to latest libraries
   * Now requires node v0.8.x
+  * timbits are now loaded before server is started (instead of async)
   * Switch to mocha for testing (was using vows)
+  * Completely revised automated testing with option for more extensive tests
+  * Added test option to timbits command line
+  * timbits s[erver] and t[est] will now load environment variables from a .env file if present
 
 0.5.14 / 2012-10-05
 ===================
