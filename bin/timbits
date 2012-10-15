@@ -2,17 +2,21 @@
 fs = require 'fs'
 util = require 'util'
 path = require 'path'
-spawn = require("child_process").spawn
-node_modules = path.join(path.dirname(fs.realpathSync(__filename)),"../node_modules/")
-optimist = require (node_modules + 'optimist')
-Log = require (node_modules + 'coloured-log')
+{spawn} = require "child_process"
+optimist = require 'optimist'
+Log = require 'coloured-log'
 log = new Log()
 
 optimist.usage("\nTimbits Code Generation\n\n" +
 "timbits n[ew] [project]\n\tCreates new subfolders [project], [project]/timbits, and [project]/views.\n\tGenerates basic server.js, package.json, History.md, README.md, and LICENSE files.\n\n" +
 "timbits g[enerate] [timbit]\n\tScaffolds a new timbit at timbits/[timbit].coffee and a new view at views/[timbit]/default.coffee\n\n" +
 "timbits s[erver]\n\tLaunches runjs with server.js\n\n" +
-"timbits [-]v[ersion]\n\tDisplays installed timbits library version")
+"timbits t[est] [options]\n\tRun mocha test cases\n\n" + 
+"timbits [-]v[ersion]\n\tDisplays installed timbits library version"
+)
+
+optimist.alias('a', 'all').describe('a', 'run all dynamic tests')
+optimist.alias('w', 'watch').describe('w', 'watch for changes and retest')
 
 lib = path.dirname(fs.realpathSync(__filename)) + '/template'
 
@@ -32,62 +36,82 @@ cp = (file, destination, callback) ->
 	newFile.once 'open', =>
 		util.pump templateFile, newFile, callback
 
-newProject = (argv) ->
+# helper function to load environment parameters from .env file
+loadEnv = ->
+	if fs.existsSync '.env'
+		for env in fs.readFileSync('.env').toString().split('\n')
+			key_value = env.split('=')
+			if key_value.length is 2
+				process.env[key_value[0]] = key_value[1]
+
+newProject = (name) ->
 	# Creates new subfolders [project], [project]/timbits, and [project]/views.
 	# Generates basic server.js, package.json, History.md, README.md, and LICENSE files.
-	if argv.length < 2
-		log.error "New project requires two parameters (eg. './timbits new project')"
-	else
-		log.notice "Creating project '#{argv[1]}'"
-		directories = ["#{argv[1]}", "#{argv[1]}/timbits", "#{argv[1]}/helpers", "#{argv[1]}/views", "#{argv[1]}/test"]
-		files = ["server.js", "History.md", "README.md", "LICENSE"]
+	log.notice "Creating project '#{name}'"
+	directories = ["#{name}", "#{name}/timbits", "#{name}/helpers", "#{name}/views", "#{name}/test"]
+	files = ["server.js", "History.md", "README.md", "LICENSE"]
 
-		mkdir directories[0], ->
-			mkdir directories[1], ->
-			mkdir directories[2], ->
-			mkdir directories[3], ->
-			mkdir directories[4], ->
-				cp "#{lib}/test/timbits-test.coffee", "#{argv[1]}/test/#{argv[1]}-test.coffee", ->
+	mkdir directories[0], ->
+		mkdir directories[1], ->
+		mkdir directories[2], ->
+		mkdir directories[3], ->
+		mkdir directories[4], ->
+			cp "#{lib}/test/timbits-test.coffee", "#{name}/test/#{name}-test.coffee", ->
 
-			for file in files
-				cp "#{lib}/#{file}", "#{argv[1]}/#{file}", ->
+		for file in files
+			cp "#{lib}/#{file}", "#{name}/#{file}", ->
 
-			getVersion (pkg) ->
-				package_json = "{\n\t\"name\": \"#{argv[1]}\",\n\t\"description\": \"Widgets built using Timbits\",\n\t\"version\": \"0.0.1\",\n\t\"dependencies\": {\n\t\t\"timbits\": \">= #{pkg.version}\"\n\t}\n}"
-				fs.writeFile "#{directories[0]}/package.json", package_json, (err) ->
-					throw err if err
-					log.info "Created package.json in #{directories[0]}/package.json"
-					log.notice "Run 'npm init' to update your package.json file"
-					log.notice "Don't forget to run 'npm install -d' to install required packages"
+		getVersion (pkg) ->
+			package_json = "{\n\t\"name\": \"#{name}\",\n\t\"description\": \"Widgets built using Timbits\",\n\t\"version\": \"0.0.1\",\n\t\"dependencies\": {\n\t\t\"timbits\": \">= #{pkg.version}\"\n\t}\n}"
+			fs.writeFile "#{directories[0]}/package.json", package_json, (err) ->
+				throw err if err
+				log.info "Created package.json in #{directories[0]}/package.json"
+				log.notice "Run 'npm init' to update your package.json file"
+				log.notice "Don't forget to run 'npm install -d' to install required packages"
 
-generateTimbit = (argv) ->
+generateTimbit = (name) ->
 	# Scaffolds a new timbit at timbits/[timbit].coffee and a new view at views/[timbit]/default.coffee
-	if argv.length < 2
-		log.error "Generating timbit requires two parameters (eg. './timbits generate timbit')"
-	else
-		log.notice "Generating timbit '#{argv[1]}'"
-		fs.readdir "timbits", (e) ->
-			if e?.message?
-				log.error "#{e.message}: timbits"
-			else
-				cp "#{lib}/timbit.coffee", "timbits/#{argv[1]}.coffee", ->
-		fs.readdir "views", (e) ->
-			if e?.message?
-				log.error "#{e.message}: views"
-			else
-				mkdir "views/#{argv[1]}", ->
-					fs.writeFile "views/#{argv[1]}/default.coffee", "h1 '#{argv[1]} Timbit'", (err) ->
-						throw err if err
-						log.info "Created view in views/#{argv[1]}/default.coffee"
+	log.notice "Generating timbit '#{name}'"
+	fs.readdir "timbits", (e) ->
+		if e?.message?
+			log.error "#{e.message}: timbits"
+		else
+			log.debug "#{lib}/timbit.coffee"
+			cp "#{lib}/timbit.coffee", "timbits/#{name}.coffee", ->
+	fs.readdir "views", (e) ->
+		if e?.message?
+			log.error "#{e.message}: views"
+		else
+			mkdir "views/#{name}", ->
+				fs.writeFile "views/#{name}/default.coffee", "h1 '#{name} Timbit'", (err) ->
+					throw err if err
+					log.info "Created view in views/#{name}/default.coffee"
 
-startServer = (argv) ->
-	# Launches runjs with server.js
-	log.notice "Running command 'runjs server.js'"
-	runjs = spawn("runjs", [ "server.js" ])
-	runjs.stdout.on "data", (data) ->
-		console.log data.toString()
-	runjs.stderr.on "data", (data) ->
-		console.log data.toString()
+startServer = (filename) ->
+	# Launches runjs with server.js or alternate
+	loadEnv()
+	log.notice "Starting server (#{filename})"
+	runjs = spawn("runjs", [ filename ], {stdio: 'inherit', env: process.env})
+
+runTests = (alltests, watch) ->
+	process.env.TIMBITS_TEST_WHICH = 'all' if alltests
+	loadEnv()
+	
+	args = [
+		'--reporter'
+		'spec'
+		'--compilers'
+		'coffee:coffee-script'
+		'--growl'
+		'--colors'
+		]
+
+	args.push '--watch' if watch
+
+	mocha = spawn 'mocha', args, {
+			stdio: 'inherit'
+			env: process.env
+		}
 
 getVersion = (callback) ->
 	# Get version of installed timbits library
@@ -96,20 +120,39 @@ getVersion = (callback) ->
 		pkg = JSON.parse(data)
 		callback pkg
 
-showVersion = (argv) ->
+showVersion = () ->
 	# Show version of installed timbits library
 	getVersion (pkg) ->
 		console.log pkg.version
 
-showHelp = (argv) ->
+showHelp = ->
 	# Show usage help
 	console.log optimist.help()
 
 switch optimist.argv._[0]
-	when 'n', 'new' then newProject(optimist.argv._)
-	when 'g', 'generate' then generateTimbit(optimist.argv._)
-	when 's', 'server' then startServer()
-	when 'v', 'version' then showVersion()
+	when 'n', 'new'
+		if optimist.argv._.length < 2
+			log.error 'new project requires a name'
+			showHelp()
+		else
+			newProject(optimist.argv._[1])
+			
+	when 'g', 'generate'
+		if optimist.argv._.length < 2
+			log.error 'new timbit requires a name'
+			showHelp()
+		else
+			 generateTimbit(optimist.argv._[1])
+			
+	when 's', 'server'
+		filename = if optimist.argv._.length > 1 then optimist.argv._[1] else 'server.js'
+		startServer(filename)
+		
+	when 't', 'test'
+		runTests(optimist.argv.a, optimist.argv.w)
+		
+	when 'v', 'version'
+		showVersion()
 	else
 		if optimist.argv.v? # Also support -v for unix convention consistency
 			showVersion()

@@ -1,43 +1,48 @@
+# reduce logging levels to provide clean test feedback
+process.env.TIMBITS_VERBOSITY = 'critical'
+process.env.PANTRY_VERBOSITY = 'critical'
+
+# Module dependencies.
 timbits = require 'timbits'
-vows = require 'vows'
-assert = require 'assert'
-path = require 'path'
-request = require 'request'
+should = require 'timbits/node_modules/should'
+request = require 'timbits/node_modules/request'
 
-homeFolder = process.cwd()
 port = 8785
+alltests = process.env.TIMBITS_TEST_WHICH is 'all'
 
-server = timbits.serve( {home: homeFolder, port: port })
+server = timbits.serve( {port: port })
 
-assertStatus = (code) ->
-	return (err, res) ->
-		assert.isNull err
-		assert.equal res.statusCode, code
+validateRequest = (vpath, expect = 'html') ->
+	describe vpath, ->
+		test_msg = "should respond with #{expect} and status 200"
+		if typeof expect isnt 'string'
+			test_msg = "should respond with status #{expect}"
 
-respondsWith = (status) ->
-	context = {
-		topic: ->
-			req = @context.name.split(' ')
-			method = req[0].toLowerCase()
-			path = req[1]
-			uri = "http://localhost:#{port}#{path}"
-			console.log uri
+		it test_msg, (done) ->
+			request "http://localhost:#{port}#{vpath}", (err, res) ->
+				should.not.exist err
+				if typeof expect is 'string'
+					res.should.have.status 200
+					if expect is 'json'
+						res.should.be.json
+					else
+						res.should.be.html
+				else
+					res.should.have.status expect
+				done()
 			
-			request[method] uri, @callback
-			return
-	}
+
+describe 'timbits', ->
+	
+	describe 'automated test cases', ->
+		for name, timbit of timbits.box
+			if timbit.examples?
+				describe "specified examples for #{name}", ->
+					for example in timbit.examples
+						validateRequest example.href
 			
-	context["should respond with a #{status}"] = assertStatus(status)
-	return context
-
-vows
-	.describe('timbits')
-	.addBatch
-		
-		#test main help page
-		'GET /timbits/help': respondsWith 200
-		
-		#test json directory
-		'GET /timbits/json': respondsWith 200
-
-	.export module
+			dynatests = timbit.generateTests(alltests)
+			if dynatests.length
+				describe "dynamic tests for #{name}", ->
+					for href in dynatests
+						validateRequest href

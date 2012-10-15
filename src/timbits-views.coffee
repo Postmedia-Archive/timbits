@@ -49,61 +49,79 @@ exports.help = ->
 					li -> a href: "../#{k}/help", -> k + ' &raquo;'
 
 exports.test = ->
-	style '''body {
-		background: #d2d5dc; /* Old browsers */
-		background: -moz-linear-gradient(top, #d2d5dc 0%, #ffffff 75%); /* FF3.6+ */
-		background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d2d5dc), color-stop(75%,#ffffff)); /* Chrome,Safari4+ */
-		background: -webkit-linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* Chrome10+,Safari5.1+ */
-		background: -o-linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* Opera11.10+ */
-		background: -ms-linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* IE10+ */
-		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d2d5dc', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
-		background: linear-gradient(top, #d2d5dc 0%,#ffffff 75%); /* W3C */
-		background-repeat: no-repeat;
-		margin: 0;
-		padding: 0;
-		font: 14px Tahoma, Geneva, sans-serif;
+	style '''
+	body {margin: 0; padding: 0; font-family: Tahoma, Geneva, sans-serif;}
+	.test_block {
+		border: 1px solid #666;
+		margin: 20px;
+		padding: 20px;
+		width: 95%;
+		background-color: #fcfcfc;
 	}
-	#content {
-	    background: #fff none;
-	    width: 750px;
-	    padding: 5px 20px 20px 20px;
-		box-shadow: 0 0px 20px #666;
-		min-height: 500px;
-	}
-	
-	.test_passed h3 {color: #009904; margin-bottom: 5px;}
+	.test_block:hover {background-color: #f6f6f6;}
+	h1, h2, h3, h4, h5 {margin: 0; padding: 0;}
+	h1 {margin: 0 0 20px 0;}
+
 	.icon {
 		float: left;
 		margin: 3px 5px 0 0;
 	}
-	
-	a {color: #4E5989; text-decoration: underline;}
-	a:hover {text-decoration: none;}
 
-	#wrapper {width: 750px; margin: 0 auto;}
+	table {width: 990px; font-size: 12px;}
+	thead tr td {border-bottom: 1px solid #ddd; font-weight: bold;}
+	.test_passed, .test_failed {margin: 30px 0;}
+	.test_passed h3 {color: #009904; margin-bottom: 5px;}
+	.test_failed h3 {color: #D23D24; margin-bottom: 5px;}
+	ul {margin:0; list-style: none; font-size: 12px; padding: 0 0 0 20px;}
+	li:before { content: "» ";}
+	.test_required_params, .test_optional_params {margin-top: 30px;}
+	h4 {margin-bottom: 5px; color: #001cc9;}
 
-	h1 {border-bottom: 1px solid #999; width: 100%; font: 30px Tahoma, Geneva, sans-serif}
-
-	p, h3 {margin: 0 0 5px 0;}
-	h2 {margin: 40px 0 5px 0;}
-
-	ul {
-	    margin: 0 0 10px 0;
-	    list-style: none;
-		padding: 0;
-	}
-
-	li {padding: 0 0 10px 0; text-transform: uppercase;}
 	'''
+	div class:"test_block", ->
+		h1 class:'test_title', ->
+			"Testing Summary, All Timbits"
 
-	div id:'wrapper', ->
-		div id:'content', ->
-			h1 'Timbits - Testing'
+		# h3 class:'test_summary', 'Testing Summary'
 
-			if not @tests?
-				div class:'test_passed', ->
-					img src:'/images/accept.png', class:'icon'
-					h3 "No timbits exist yet, base testing of timbits server passes however."
+		passed = 0
+		failed = 0
+		for test in @results
+			if test.status isnt 200 then failed++ else passed++
+
+		if failed > 0
+			div class:'test_failed', ->
+				img src:'/images/cancel.png', class:'icon'
+				h3 "Failed #{failed} of #{passed+failed}"
+				table ->
+					thead ->
+						tr ->
+							td 'Timbit'
+							td 'URL'
+							td 'HTTP Status'
+							td 'Error Message'
+					tbody ->
+						for test in @results when test.status isnt 200
+							tr ->
+								td test.timbit
+								td -> a href: test.href, target: '_blank', -> test.href
+								td test.status
+								td test.error
+								
+		if passed > 0
+			div class:'test_passed', ->
+				img src:'/images/accept.png', class:'icon'
+				h3 "Passed #{passed} of #{passed+failed}"
+				table ->
+					thead ->
+						tr ->
+							td 'Timbit'
+							td 'URL'
+					tbody ->
+						for test in @results when test.status is 200
+							tr ->
+								td test.timbit
+								td -> a href: test.href, target: '_blank', -> test.href
 
 exports.timbit_help = ->
 	style '''body {
@@ -238,53 +256,14 @@ exports.timbit_test = ->
 	'''
 	div class:"test_block", ->
 		h1 class:'test_title', ->
-			"Testing Summary, Timbit: '#{@timbit}'"
+			"Testing Summary, Timbit: '#{@name}'"
 
 		# h3 class:'test_summary', 'Testing Summary'
 
-		div class:'test_views', ->
-			img src:'/images/eye.png', class:'icon'
-			h4 'Views'
-			ul ->
-				for view in @views
-					li -> view
-
-		if @required?.length > 0
-			div class:'test_required_params', ->
-				img src:'/images/brick_add.png', class:'icon'
-				h4 'Required Parameters'
-				ul ->
-					for required in @required
-						li -> required
-
-		if @optional?.length > 0
-			div class:'test_optional_params', ->
-				img src:'/images/brick_add.png', class:'icon'
-				h4 'Optional Parameters'
-				ul ->
-					for optional in @optional
-						li -> optional
-
 		passed = 0
 		failed = 0
-		for test in @tests
-			if test.status == 200 then passed++ else failed++
-
-		if passed > 0
-			div class:'test_passed', ->
-				img src:'/images/accept.png', class:'icon'
-				h3 "Passed #{passed} of #{passed+failed}"
-				table ->
-					thead ->
-						tr ->
-							td 'Type'
-							td 'URL'
-					tbody ->
-						for test in @tests
-							if test.status is 200
-								tr ->
-									td test.type
-									td -> a href: test.uri, target: '_blank', -> test.uri
+		for test in @results
+			if test.status isnt 200 then failed++ else passed++
 
 		if failed > 0
 			div class:'test_failed', ->
@@ -293,28 +272,25 @@ exports.timbit_test = ->
 				table ->
 					thead ->
 						tr ->
-							td 'Type'
 							td 'URL'
 							td 'HTTP Status'
 							td 'Error Message'
 					tbody ->
-						for test in @tests
-							if test.status isnt 200
-								tr ->
-									td test.type
-									td -> a href: test.uri, target: '_blank', -> test.uri
-									td test.status
-									td test.error
-
-		if @warnings.length > 0
-			div class:'warnings', ->
-				img src:'/images/error.png', class:'icon'
-				h3 "Warnings"
+						for test in @results when test.status isnt 200
+							tr ->
+								td -> a href: test.href, target: '_blank', -> test.href
+								td test.status
+								td test.error
+								
+		if passed > 0
+			div class:'test_passed', ->
+				img src:'/images/accept.png', class:'icon'
+				h3 "Passed #{passed} of #{passed+failed}"
 				table ->
 					thead ->
 						tr ->
-							td 'Message'
+							td 'URL'
 					tbody ->
-						for warning in @warnings
+						for test in @results when test.status is 200
 							tr ->
-								td warning.message
+								td -> a href: test.href, target: '_blank', -> test.href

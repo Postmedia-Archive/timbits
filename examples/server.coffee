@@ -1,3 +1,7 @@
+# set logging level
+process.env.TIMBITS_VERBOSITY = 'debug'
+process.env.PANTRY_VERBOSITY = 'debug'
+
 # Module dependencies.
 timbits = require '../src/timbits'
 

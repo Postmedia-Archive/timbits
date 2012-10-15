@@ -5,9 +5,9 @@ Widget framework based on Express and CoffeeScript
 
 Timbits is an attempt to build an easy and reusable widget framework on top of Express.  These widgets are meant to render independent HTML snippets based on REST based JSON/XML data sources and brought together on a page via ESI (Edge Side Includes).
 
-It's primarily meant to serve internal purposes as Postmedia Network Inc, however it is being open sourced under the MIT License.  Others may find some use for what we are doing, and still others may be able to help turn this into a more generic and useful solution by contributing and/or correcting our ignorant ways.
+It's primarily meant to serve internal purposes as Postmedia Network Inc, however it is being open sourced under the MIT License.  Others may find some use for what we are doing, and still others may be able to help turn this into a more generic and useful solution via contributions.
 
-Constructive criticism is encouraged.  If you see something odd and think to yourself "WTF?" then by all means, let us know.  We are eager and willing to learn.
+Constructive criticism is encouraged.
 
 ## Installing
 
@@ -115,7 +115,12 @@ Create a new project, generate a timbit (and default view), or run the project w
 
 	timbits n[ew] [project]
 	timbits g[enerate] [timbit]
-	timbits s[erver]
+	timbits s[erver] [filename]
+	timbits t[est]
+	
+### Running timbits
+
+There are a number of ways to run timbits, but the easiest approach during development is to utilize the timbits server command.  Doing so will by default run the server.js file, although an alternate filename (server.coffee) can be given.  The timbits server command has the added benefits of loading up any environment variables from an optional .env file as well as automatically restarting the server if any files change.
 
 ### Server Configuration
 
@@ -181,10 +186,49 @@ There is also a built in help index that for any timbits project located at /tim
 
 The examples and params used to power the help pages are also used to power the automated test pages.  Each timbit has a 'test' view which will utilize this information to define and execute some basic testing of the timbit.  e.g. /plain/test
 
-There is also a master test page located at /timbits/test which will execute tests 
+There is also a master test page located at /timbits/test which will execute tests for all timbits
+
 Although not overly sophisticated, it will ensure your definitions, examples, and views are valid and compile properly.  It is also useful for remote monitoring of production systems.
 
-Additional functional testing can and should be implemented via a testing library, such as vows [vows](http://vowsjs.org/)
+Additional functional testing can and should be implemented via a testing library, such as [mocha](http://visionmedia.github.com/mocha/)
+
+By default, only a limited number of tests are executed, but you can run through a much larger set of tests by appending /all to the test path.  This will generate a much more thorough list of test urls using every possible combination of required parameters and their sample values, along with each possible sample value for optional parameters.
+
+e.g. /mytimbit/test/all (run through all tests for mytimbit)
+
+e.g. /timbits/test/all (run through all tests for all timbits)
+
+Note that you can provide your own list of test urls in place of the automated ones by simple overriding the generateTests() method for a given timbit and returning a simply array of virtual paths
+
+Example:
+
+	timbit.generateTests = (alltests) ->
+		tests = [
+			'/mytimbit/myview?name=bob'
+			'/mytimbit/altview?name=sue'
+		]
+		
+		if alltests
+			tests.push(
+				'/mytimbit/myview?name=bob&age=39'
+				'/mytimbit/myview?name=sue&gender=F'
+			)
+
+If you use the test cases provided by the timbit new project template, you can also run through these same tests (and any others you may want to add) from a terminal via the test command
+
+	timbits test
+	
+Running the test command will invoke the mocha test framework.  The command will also load up any environment variables found in the optional .env file before starting the server and running the tests.
+
+Just as with running tests via the browser, you can indicate you want to run through all the available tests via the --all flag.  In addition, you can tell mocha to watch for file changes and retest via the --watch flag.
+
+Example:
+
+	timbits test --all --watch
+	
+Or (if you want to minimize typing)
+
+	timbits t -aw
 
 ### Default view
 
@@ -270,6 +314,7 @@ We've also added support for the dynamic insertion of query string values into y
 
 We have a number of items in the pipeline which we believe will provide a lot of power to this platform, such as:
 
+* Support for building responsive websites
 * Integrated benchmarks
 * Real-time data updates via Socket.IO
 
