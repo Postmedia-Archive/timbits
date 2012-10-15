@@ -1,72 +1,62 @@
+# reduce logging levels to provide clean test feedback
+process.env.TIMBITS_VERBOSITY = 'critical'
+process.env.PANTRY_VERBOSITY = 'critical'
+
+# Module dependencies.
 timbits = require '../src/timbits'
-vows = require 'vows'
-assert = require 'assert'
+should = require 'should'
 path = require 'path'
 request = require 'request'
 
 homeFolder = path.join("#{process.cwd()}", "examples")
 port = 8785
+alltests = process.env.TIMBITS_TEST_WHICH is 'all'
 
-server = timbits.serve( {home: homeFolder, port: port })
+server = timbits.serve( {home: homeFolder, port: port, verbosity: 'critical' })
 
-assertStatus = (code) ->
-	return (err, res) ->
-		assert.isNull err
-		assert.equal res.statusCode, code
+validateRequest = (vpath, expect = 'html') ->
+	describe vpath, ->
+		test_msg = "should respond with #{expect} and status 200"
+		if typeof expect isnt 'string'
+			test_msg = "should respond with status #{expect}"
 
-respondsWith = (status) ->
-	context = {
-		topic: ->
-			req = @context.name.split(' ')
-			method = req[0].toLowerCase()
-			path = req[1]
-			uri = "http://localhost:#{port}#{path}"
-			console.log uri
+		it test_msg, (done) ->
+			request "http://localhost:#{port}#{vpath}", (err, res) ->
+				should.not.exist err
+				if typeof expect is 'string'
+					res.should.have.status 200
+					if expect is 'json'
+						res.should.be.json
+					else
+						res.should.be.html
+				else
+					res.should.have.status expect
+				done()
 			
-			request[method] uri, @callback
-			return
-	}
+
+describe 'timbits', ->
+
+	describe 'default resources', ->
+		validateRequest '/timbits/help'
+		validateRequest '/timbits/json', 'json'
+		
+	describe 'individual help pages', ->
+		for name of timbits.box
+			validateRequest "/#{name}/help"
+
+	describe 'individual test pages', ->
+		for name of timbits.box
+			validateRequest "/#{name}/test"
 			
-	context["should respond with a #{status}"] = assertStatus(status)
-	return context
-
-vows
-	.describe('timbits')
-	.addBatch
-		'inspect loaded timbits':
-			topic: timbits.box
-				
-			'should contain four timbits': (box) ->
-				assert.equal Object.keys(box).length, 4
-		
-		#test main help page
-		'GET /timbits/help': respondsWith 200
-		
-		#test json directory
-		'GET /timbits/json': respondsWith 200
-		
-		#test individual help pages
-		'GET /plain/help': respondsWith 200
-		'GET /cherry/help': respondsWith 200
-		'GET /chocolate/help': respondsWith 200
-		'GET /dutchie/help': respondsWith 200
-
-		#execute automated test pages
-		'GET /plain/test': respondsWith 200
-		'GET /cherry/test': respondsWith 200
-		'GET /chocolate/test': respondsWith 200
-		'GET /dutchie/test': respondsWith 200
-		
-		#retrieve json view
-		'GET /plain/json': respondsWith 200
-		
-		#retrieve an non-existant timbit
-		'GET /fake': respondsWith 404
-		
-		#use an non-existant view
-		'GET /plain/fake': respondsWith 500
-		
-		#enforcement of required parameters
-		'GET /chocolate': respondsWith 500
-
-	.export module
+	describe 'automated test cases', ->
+		for name, timbit of timbits.box
+			if timbit.examples?
+				describe "specified examples for #{name}", ->
+					for example in timbit.examples
+						validateRequest example.href
+			
+			dynatests = timbit.generateTests(alltests)
+			if dynatests.length
+				describe "dynamic tests for #{name}", ->
+					for href in dynatests
+						validateRequest href

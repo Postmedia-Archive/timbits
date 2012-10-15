@@ -21,21 +21,17 @@ config = {
 }
 
 server = {}
-
-log = new Log()
+log = new Log(process.env.TIMBITS_VERBOSITY or Log.NOTICE)
 
 # creates, configures, and returns a standard express server instance
 @serve = (options) ->
 	config[key] = value for key, value of options
 	@server = express.createServer()
-	
-	# init log
-	log = new Log(if @server.settings.env is 'development' then Log.DEBUG else Log.INFO)
 
 	# support coffeekup
 	@server.register '.coffee', ck
 
-	# configure server (still needs some thought)
+	# configure server
 	@server.set 'views', "#{config.home}/views"
 	@server.set 'view engine', config.engine
 	@server.set 'view options', {layout: false}
@@ -64,82 +60,95 @@ log = new Log()
 		res.json @box
 
 	# route help page
-	@server.all "#{config.base}/timbits/help", (req, res) =>
+	@server.get "#{config.base}/timbits/help", (req, res) =>
 		res.send ck.render(views.help, {box: @box} )
 
 	# route master test page
-	@server.all "#{config.base}/timbits/test", (req, res) =>
-		res.setHeader 'Content-Type', 'text/html; charset=UTF-8'
-		master = ''
+	@server.get "#{config.base}/timbits/test/:which?", (req, res) =>
+		alltests = req.params.which is 'all'
+		all_results = []
 		pending = Object.keys(@box).length
 		if pending
-			for timbit of @box
-				request {uri: "http://#{req.headers.host}#{config.base}/#{timbit}/test" }, (error, response, body) ->
-					master += body
-					res.end master unless --pending
+			for name, timbit of @box
+				timbit.test "http://#{req.headers.host}", alltests, (results) ->
+					all_results.push result for result in results
+					if --pending is 0
+						res.send ck.render(views.test, {results: all_results} )
 		else
-			master += ck.render(views.test, {})
-			res.end master
+			res.send ck.render(views.test, {})
 
 	# automagically load helpers found in the ./helpers folder
 	helper_path = path.join(config.home, "helpers")
 	helpers = {}
-	fs.readdir helper_path, (err, files) =>
-		if not err?
-			for file in files
-				if file.match(/\.(coffee|js)$/)?
-					helper_name = file.substring(0, file.lastIndexOf("."))
-					log.info "Loading dynamic helpers: #{helper_name}"
-					helpers[helper_name] = require(path.join(helper_path, file))
-					@server.helpers helpers
+	if fs.existsSync(helper_path)
+		for file in fs.readdirSync(helper_path)
+			if file.match(/\.(coffee|js)$/)?
+				helper_name = file.substring(0, file.lastIndexOf("."))
+				log.notice "Loading dynamic helpers: #{helper_name}"
+				helpers[helper_name] = require(path.join(helper_path, file))
+				@server.helpers helpers
 
 	# automagically load timbits found in the ./timbits folder
 	timbit_path = "#{config.home}/timbits"
-	fs.readdir timbit_path, (err, files) =>
-		throw err if err
-		for file in files
-			if file.match(/\.(coffee|js)$/)?
-				@add file.substring(0, file.lastIndexOf(".")), require( path.join(timbit_path, file))
-
-	# starts the server
-	try
-		@server.listen process.env.PORT || process.env.C9_PORT || config.port
-		log.info "Timbits server listening on port #{@server.address().port} in #{@server.settings.env} mode"
-		server.address = @server.address().address
-		server.port = @server.address().port
-	catch err
-		log.error "Server could not start on port #{process.env.PORT || process.env.C9_PORT || config.port}. (#{err})"
-		console.log "\nPress Ctrl+C to Exit"
-		process.kill process.pid, 'SIGTERM'
-	@server
+	
+	files = []
+	
+	for file in fs.readdirSync(timbit_path) 
+		files.push file if file.match(/\.(coffee|js)$/)?
+	
+	pending = files.length
+	for file in files
+		@add file.substring(0, file.lastIndexOf(".")), require( path.join(timbit_path, file)), =>
+			pending--
+			
+			# start the server once all the timbits have been loaded
+			if pending is 0
+				try
+					@server.listen process.env.PORT || process.env.C9_PORT || config.port
+					log.notice "Timbits server listening on port #{@server.address().port} in #{@server.settings.env} mode"
+					server.address = @server.address().address
+					server.port = @server.address().port
+				catch err
+					log.error "Server could not start on port #{process.env.PORT || process.env.C9_PORT || config.port}. (#{err})"
+					console.log "\nPress Ctrl+C to Exit"
+					process.kill process.pid, 'SIGTERM'
+				@server
 
 # the box that holds each of the individual timbits created
 @box = {}
 
 # use the 'add' method to place a timbit in the box
-@add = (name, timbit) ->
+@add = (name, timbit, callback) ->
 	#place the timbit in the box
 	log.notice "Placing #{name} in the box"
 	timbit.name = name
 	timbit.viewBase ?= name
 	timbit.defaultView ?= 'default'
 	timbit.maxAge ?= config.maxAge
-	timbit.listviews (views) =>
-		timbit.views = views
+	
+	# generate list of views
+	timbit.views = []
+	viewpath = path.join(config.home, 'views', timbit.viewBase)
+	
+	if fs.existsSync(viewpath)
+		for file in fs.readdirSync(viewpath)
+			if file.match(/\.coffee/)?
+				timbit.views.push file.substring(0, file.lastIndexOf("."))
+	else
+		# We will attempt the default view anyway and hope the timbit knows what it is doing.
+		timbit.views.push @defaultView
+	
 	@box[name] = timbit
 
 	# configure help
-	@server.all ("#{config.base}/#{name}/help"), (req, res) ->
-		renderHelp = ->
-			res.send ck.render(views.timbit_help, timbit)
-		timbit.listviews (views) ->
-			timbit.views = views
-			renderHelp()
+	@server.get ("#{config.base}/#{name}/help"), (req, res) ->
+		res.send ck.render(views.timbit_help, timbit)
 
 	# configure test
-	@server.all ("#{config.base}/#{name}/test"), (req, res) ->
-		timbit.test "http://#{req.headers.host}", timbit, (results) ->
-			res.send ck.render(views.timbit_test, results)
+	@server.get ("#{config.base}/#{name}/test/:which?"), (req, res) ->
+		alltests = req.params.which is 'all'
+		timbit.test "http://#{req.headers.host}", alltests, (results) ->
+			res.send ck.render(views.timbit_test, {name: timbit.name, results: results} )
 
 	# configure the route
 	@server.all ("#{config.base}/#{name}/:view?"), (req, res) ->
@@ -212,12 +221,15 @@ log = new Log()
 	if config.base? and timbit.examples?
 		for example in timbit.examples
 			example.href = "#{config.base}#{example.href}"
+			
+	# callback after timbit has been loaded
+	callback()
 
 # definition of a timbit
 class @Timbit
 
-	log: log
 	pantry: pantry
+	log: log
 
 	# default render implementation
 	render: (req, res, context) ->
@@ -263,92 +275,82 @@ class @Timbit
 	eat: (req, res, context) ->
 		@render req, res, context
 
-	# this method returns a list of views available to this timbit
-	listviews: (callback) ->
-		view = []
-		fs.readdir path.join(config.home, 'views', @viewBase), (err,list) ->
-			if err || list is undefined
-				view.push @defaultView # We will attempt the default view anyway and hope the timbit knows what it is doing.
-			else
-				for file in list then do (file) ->
-					if file.match(/\.coffee/)?
-						view.push file.substring(0, file.lastIndexOf("."))
-			callback(view)
-
-	test: (host, context, callback) ->
-		results = {
-			timbit: context.name
-			views: []
-			required: []
-			optional: []
-			queries: []
-			tests: []
-			warnings: []
-		}
-
-		testParams = ->
-			# Process parameters, seperate into required vs. optional
-			for k, v of context.params
-				param = "#{k}=#{v.values[0]}"
-				if v.required
-					results.required.push param
+	generateTests: (alltests) ->
+		
+		getTestValues = (values, alltests) ->
+			if values? and values.length? and values.length isnt 0
+				if alltests
+					return values
 				else
-					results.optional.push param
-
-		testQueries = ->
-			# Determine whether we have optional and required parameters and build query strings.
-			results.queries.push "#{results.required.concat(results.optional).join('&')}"
-
-		testRequest = (type, uri, callback) ->
-			# Execute request for uri and store result
-			request {uri: "#{uri}" }, (error, response, body) ->
-				results.tests.push { type: type, uri: uri, status: response.statusCode, error: (if error? then error else '') }
-				callback()
-
-		testRunQueries = (callback) ->
-			if results.queries?.length is 0
-				# Test each view if no query parameters present
-				pending = results.views.length
-				for view in results.views then do (view) ->
-					testRequest "views", "#{host}#{config.base}/#{context.name}/#{view}", ->
-						callback() unless --pending
+					return values[0..0]
 			else
-				# Test each query for each view
-				pending = results.queries.length * results.views.length
-				for query in results.queries then do (query) ->
-					for view in results.views then do (view) ->
-						testRequest "queries","#{host}#{config.base}/#{context.name}/#{view}?#{query}", ->
-							callback() unless --pending
-
-		testRunExamples = (callback) ->
-			# Test the example links provided.
-			if context.examples?
-				pending = context.examples.length
-				for example in context.examples then do (example) ->
-					testRequest "example", "#{host}#{example.href}", ->
-						callback() unless --pending
-			else
-			 	callback()
-
-		runTests = ->
-			# Execute the tests based on provided querystrings, views and examples.
-			testParams()
-			testQueries()
-			testRunQueries ->
-				testRunExamples ->
-					displayTests()
-
-		displayTests = ->
-			log.notice "Testing Timbit - #{context.name}"
-			for test in results.tests
-				if test.status >= 400 or error?
-					log.error "Test: #{test.type} URI: #{test.uri} Status: #{test.status} Error: #{test.error}"
+				return []
+		
+		# create combination of required parameters
+		required = []
+		for name, param of @params when param.required is true
+			temp = []
+			for value in getTestValues(param.values, alltests)
+				if required.length is 0
+					temp.push "#{name}=#{value}"
 				else
-					log.info "Test: #{test.type} URI: #{test.uri} Status: #{test.status}"
-			for warning in results.warnings
-					log.warning "Message: #{warning.message}"
-			callback results
+					for item in required
+						temp.push "#{item}&#{name}=#{value}"
+			required = temp
 
-		@listviews (views) ->
-			results.views = views
-			runTests()
+		# create list of possible queries using required and optional parameters
+		queries = []
+		queries.push item for item in required
+
+		# only include optional parameters if all tests are requested
+		if alltests
+			for name, param of @params when param.required isnt true
+				for value in getTestValues(param.values, alltests)
+					if required.length is 0
+						queries.push "#{name}=#{value}"
+					else
+						for item in required
+							queries.push "#{item}&#{name}=#{value}"
+						
+		# create list of testable paths using available views and quiries
+		hrefs = []
+		
+		# add examples to test cases
+		for view in @views
+			if queries.length
+				for query in queries
+					hrefs.push "/#{@name}/#{view}?#{query}"
+			else
+				hrefs.push "/#{@name}/#{view}"
+			
+		return hrefs
+
+		
+	test: (host, alltests, callback) ->
+
+		# generate dynamic list of test urls
+		tests = @generateTests(alltests)
+		
+		# add examples to list of tests
+		if @examples
+			for example in @examples
+				tests.push example.href
+			
+		# run the tests
+		name = @name
+		results = []
+		for href in tests
+			do (href) ->
+				request "#{host}#{href}", (error, response, body) ->
+					error ?= if response.statusCode is 200 then '' else body
+						
+					results.push {
+						timbit: name
+						href: href
+						error: error
+						status: response.statusCode
+					}
+					if results.length is tests.length
+						# we are done
+						callback results
+		
