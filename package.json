@@ -35,5 +35,5 @@
 	"scripts": {
 		"build": "cake build"
 	},
-	"engines": { "node": "0.8.x" }
+	"engines": { "node": "0.8.x", "npm": "1.1.x" }
 }
