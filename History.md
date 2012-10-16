@@ -1,3 +1,9 @@
+0.6.1 / 2012-10-16
+==================
+
+  * Updated read me to reflect global dependencies for command line use of timbits
+  * Modified spawn of child process to use the node-which lib for proper PATHEXTS of executables on Windows and Linux
+
 0.6.0 / 2012-10-05
 ==================
 
