@@ -6,6 +6,7 @@ path = require 'path'
 optimist = require 'optimist'
 Log = require 'coloured-log'
 log = new Log()
+which = require('which').sync
 
 optimist.usage("\nTimbits Code Generation\n\n" +
 "timbits n[ew] [project]\n\tCreates new subfolders [project], [project]/timbits, and [project]/views.\n\tGenerates basic server.js, package.json, History.md, README.md, and LICENSE files.\n\n" +
@@ -91,7 +92,8 @@ startServer = (filename) ->
 	# Launches runjs with server.js or alternate
 	loadEnv()
 	log.notice "Starting server (#{filename})"
-	runjs = spawn("runjs", [ filename ], {stdio: 'inherit', env: process.env})
+	cmd = which('runjs')
+	runjs = spawn(cmd, [ filename ], {stdio: 'inherit', env: process.env})
 
 runTests = (alltests, watch) ->
 	process.env.TIMBITS_TEST_WHICH = 'all' if alltests
@@ -108,7 +110,8 @@ runTests = (alltests, watch) ->
 
 	args.push '--watch' if watch
 
-	mocha = spawn 'mocha', args, {
+	cmd = which('mocha')
+	mocha = spawn cmd, args, {
 			stdio: 'inherit'
 			env: process.env
 		}
