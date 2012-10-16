@@ -20,7 +20,8 @@
 		"optimist": "~0.3.4",
 		"run": "~1.0",
 		"mocha": "~1.6",
-		"should": "~1.2"
+		"should": "~1.2",
+		"which": "~1.0.5"
 	},
 	"bugs": { "url": "https://github.com/Postmedia/timbits/issues"},
 	"licenses": [
