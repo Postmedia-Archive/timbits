@@ -106,8 +106,8 @@ runTests = (alltests, watch, override) ->
 	if override
 		ask = readline.createInterface(process.stdin, process.stdout, null)
 		log.notice "Override of test enging options"
-		console.log "\u001b[33mPlease refer to the mocha documentation for available options, default options provided below.\n"
-		ask.question "\u001b[34mPlease enter test options: \u001b[0m", (answer) ->
+		console.log "\u001b[33mPlease refer to the mocha documentation for available options, default options provided below. \u001b[0m\n"
+		ask.question "Please enter test options:", (answer) ->
 			log.notice "Running test engine with: #{answer}"
 			ask.close()
 			process.stdin.destroy
