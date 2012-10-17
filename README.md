@@ -226,9 +226,11 @@ If you use the test cases provided by the timbit new project template, you can a
 	
 Running the test command will invoke the mocha test framework.  The command will also load up any environment variables found in the optional .env file before starting the server and running the tests.
 
-Just as with running tests via the browser, you can indicate you want to run through all the available tests via the --all flag.  In addition, you can tell mocha to watch for file changes and retest via the --watch flag.
+Just as with running tests via the browser, you can indicate you want to run through all the available tests via the -all flag.  In addition, you can tell mocha to watch for file changes and retest via the -watch flag.
 
-In case the default test engine commands do not suit your needs, you can override these with the --override flag.  By default we pass the following into mocha for running the tests: --reporter spec --compilers coffee:coffee-script --growl --colors
+In case the default test engine commands do not suit your needs, you can override these with the -override flag.  By default we pass the following into mocha for running the tests: --reporter spec --compilers coffee:coffee-script --growl --colors
+
+For a list of mocha test options please refer to http://visionmedia.github.com/mocha/
 
 Example:
 
