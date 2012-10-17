@@ -228,13 +228,15 @@ Running the test command will invoke the mocha test framework.  The command will
 
 Just as with running tests via the browser, you can indicate you want to run through all the available tests via the --all flag.  In addition, you can tell mocha to watch for file changes and retest via the --watch flag.
 
+In case the default test engine commands do not suit your needs, you can override these with the --override flag.  By default we pass the following into mocha for running the tests: --reporter spec --compilers coffee:coffee-script --growl --colors
+
 Example:
 
-	timbits test --all --watch
+	timbits test -all -watch -override
 	
 Or (if you want to minimize typing)
 
-	timbits t -aw
+	timbits t -awo
 
 ### Default view
 

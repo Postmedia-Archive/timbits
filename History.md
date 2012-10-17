@@ -1,3 +1,9 @@
+0.6.2 /2012-10-17
+=================
+
+  * Add override option to pass custom values to mocha test engine
+
+
 0.6.1 / 2012-10-16
 ==================
 
