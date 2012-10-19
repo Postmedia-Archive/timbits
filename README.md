@@ -15,12 +15,6 @@ Just grab [node.js](http://nodejs.org/#download) and [npm](http://github.com/isa
 
 	npm install timbits -g
 	
-	* In order to use all of the timbits commands you will also need to globally install a few other dependencies globally, please execute the following:
-	
-	npm install mocha -g
-	npm install run -g
-	npm install coffee-script -g
-	
 Timbits is simplistic and finds most of it's power by running on top of some very cool node libraries such as [express](http://expressjs.com/), [CoffeeScript](http://coffeescript.org) and [CoffeeKup](http://coffeekup.org/).  It also now uses our [Pantry](https://github.com/Postmedia/pantry) package for JSON/XML data sources.  
 
 ## Using

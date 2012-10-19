@@ -1,3 +1,9 @@
+0.6.2 / 2012-10-22
+==================
+
+  * Rewrite of timbits command line in js
+  * No longer requires coffee-script, mocha or runjs packages to be installed globally
+
 0.6.1 / 2012-10-16
 ==================
 
