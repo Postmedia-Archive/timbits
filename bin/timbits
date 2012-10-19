@@ -5,11 +5,15 @@ var fs = require('fs')
   , util = require('util')
   , path = require('path')
   , spawn = require("child_process").spawn
-  , optimist = require(path.join(__dirname, '..', 'node_modules', 'optimist'))
   , which = require(path.join(__dirname, '..', 'node_modules', 'which')).sync;
 
 // configure optimist
-optimist.usage(
+var optimist = require(path.join(__dirname, '..', 'node_modules', 'optimist'))
+  .alias('all', 'a')
+  .describe('a', 'run all dynamic tests')
+  .alias('w', 'watch')
+  .describe('w', 'watch for changes and retest')
+  .usage(
 "Timbits Command Help\n\n \
 timbits n[ew] [project]\n\ \
   Creates new project template and subfolders\n\n \
@@ -21,10 +25,7 @@ timbits t[est] [options]\n \
   Run mocha test cases\n\n \
 timbits [-]v[ersion]\n \
   Displays installed timbits library version \
-");
-
-optimist.alias('a', 'all').describe('a', 'run all dynamic tests');
-optimist.alias('w', 'watch').describe('w', 'watch for changes and retest');
+  ");
 
 // determine path to our project template files
 var template = path.join(__dirname, 'template');
@@ -32,7 +33,10 @@ var template = path.join(__dirname, 'template');
 // determine path to a command in local node modules
 function localCmd(name) {
   var cmd = path.join(__dirname, '..', 'node_modules', '.bin', name);
-  return which(cmd);
+  if(process.platform === 'win32') {
+    cmd += '.cmd';
+  }
+  return cmd;
 }
 
 function cp(source, destination) {
@@ -211,30 +215,31 @@ function showHelp() {
   console.log(optimist.help());
 }
 
-switch (optimist.argv._[0]) {
+var argv = optimist.argv;
+switch (argv._[0]) {
   case 'n':
   case 'new':
-    if (optimist.argv._.length < 2) {
+    if (argv._.length < 2) {
       log.error('new project requires a name');
       showHelp();
     } else {
-      newProject(optimist.argv._[1]);
+      newProject(argv._[1]);
     }
     break;
     
   case 'g':
   case 'generate':
-    if (optimist.argv._.length < 2) {
+    if (argv._.length < 2) {
       log.error('new timbit requires a name');
       showHelp();
     } else {
-      generateTimbit(optimist.argv._[1]);
+      generateTimbit(argv._[1]);
     }
     break;
     
   case 's':
   case 'server':
-    filename = optimist.argv._.length > 1 ? optimist.argv._[1] : 'server.js';
+    filename = argv._.length > 1 ? optimist.argv._[1] : 'server.js';
     startServer(filename);
     break;
     
@@ -249,7 +254,7 @@ switch (optimist.argv._[0]) {
     break;
     
   default:
-    if (optimist.argv.v != null) {
+    if (argv.v != null) {
       showVersion();
     } else {
       showHelp();
