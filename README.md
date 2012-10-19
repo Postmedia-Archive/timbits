@@ -220,7 +220,7 @@ If you use the test cases provided by the timbit new project template, you can a
 	
 Running the test command will invoke the mocha test framework.  The command will also load up any environment variables found in the optional .env file before starting the server and running the tests.
 
-Just as with running tests via the browser, you can indicate you want to run through all the available tests via the --all flag.  In addition, you can tell mocha to watch for file changes and retest via the --watch flag.
+Just as with running tests via the browser, you can indicate you want to run through all the available tests via the --all flag.  In addition, you can pass a number of options to mocha (run timbits help to see the full list).  For example, to watch for file changes and retest use the --watch flag.
 
 Example:
 

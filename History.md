@@ -3,6 +3,8 @@
 
   * Rewrite of timbits command line in js
   * No longer requires coffee-script, mocha or runjs packages to be installed globally
+  * for projects created via "timbits new", generated package.json will lock down the timbits dependency to the version used to create the project.  To upgrade to a newer version of timbits, you'll need to adjust the dependency first
+  * Added support for numerous mocha options to "timbits test" command
 
 0.6.1 / 2012-10-16
 ==================
