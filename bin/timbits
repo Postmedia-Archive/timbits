@@ -1,163 +1,257 @@
-#!/usr/bin/env coffee
-fs = require 'fs'
-util = require 'util'
-path = require 'path'
-{spawn} = require "child_process"
-optimist = require 'optimist'
-Log = require 'coloured-log'
-log = new Log()
-which = require('which').sync
+#!/usr/bin/env node
 
-optimist.usage("\nTimbits Code Generation\n\n" +
-"timbits n[ew] [project]\n\tCreates new subfolders [project], [project]/timbits, and [project]/views.\n\tGenerates basic server.js, package.json, History.md, README.md, and LICENSE files.\n\n" +
-"timbits g[enerate] [timbit]\n\tScaffolds a new timbit at timbits/[timbit].coffee and a new view at views/[timbit]/default.coffee\n\n" +
-"timbits s[erver]\n\tLaunches runjs with server.js\n\n" +
-"timbits t[est] [options]\n\tRun mocha test cases\n\n" + 
-"timbits [-]v[ersion]\n\tDisplays installed timbits library version"
-)
+// load modules
+var fs = require('fs')
+  , util = require('util')
+  , path = require('path')
+  , spawn = require("child_process").spawn
+  , optimist = require(path.join(__dirname, '..', 'node_modules', 'optimist'))
+  , which = require(path.join(__dirname, '..', 'node_modules', 'which')).sync;
 
-optimist.alias('a', 'all').describe('a', 'run all dynamic tests')
-optimist.alias('w', 'watch').describe('w', 'watch for changes and retest')
+// configure optimist
+optimist.usage(
+"Timbits Command Help\n\n \
+timbits n[ew] [project]\n\ \
+  Creates new project template and subfolders\n\n \
+timbits g[enerate] [timbit]\n \
+  Scaffolds a new timbit and default view\n\n \
+timbits s[erver] [filename]\n \
+  Launches runjs with [server.js]\n\n \
+timbits t[est] [options]\n \
+  Run mocha test cases\n\n \
+timbits [-]v[ersion]\n \
+  Displays installed timbits library version \
+");
 
-lib = path.dirname(fs.realpathSync(__filename)) + '/template'
+optimist.alias('a', 'all').describe('a', 'run all dynamic tests');
+optimist.alias('w', 'watch').describe('w', 'watch for changes and retest');
 
-mkdir = (directory, callback) ->
-	# Make directory
-	fs.mkdir directory, (e) ->
-		if e?.message?
-			log.error "#{e.message}"
-		else
-			log.info "Created #{directory} directory"
-		callback()
+// determine path to our project template files
+var template = path.join(__dirname, 'template');
 
-cp = (file, destination, callback) ->
-	# Copy file
-	templateFile = fs.createReadStream file
-	newFile = fs.createWriteStream destination
-	newFile.once 'open', =>
-		util.pump templateFile, newFile, callback
+// determine path to a command in local node modules
+function localCmd(name) {
+  cmd = path.join(__dirname, '..', 'node_modules', '.bin', name);
+  return which(cmd);
+}
 
-# helper function to load environment parameters from .env file
-loadEnv = ->
-	if fs.existsSync '.env'
-		for env in fs.readFileSync('.env').toString().split('\n')
-			key_value = env.split('=')
-			if key_value.length is 2
-				process.env[key_value[0]] = key_value[1]
+function cp(source, destination) {
+  var data = fs.readFileSync(source);
+  fs.writeFileSync(destination, data);
+}
 
-newProject = (name) ->
-	# Creates new subfolders [project], [project]/timbits, and [project]/views.
-	# Generates basic server.js, package.json, History.md, README.md, and LICENSE files.
-	log.notice "Creating project '#{name}'"
-	directories = ["#{name}", "#{name}/timbits", "#{name}/helpers", "#{name}/views", "#{name}/test"]
-	files = ["server.js", "History.md", "README.md", "LICENSE"]
+function loadEnv() {
+  if (fs.existsSync('.env')) {
+    env_lines = fs.readFileSync('.env').toString().split('\n');
+    for (var i = 0; i < env_lines.length; i++) {
+      var key_value = env_lines[i].split('=');
+      if (key_value.length === 2) {
+        console.log('Setting env var: ' + env_lines[i]);
+        process.env[key_value[0]] = key_value[1];
+      }
+    }
+  }
+}
 
-	mkdir directories[0], ->
-		mkdir directories[1], ->
-		mkdir directories[2], ->
-		mkdir directories[3], ->
-		mkdir directories[4], ->
-			cp "#{lib}/test/timbits-test.coffee", "#{name}/test/#{name}-test.coffee", ->
+function newProject(name) {
+  console.log("Creating project '" + name + "'");
+  
+  var directories = ["timbits", "helpers", "views", "test"];
+  var files = ["server.js", "History.md", "README.md", "LICENSE"];
+  
+  var project_home = path.join(process.cwd(), name);
+  
+  if(fs.existsSync(project_home)) {
+    console.log('ERROR! ' + project_home + ' already exists!');
+    return;
+  }
+  
+  // create parent directory
+  console.log('Creating project directory: ' + project_home);
+  fs.mkdirSync(project_home);
+  
+  // create child directories
+  for (var i = 0; i < directories.length; i++) {
+    console.log('Creating child directory: ' + directories[i]);
+    fs.mkdirSync(path.join(project_home, directories[i]));
+  }
+  
+  // copy template files
+  for (var i = 0; i < files.length; i++) {
+    console.log('Copying template file: ' + files[i]);
+    cp(
+      path.join(template, files[i]),
+      path.join(project_home, files[i])
+    );
+  }
+  
+  // copy test template
+  console.log('Generating test template: ' + name + '-test.coffee');
+  cp(
+    path.join(template, 'test', 'timbits-test.coffee'),
+    path.join(project_home, 'test', name + '-test.coffee')
+  );
+  
+  // create package file
+  console.log('Generating package.json: package.json');
+  var pkg = {
+    name: name,
+    description: 'Widgets built using Timbits',
+    version: '0.0.1',
+    dependencies: {
+      timbits: getPackage().version
+    }
+  };
+  
+  fs.writeFileSync(
+    path.join(project_home, 'package.json'),
+    JSON.stringify(pkg)
+  );
+   
+  // prompt user to configure npm package
+  npm_init = spawn(
+    which('npm'),
+    ['init'],
+    {
+      cwd: project_home,
+      env: process.env,
+      stdio: 'inherit'
+    }
+  );
+  
+  npm_init.on('exit', function(code) {
+    if(code === 0) {
+      // install dependencies
+      spawn(
+        which('npm'),
+        ['install', '-d'],
+        {
+          cwd: project_home,
+          env: process.env,
+          stdio: 'inherit'
+        }
+      );
+    }
+    
+    console.log('Finished!');
+  });
+  
+}
 
-		for file in files
-			cp "#{lib}/#{file}", "#{name}/#{file}", ->
+function generateTimbit(name) {
+  console.log("Generating timbit '" + name + "'");
+  if(
+    fs.existsSync(path.join('timbits', name + '.coffee')) ||
+    fs.existsSync(path.join('views', name))
+  ) {
+    console.log('ERROR!  The timbit ' + name + ' may already exist!');
+    return;
+  }
+  
+  // create timbit
+  console.log('Creating timbits/' + name + '.coffee');
+  cp(
+    path.join(template, 'timbit.coffee'),
+    path.join('timbits', name + '.coffee')
+  );
+  
+  // create default view
+  console.log('Creating views/' + name + '/default.coffee');
+  fs.mkdirSync(
+    path.join('views', name)
+  );
+  
+  fs.writeFileSync(
+    path.join('views', name, 'default.coffee'),
+    "h1 '" + name + " Timbit'"
+  );
+  
+}
 
-		getVersion (pkg) ->
-			package_json = "{\n\t\"name\": \"#{name}\",\n\t\"description\": \"Widgets built using Timbits\",\n\t\"version\": \"0.0.1\",\n\t\"dependencies\": {\n\t\t\"timbits\": \">= #{pkg.version}\"\n\t}\n}"
-			fs.writeFile "#{directories[0]}/package.json", package_json, (err) ->
-				throw err if err
-				log.info "Created package.json in #{directories[0]}/package.json"
-				log.notice "Run 'npm init' to update your package.json file"
-				log.notice "Don't forget to run 'npm install -d' to install required packages"
 
-generateTimbit = (name) ->
-	# Scaffolds a new timbit at timbits/[timbit].coffee and a new view at views/[timbit]/default.coffee
-	log.notice "Generating timbit '#{name}'"
-	fs.readdir "timbits", (e) ->
-		if e?.message?
-			log.error "#{e.message}: timbits"
-		else
-			log.debug "#{lib}/timbit.coffee"
-			cp "#{lib}/timbit.coffee", "timbits/#{name}.coffee", ->
-	fs.readdir "views", (e) ->
-		if e?.message?
-			log.error "#{e.message}: views"
-		else
-			mkdir "views/#{name}", ->
-				fs.writeFile "views/#{name}/default.coffee", "h1 '#{name} Timbit'", (err) ->
-					throw err if err
-					log.info "Created view in views/#{name}/default.coffee"
 
-startServer = (filename) ->
-	# Launches runjs with server.js or alternate
-	loadEnv()
-	log.notice "Starting server (#{filename})"
-	cmd = which('runjs')
-	runjs = spawn(cmd, [ filename ], {stdio: 'inherit', env: process.env})
+function startServer(filename) {
+  console.log("Starting server (" + filename + ")");
+  loadEnv();
 
-runTests = (alltests, watch) ->
-	process.env.TIMBITS_TEST_WHICH = 'all' if alltests
-	loadEnv()
-	
-	args = [
-		'--reporter'
-		'spec'
-		'--compilers'
-		'coffee:coffee-script'
-		'--growl'
-		'--colors'
-		]
+  var runjs = spawn(localCmd('runjs'), [filename], {
+    stdio: 'inherit',
+    env: process.env
+  });
+}
 
-	args.push '--watch' if watch
+function runTests(alltests, watch) {
+  if (alltests) {
+    process.env.TIMBITS_TEST_WHICH = 'all';
+  }
+  loadEnv();
+  
+  var args = ['--reporter', 'spec', '--compilers', 'coffee:coffee-script', '--growl', '--colors'];
+  if (watch) {
+    args.push('--watch');
+  }
 
-	cmd = which('mocha')
-	mocha = spawn cmd, args, {
-			stdio: 'inherit'
-			env: process.env
-		}
+  var mocha = spawn(localCmd('mocha'), args, {
+    stdio: 'inherit',
+    env: process.env
+  });
+}
 
-getVersion = (callback) ->
-	# Get version of installed timbits library
-	fs.readFile path.join(path.dirname(fs.realpathSync(__filename)),"../package.json"), (err, data) ->
-		throw err if err
-		pkg = JSON.parse(data)
-		callback pkg
+function getPackage() {
+  data = fs.readFileSync(path.join(__dirname, "../package.json"));
+  return JSON.parse(data);
+}
 
-showVersion = () ->
-	# Show version of installed timbits library
-	getVersion (pkg) ->
-		console.log pkg.version
+function showVersion() {
+  pkg = getPackage();
+  console.log(pkg.version);
+}
 
-showHelp = ->
-	# Show usage help
-	console.log optimist.help()
+function showHelp() {
+  console.log(optimist.help());
+}
 
-switch optimist.argv._[0]
-	when 'n', 'new'
-		if optimist.argv._.length < 2
-			log.error 'new project requires a name'
-			showHelp()
-		else
-			newProject(optimist.argv._[1])
-			
-	when 'g', 'generate'
-		if optimist.argv._.length < 2
-			log.error 'new timbit requires a name'
-			showHelp()
-		else
-			 generateTimbit(optimist.argv._[1])
-			
-	when 's', 'server'
-		filename = if optimist.argv._.length > 1 then optimist.argv._[1] else 'server.js'
-		startServer(filename)
-		
-	when 't', 'test'
-		runTests(optimist.argv.a, optimist.argv.w)
-		
-	when 'v', 'version'
-		showVersion()
-	else
-		if optimist.argv.v? # Also support -v for unix convention consistency
-			showVersion()
-		else
-			showHelp()
+switch (optimist.argv._[0]) {
+  case 'n':
+  case 'new':
+    if (optimist.argv._.length < 2) {
+      log.error('new project requires a name');
+      showHelp();
+    } else {
+      newProject(optimist.argv._[1]);
+    }
+    break;
+    
+  case 'g':
+  case 'generate':
+    if (optimist.argv._.length < 2) {
+      log.error('new timbit requires a name');
+      showHelp();
+    } else {
+      generateTimbit(optimist.argv._[1]);
+    }
+    break;
+    
+  case 's':
+  case 'server':
+    filename = optimist.argv._.length > 1 ? optimist.argv._[1] : 'server.js';
+    startServer(filename);
+    break;
+    
+  case 't':
+  case 'test':
+    runTests(optimist.argv.a, optimist.argv.w);
+    break;
+    
+  case 'v':
+  case 'version':
+    showVersion();
+    break;
+    
+  default:
+    if (optimist.argv.v != null) {
+      showVersion();
+    } else {
+      showHelp();
+    }
+}
