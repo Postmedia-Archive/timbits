@@ -198,7 +198,7 @@ function runTests(alltests, watch) {
 }
 
 function getPackage() {
-  data = fs.readFileSync(path.join(__dirname, "../package.json"));
+  data = fs.readFileSync(path.join(__dirname, '..', 'package.json'));
   return JSON.parse(data);
 }
 
