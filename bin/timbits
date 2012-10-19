@@ -10,9 +10,23 @@ var fs = require('fs')
 // configure optimist
 var optimist = require(path.join(__dirname, '..', 'node_modules', 'optimist'))
   .alias('all', 'a')
-  .describe('a', 'run all dynamic tests')
+  .describe('a', 'test: run all dynamic tests')
+  .alias('R', 'reporter').string('R')
+  .describe('R', 'test: specify reporter to use')
+  .alias('g', 'grep').string('g')
+  .describe('g', 'test: only run tests matching <pattern>')
+  .alias('i', 'invert')
+  .describe('i', 'test: inverts --grep matches')
+  .alias('t', 'timeout').default('t', 2000)
+  .describe('t', 'test: set test-case timeout in milliseconds')
+  .alias('s', 'slow').default('s', 75)
+  .describe('s', 'test: "slow" test threshold in milliseconds')
   .alias('w', 'watch')
-  .describe('w', 'watch for changes and retest')
+  .describe('w', 'test: watch for changes and retest')
+  .alias('d', 'debug')
+  .describe('d', 'test: enable node debugger')
+  .alias('b', 'bail')
+  .describe('b', 'test: bail after first test failure')
   .usage(
 "Timbits Command Help\n\n \
 timbits n[ew] [project]\n\ \
@@ -184,18 +198,13 @@ function startServer(filename) {
   });
 }
 
-function runTests(alltests, watch) {
+function runTests(alltests, options) {
   if (alltests) {
     process.env.TIMBITS_TEST_WHICH = 'all';
   }
   loadEnv();
-  
-  var args = ['--reporter', 'spec', '--compilers', 'coffee:coffee-script', '--growl', '--colors'];
-  if (watch) {
-    args.push('--watch');
-  }
 
-  var mocha = spawn(localCmd('mocha'), args, {
+  var mocha = spawn(localCmd('mocha'), options, {
     stdio: [null, process.stdout, process.stderr],
     env: process.env
   });
@@ -245,7 +254,24 @@ switch (argv._[0]) {
     
   case 't':
   case 'test':
-    runTests(optimist.argv.a, optimist.argv.w);
+    options = ['--compilers', 'coffee:coffee-script', '--growl', '--colors'];
+    for (key in argv) {
+      switch(key){
+        case 'reporter':
+        case 'grep':
+        case 'timeout':
+        case 'slow':
+          options.push('--' + key, argv[key]);
+          break;
+        case 'invert':
+        case 'watch':
+        case 'debug':
+        case 'bail':
+          options.push('--' + key)
+          break;
+      }
+    }
+    runTests(argv.a, options);
     break;
     
   case 'v':
