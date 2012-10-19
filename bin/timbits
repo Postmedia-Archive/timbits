@@ -179,7 +179,7 @@ function startServer(filename) {
   loadEnv();
 
   spawn(localCmd('runjs'), [filename], {
-    stdio: 'inherit',
+    stdio: [null, process.stdout, process.stderr],
     env: process.env
   });
 }
@@ -196,7 +196,7 @@ function runTests(alltests, watch) {
   }
 
   var mocha = spawn(localCmd('mocha'), args, {
-    stdio: 'inherit',
+    stdio: [null, process.stdout, process.stderr],
     env: process.env
   });
 }
