@@ -31,7 +31,7 @@ var template = path.join(__dirname, 'template');
 
 // determine path to a command in local node modules
 function localCmd(name) {
-  cmd = path.join(__dirname, '..', 'node_modules', '.bin', name);
+  var cmd = path.join(__dirname, '..', 'node_modules', '.bin', name);
   return which(cmd);
 }
 
@@ -42,7 +42,7 @@ function cp(source, destination) {
 
 function loadEnv() {
   if (fs.existsSync('.env')) {
-    env_lines = fs.readFileSync('.env').toString().split('\n');
+    var env_lines = fs.readFileSync('.env').toString().split('\n');
     for (var i = 0; i < env_lines.length; i++) {
       var key_value = env_lines[i].split('=');
       if (key_value.length === 2) {
@@ -109,7 +109,7 @@ function newProject(name) {
   );
    
   // prompt user to configure npm package
-  npm_init = spawn(
+  var npm_init = spawn(
     which('npm'),
     ['init'],
     {
@@ -174,7 +174,7 @@ function startServer(filename) {
   console.log("Starting server (" + filename + ")");
   loadEnv();
 
-  var runjs = spawn(localCmd('runjs'), [filename], {
+  spawn(localCmd('runjs'), [filename], {
     stdio: 'inherit',
     env: process.env
   });
@@ -198,12 +198,12 @@ function runTests(alltests, watch) {
 }
 
 function getPackage() {
-  data = fs.readFileSync(path.join(__dirname, '..', 'package.json'));
+  var data = fs.readFileSync(path.join(__dirname, '..', 'package.json'));
   return JSON.parse(data);
 }
 
 function showVersion() {
-  pkg = getPackage();
+  var pkg = getPackage();
   console.log(pkg.version);
 }
 
