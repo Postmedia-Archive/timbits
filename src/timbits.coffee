@@ -8,7 +8,6 @@ Log = require 'coloured-log'
 express = require 'express'
 @pantry = pantry = require 'pantry'
 request = require 'request'
-jsonp = require 'jsonp-filter'
 
 config = {
 	appName: 'Timbits'
@@ -18,6 +17,11 @@ config = {
 	home: process.cwd()
 	maxAge: 60
 	secret: 'secret'
+	discovery: true  # support automatic discovery via /timbits/json
+	help: true # allow automatic help pages at /timbits/help and /[name]/help
+	test: true # allow automatic test pages at /timbits/test and /[name]/test
+	json: true # allow built in json view at /[name]/json
+	jsonp: true # allow jsonp calls via /[name]/json?callback=
 }
 
 server = {}
@@ -35,13 +39,13 @@ log = new Log(process.env.TIMBITS_VERBOSITY or Log.NOTICE)
 	@server.set 'views', "#{config.home}/views"
 	@server.set 'view engine', config.engine
 	@server.set 'view options', {layout: false}
-	@server.set 'jsonp callback', true;
+	
+	@server.set 'jsonp callback', config.jsonp
 
 	@server.configure =>
 		@server.use express.bodyParser()
 		@server.use express.cookieParser()
 		@server.use express.session({ secret: config.secret })
-		@server.use jsonp.setupJSONP()
 		@server.use express.static(path.join(config.home, "public"))
 		@server.use express.static(path.join(path.dirname(__filename),"../resources"))
 
@@ -52,30 +56,34 @@ log = new Log(process.env.TIMBITS_VERBOSITY or Log.NOTICE)
 		@server.use express.errorHandler()
 
 	# route root to help page
-	@server.all "#{config.base}/", (req, res) ->
-		res.redirect "#{config.base}/timbits/help"
+	if config.help
+		@server.all "#{config.base}/", (req, res) ->
+			res.redirect "#{config.base}/timbits/help"
 
-	# route json page
-	@server.get "#{config.base}/timbits/json", (req, res) =>
-		res.json @box
+	# route json discovery
+	if config.discovery
+		@server.get "#{config.base}/timbits/json", (req, res) =>
+			res.json @box
 
 	# route help page
-	@server.get "#{config.base}/timbits/help", (req, res) =>
-		res.send ck.render(views.help, {box: @box} )
+	if config.help
+		@server.get "#{config.base}/timbits/help", (req, res) =>
+			res.send ck.render(views.help, {box: @box} )
 
 	# route master test page
-	@server.get "#{config.base}/timbits/test/:which?", (req, res) =>
-		alltests = req.params.which is 'all'
-		all_results = []
-		pending = Object.keys(@box).length
-		if pending
-			for name, timbit of @box
-				timbit.test "http://#{req.headers.host}", alltests, (results) ->
-					all_results.push result for result in results
-					if --pending is 0
-						res.send ck.render(views.test, {results: all_results} )
-		else
-			res.send ck.render(views.test, {})
+	if config.test
+		@server.get "#{config.base}/timbits/test/:which?", (req, res) =>
+			alltests = req.params.which is 'all'
+			all_results = []
+			pending = Object.keys(@box).length
+			if pending
+				for name, timbit of @box
+					timbit.test "http://#{req.headers.host}", alltests, (results) ->
+						all_results.push result for result in results
+						if --pending is 0
+							res.send ck.render(views.test, {results: all_results} )
+			else
+				res.send ck.render(views.test, {})
 
 	# automagically load helpers found in the ./helpers folder
 	helper_path = path.join(config.home, "helpers")
@@ -141,14 +149,16 @@ log = new Log(process.env.TIMBITS_VERBOSITY or Log.NOTICE)
 	@box[name] = timbit
 
 	# configure help
-	@server.get ("#{config.base}/#{name}/help"), (req, res) ->
-		res.send ck.render(views.timbit_help, timbit)
+	if config.help
+		@server.get ("#{config.base}/#{name}/help"), (req, res) ->
+			res.send ck.render(views.timbit_help, timbit)
 
-	# configure test
-	@server.get ("#{config.base}/#{name}/test/:which?"), (req, res) ->
-		alltests = req.params.which is 'all'
-		timbit.test "http://#{req.headers.host}", alltests, (results) ->
-			res.send ck.render(views.timbit_test, {name: timbit.name, results: results} )
+	if config.test
+		# configure test
+		@server.get ("#{config.base}/#{name}/test/:which?"), (req, res) ->
+			alltests = req.params.which is 'all'
+			timbit.test "http://#{req.headers.host}", alltests, (results) ->
+				res.send ck.render(views.timbit_test, {name: timbit.name, results: results} )
 
 	# configure the route
 	@server.all ("#{config.base}/#{name}/:view?"), (req, res) ->
@@ -238,7 +248,7 @@ class @Timbit
 		res.setHeader "Cache-Control", "max-age=#{context.maxAge}"
 		res.setHeader "Edge-Control", "!no-store, max-age=#{context.maxAge}"
 
-		if /^\w+\/json$/.test(context.view)
+		if /^\w+\/json$/.test(context.view) and config.json
 			res.json context
 		else
 			res.render context.view, context, (err, str) =>
