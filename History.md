@@ -1,3 +1,9 @@
+0.6.3 / 2012-10-22
+==================
+
+  * Supports new configuration options which allow you to disable automated discovery, help, tests, and json views.
+  * no longer uses our own custom jsonp-filter package
+
 0.6.2 / 2012-10-22
 ==================
 
