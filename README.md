@@ -133,12 +133,17 @@ The server object can be configured during initialization as needed.  The only p
 * home - The physical path to the root project folder [process.cwd()]
 * maxAge - The default cache length in seconds [60]
 * secret - The string used to encrypt sessions ['secret']
+* discovery - Enables you to serve out your library definition via /timbits/json [true]
+* help - Enables the automated help pages via /timbits/help and /[name]/help [true]
+* test - Enables the automated test pages via /timbits/test and /[name]/test
+* json - Enables the built in json view for timbits via /[name]/json [true]
+* jsonp - Enables jsonp requests to json resources
 
-The following example shows how to run a nested application using the 'eco' view engine in place of CoffeeKup
+The following example shows how to run a nested application using the 'eco' view engine in place of CoffeeKup and disables the automated test routes
 
 	var timbits = require('timbits');
 	var eco = require('eco');
-	var server = timbits.serve({appName: 'My Nested Timbits', engine: 'eco', base: '/nested/app', secret: '359#^#$KDKS'});
+	var server = timbits.serve({appName: 'My Nested Timbits', engine: 'eco', base: '/nested/app', secret: '359#^#$KDKS', test: false});
 	server.register('.eco', eco);
 	console.log("Press Ctrl+C to Exit");
 
