@@ -61,18 +61,23 @@ log = new Log(process.env.TIMBITS_VERBOSITY or Log.NOTICE)
 			res.redirect "#{config.base}/timbits/help"
 
 	# route json discovery
-	if config.discovery
-		@server.get "#{config.base}/timbits/json", (req, res) =>
+	@server.get "#{config.base}/timbits/json", (req, res) =>
+		if config.discovery
 			res.json @box
+		else
+			res.send "Automatic Discovery has been disabled", 404
 
 	# route help page
-	if config.help
-		@server.get "#{config.base}/timbits/help", (req, res) =>
+	@server.get "#{config.base}/timbits/help", (req, res) =>
+		if config.help
 			res.send ck.render(views.help, {box: @box} )
+		else
+			res.send "Automatic Help has been disabled", 404
+			
 
 	# route master test page
-	if config.test
-		@server.get "#{config.base}/timbits/test/:which?", (req, res) =>
+	@server.get "#{config.base}/timbits/test/:which?", (req, res) =>
+		if config.test
 			alltests = req.params.which is 'all'
 			all_results = []
 			pending = Object.keys(@box).length
@@ -84,6 +89,9 @@ log = new Log(process.env.TIMBITS_VERBOSITY or Log.NOTICE)
 							res.send ck.render(views.test, {results: all_results} )
 			else
 				res.send ck.render(views.test, {})
+		else
+			res.send "Automatic Test has been disabled", 404
+		
 
 	# automagically load helpers found in the ./helpers folder
 	helper_path = path.join(config.home, "helpers")
@@ -149,16 +157,21 @@ log = new Log(process.env.TIMBITS_VERBOSITY or Log.NOTICE)
 	@box[name] = timbit
 
 	# configure help
-	if config.help
-		@server.get ("#{config.base}/#{name}/help"), (req, res) ->
+	@server.get ("#{config.base}/#{name}/help"), (req, res) ->
+		if config.help
 			res.send ck.render(views.timbit_help, timbit)
+		else
+			res.send "Automatic Help has been disabled", 404
 
-	if config.test
-		# configure test
-		@server.get ("#{config.base}/#{name}/test/:which?"), (req, res) ->
+	# configure test
+	@server.get ("#{config.base}/#{name}/test/:which?"), (req, res) ->
+		if config.test
 			alltests = req.params.which is 'all'
 			timbit.test "http://#{req.headers.host}", alltests, (results) ->
 				res.send ck.render(views.timbit_test, {name: timbit.name, results: results} )
+		else
+			res.send "Automatic Test has been disabled", 404
+
 
 	# configure the route
 	@server.all ("#{config.base}/#{name}/:view?"), (req, res) ->
@@ -248,8 +261,11 @@ class @Timbit
 		res.setHeader "Cache-Control", "max-age=#{context.maxAge}"
 		res.setHeader "Edge-Control", "!no-store, max-age=#{context.maxAge}"
 
-		if /^\w+\/json$/.test(context.view) and config.json
-			res.json context
+		if /^\w+\/json$/.test(context.view)
+			if config.json
+				res.json context
+			else
+				res.send "JSON view has been disabled", 404
 		else
 			res.render context.view, context, (err, str) =>
 				if err
