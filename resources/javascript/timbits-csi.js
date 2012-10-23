@@ -9,7 +9,7 @@ https://github.com/Postmedia/timbits
 var timbits = timbits || {};
 
 timbits.processCSI = function(index, element) {
-  var include = $(element);
+  var include = jQuery(element);
   var src = include.attr('src');
 
   process_this = true;
@@ -41,7 +41,7 @@ timbits.processCSI = function(index, element) {
     console.log('Processing CSI: ' + src);
     
     // fetch the resource and insert
-    $.getJSON(src, function(data) {
+    jQuery.getJSON(src, function(data) {
       include.after(data);
       var onload = include.attr('onload');
       if (onload) eval(onload);
@@ -52,10 +52,10 @@ timbits.processCSI = function(index, element) {
 
 timbits.discoverCSI = function(mql) {
   console.log("Discovering CSI: " + (mql ? mql.media : 'Init'));
-  $('esi\\:include, csi\\:include').each(timbits.processCSI);
+  jQuery('esi\\:include, csi\\:include').each(timbits.processCSI);
 }
 
-$( function() {
+jQuery( function() {
   // parse QS value for optional use within CSI calls
   timbits.csi_qs_params = {};
   
