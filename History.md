@@ -1,3 +1,8 @@
+0.6.3 / 2012-10-23
+==================
+
+  * Add support for responsive client side includes via media attribute
+
 0.6.3 / 2012-10-22
 ==================
 
