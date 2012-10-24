@@ -3,7 +3,8 @@ if @year is '1999'
 		"Wazzzzuuuup #{@who}!"
 else
 	h1 ->
-		"Hello #{@who}"
+		text "Hello "
+		h @who
 
 script '''
 	function blinkText() {
