@@ -4,5 +4,5 @@ h2 "Recent tweets for '#{@q}'"
 ul ->
 	for result in @tweets.results
 		li ->
-			b "#{result.from_user}: "
-			result.text
+			b -> h "#{result.from_user}: "
+			h result.text
