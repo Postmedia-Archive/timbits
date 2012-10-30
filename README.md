@@ -296,53 +296,63 @@ Example:
 
 	/chocolate?q=winning&callback=done
 
-Included with Timbits is a simple client-side JS library (/javascript/timbits-csi.js) which utilizes jQuery to post-process an HTML page for esi:include tags, automatically tacking on the callback parameter and pulling in the results client side.  We've compiled a minimized version as well ()/javascript/timbits-csi-min.js)
-
-The timbits-csi.js allows for the use of both the regular esi: namespace OR our very own csi: (for client side include), as there may be times you want your ESI processor to handle some of the widgets while others you may want to only handle client side.  Since any ESI processor wouldn't handle the csi: namespace, they would skipped and delivered to the browser as is for handling there.
+Included with Timbits is a simple client-side JS library (/javascript/timbits-csi.js) which utilizes jQuery to post-process an HTML page for tags containing the data-csi attribute, automatically tacking on the callback parameter when needed and pulling in the results client side.  We've compiled a minimized version as well (/javascript/timbits-csi-min.js)
 
 Example:
 
-	<csi:include src="http://mytimbitserver.fake/plain/?who=world"></csi:include>
-	<esi:include src="http://mytimbitserver.fake/chocolate/?q=winning"></esi:include>
+	<div data-csi="http://mytimbitserver.fake/plain/?who=world"></div>
+	<div data-csi="navigation.html"></div>
 
+By default, the CSI library runs in "replace" mode, i.e. the returned html replaces any content within the parent element, but you can control that by setting the data-mode attribute to either "prepend" or "append"
 
-In the example above, if the page was served through an ESI compatible proxy the first item would be rendered on the client (in the browser) while the second would be rendered within the proxy.  If there was no ESI compatible proxy in place, both would be rendered on the client.
+	<div data-csi="http://mytimbitserver.fake/plain/?who=world">
+		<p>This will be replaced by the results of the include<p>
+	</div>
+	<div data-csi="http://mytimbitserver.fake/plain/?who=world" data-mode="prepend">
+		<p>This will appear below the results of the include<p>
+	</div>
+	<div data-csi="http://mytimbitserver.fake/plain/?who=world" data-mode="append">
+		<p>This HTML will appear above the results of the include<p>
+	</div>
+	
+We've also added support for the dynamic insertion of query string values into your client side includes via the {#name} syntax.  For example, the following will grab the query string parameter 'term' from the host page and insert it into the source url prior to making the request.
 
-To render these tags client side, include the jQuery library and the include /javascript/timbits-csi.js library on your page.
-
-We've also added support for the dynamic insertion of query string values into your client side ESI/CSI calls via the standard $(QUERY\_STRING{'name'}) syntax.  For example, the following will grab the query string parameter 'term' from the host page and insert it into the source url prior to making the request.
-
-	<esi:include src="http://mytimbitserver.fake/chocolate/?q=$(QUERY_STRING{'term'})"></esi:include>
+	<section id="results" class="tweets" data-csi="http://mytimbitserver.fake/chocolate/?q={#term}"></section>
 	
 ### Responsive Rendering
 
-In an effort to assist with minimizing page sizes (for mobile clients specifically) we've introduced support for an onload attribute and media queries within our timbits-csi.js library.  (We would strongly suggest not using these attirbutes via esi tags, only csi tags, as any ESI processor we know of would just ignore these.)
+In an effort to assist with minimizing page sizes (for mobile clients specifically) we've introduced a 'load' event as well as media queries within our timbits-csi.js library.
 
-To run some javascript once a timbit has been loaded, simply add an onload attribute to the csi tag like this:
+To run some javascript once a timbit has been loaded, simply bind to the element's load event like this:
 
-	<csi:include src="http://mytimbitserver.fake/plain/?who=world" onload="alert('Loaded and ready to go!)"></csi:include>
+	<script>
+		$('#mycsi').bind('load', function() {
+			alert('Run After Load Works!');
+		});
+	</script>
 	
-To implement media queries, add a media attribute to the csi tag like this:
+To implement media queries, add a data-media attribute to the element like this:
 
-	<csi:include src="http://mytimbitserver.fake/plain/?who=world" media="screen and (min-width: 500px)"></csi:include>
+	<footer data-csi="http://mytimbitserver.fake/plain/?who=world" data-media="screen and (min-width: 500px)"></footer>
 
 If you want to get even fancier, you can load (not show, see below) two different views of the same timbit depending on a specific breakpoint as in this example:
 
-	<csi:include src="http://mytimbitserver.fake/plain/small?who=world" media="screen and (max-width: 420px)"></csi:include>
-	<csi:include src="http://mytimbitserver.fake/plain/large?who=world" media="screen and (min-width: 421px)"></csi:include>
+	<div data-csi="http://mytimbitserver.fake/plain/small?who=world" data-media="screen and (max-width: 420px)"></div>
+	<div:data-csi="http://mytimbitserver.fake/plain/large?who=world" media="screen and (min-width: 421px)"></div>
 
-Here's another example which shows some of the power behind this.  Say you want to show four blog posts to all users, but an additional six for larger devices.  The following will keep default payload small for smartphones while expanding the available content for tablets and desktops, using ESI for the standard and then having the client pull in more content if needed
+Here's another example which shows some of the power behind this.  Say you want to show four blog posts to all users, but an additional six for larger devices.  The following will keep default payload small for smartphones while expanding the available content for tablets and desktops.
 
-	<esi:include src="http://mytimbitserver.fake/posts/list?topic=sports&max=4"></esi:include>
-	<csi:include src="http://mytimbitserver.fake/posts/list?topic=sports&start=5&max=6" media="screen and (min-width: 421px)"></csi:include>
+	<div data-csi="http://mytimbitserver.fake/posts/list?topic=sports&start=5&max=6" data-media="screen and (min-width: 421px)" data-mode="append">
+		<div data-csi="http://mytimbitserver.fake/posts/list?topic=sports&max=4"></div>
+	</div>
 
-Any valid media query will do.  In fact, we also will respond to media query changes (including orientation!) so that as you resize the browser, any csi tags that were skipped due to unmet media queries will load once the media query is valid.
+Any valid media query will do.  In fact, we also will respond to media query changes (including orientation!) so that as you resize the browser, any csi elements that were skipped due to unmet media queries will load once the media query is valid.
 
-A couple caveats you should be aware of.  First, we will load csi includes based on the media query, but we won't unload them.  Secondly, since we depend on the window.matchMedia() method, this doesn't work across all browsers.  Specifically Opera and IE9 and below.  On these browsers, timbits-csi will ignore the media queries and load each and every include.  So you should still use CSS media queries to show/hide elements as you would if all the content was loaded.
+A couple caveats you should be aware of.  First, we will load csi includes based on the media query, but we won't unload them.  Secondly, since we depend on the window.matchMedia() method, this doesn't work across all browsers.  Specifically Opera and IE9 and below.  On these browsers, timbits-csi will ignore the media queries and load each and every include.  So you should still use CSS media queries to show/hide elements as if all the content was loaded.
 
 ### Wordpress Plugin
 
-For those of you who would like to utilize Timbits within your Wordpress environment, we've created a plugin for that called [wp-timbits](https://github.com/Postmedia/wp-timbits) which provides shortcode and widget support, and supports Timbits' auto-discovery feature.
+For those of you who would like to utilize Timbits within your Wordpress environment, we've created a plugin for that called [wp-timbits](https://github.com/Postmedia/wp-timbits) which provides shortcode and widget support, supports Timbits' auto-discovery feature, includes the csi rendering library (with media query support) and has the ability to turn your Wordpress instance into a Timbits server.
 
 ## Road Map
 
