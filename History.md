@@ -1,5 +1,9 @@
 0.6.4 / 2012-10-23
 ==================
+  * client rendering library revised.  no longer uses namespaced includes
+
+0.6.4 / 2012-10-23
+==================
 
   * Add support for responsive client side includes via media attribute
   * Modified production flags to return 404 when feature has been disabled
