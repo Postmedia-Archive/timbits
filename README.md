@@ -296,7 +296,7 @@ Example:
 
 	/chocolate?q=winning&callback=done
 
-Included with Timbits is a simple client-side JS library (/javascript/timbits-csi.js) which utilizes jQuery to post-process an HTML page for tags containing the data-csi attribute, automatically tacking on the callback parameter when needed and pulling in the results client side.  We've compiled a minimized version as well (/javascript/timbits-csi-min.js)
+Included with Timbits is a simple client-side JS library (/javascript/timbits.csi.js) which utilizes jQuery to post-process an HTML page for tags containing the data-csi attribute, automatically tacking on the callback parameter when needed and pulling in the results client side.  We've compiled a minimized version as well (/javascript/timbits.csi.min.js)
 
 Example:
 
@@ -321,7 +321,7 @@ We've also added support for the dynamic insertion of query string values into y
 	
 ### Responsive Rendering
 
-In an effort to assist with minimizing page sizes (for mobile clients specifically) we've introduced a 'load' event as well as media queries within our timbits-csi.js library.
+In an effort to assist with minimizing page sizes (for mobile clients specifically) we've introduced a 'load' event as well as media queries within our timbits.csi.js library.
 
 To run some javascript once a timbit has been loaded, simply bind to the element's load event like this:
 
@@ -348,7 +348,7 @@ Here's another example which shows some of the power behind this.  Say you want 
 
 Any valid media query will do.  In fact, we also will respond to media query changes (including orientation!) so that as you resize the browser, any csi elements that were skipped due to unmet media queries will load once the media query is valid.
 
-A couple caveats you should be aware of.  First, we will load csi includes based on the media query, but we won't unload them.  Secondly, since we depend on the window.matchMedia() method, this doesn't work across all browsers.  Specifically Opera and IE9 and below.  On these browsers, timbits-csi will ignore the media queries and load each and every include.  So you should still use CSS media queries to show/hide elements as if all the content was loaded.
+A couple caveats you should be aware of.  First, we will load csi includes based on the media query, but we won't unload them.  Secondly, since we depend on the window.matchMedia() method, this doesn't work across all browsers.  Specifically Opera and IE9 and below.  On these browsers, timbits csi will ignore the media queries and load each and every include.  So you should still use CSS media queries to show/hide elements as if all the content was loaded.
 
 ### Wordpress Plugin
 

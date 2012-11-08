@@ -1,4 +1,8 @@
-0.6.4 / 2012-10-23
+0.6.6 / 2012-11-08
+==================
+  * renamed csi libraries to match best practices (dot instead of dash)
+
+0.6.5 / 2012-10-23
 ==================
   * client rendering library revised.  no longer uses namespaced includes
 
