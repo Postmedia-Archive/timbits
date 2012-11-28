@@ -1,3 +1,7 @@
+0.6.7 / 2012-11-28
+==================
+  * added trim function when processing environment key/value pairs, fixes issue on Windows when multiple environment variables are concatenated in same string.
+
 0.6.6 / 2012-11-08
 ==================
   * renamed csi libraries to match best practices (dot instead of dash)
