@@ -1,7 +1,7 @@
 {
 	"name": "timbits",
 	"description": "Widget framework based on Express and CoffeeScript",
-	"version": "0.6.6",
+	"version": "0.6.7",
 	"homepage": "https://github.com/Postmedia/timbits",
 	"author": "Edward de Groot <edegroot@postmedia.com> (http://mred9.com)",
 	"contributors": [ 
