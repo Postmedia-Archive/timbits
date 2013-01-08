@@ -33,7 +33,9 @@
 		"timbits": "./bin/timbits"
 	},
 	"scripts": {
-		"build": "cake build"
+		"build": "cake build",
+		"test": "mocha --reporter spec --compilers coffee:coffee-script"
 	},
 	"engines": { "node": "0.8.x", "npm": "1.1.x" }
 }
+
