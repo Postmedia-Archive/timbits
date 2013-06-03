@@ -106,8 +106,8 @@ function newProject(name) {
   // copy test template
   console.log('Generating test template: ' + name + '-test.coffee');
   cp(
-    path.join(template, 'test', 'timbits-test.coffee'),
-    path.join(project_home, 'test', name + '-test.coffee')
+    path.join(template, 'test', 'timbits-test.js'),
+    path.join(project_home, 'test', name + '-test.js')
   );
   
   // create package file
@@ -159,7 +159,7 @@ function newProject(name) {
 function generateTimbit(name) {
   console.log("Generating timbit '" + name + "'");
   if(
-    fs.existsSync(path.join('timbits', name + '.coffee')) ||
+    fs.existsSync(path.join('timbits', name + '.js')) ||
     fs.existsSync(path.join('views', name))
   ) {
     console.log('ERROR!  The timbit ' + name + ' may already exist!');
@@ -167,10 +167,10 @@ function generateTimbit(name) {
   }
   
   // create timbit
-  console.log('Creating timbits/' + name + '.coffee');
+  console.log('Creating timbits/' + name + '.js');
   cp(
-    path.join(template, 'timbit.coffee'),
-    path.join('timbits', name + '.coffee')
+    path.join(template, 'timbit.js'),
+    path.join('timbits', name + '.js')
   );
   
   // create default view
