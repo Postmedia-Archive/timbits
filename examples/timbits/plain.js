@@ -23,9 +23,6 @@ timbit.examples = [
   }, {
     href: '/plain/?who=Kevin&retro=true',
     caption: 'Flashback'
-  }, {
-    href: '/plain/with-help?who=Handy%20Manny',
-    caption: 'With Help'
   }
 ];
 

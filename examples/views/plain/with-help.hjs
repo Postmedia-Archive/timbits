@@ -1,4 +1,0 @@
-<h1>{{hello who}}</h1>
-{{#if url}}
-<h2>{{link url who}}</h2>
-{{/if}}

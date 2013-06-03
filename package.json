@@ -1,6 +1,6 @@
 {
 	"name": "timbits",
-	"description": "Widget framework based on Express and CoffeeScript",
+	"description": "Widget framework based on Express",
 	"version": "0.7.0",
 	"homepage": "https://github.com/Postmedia/timbits",
 	"author": "Edward de Groot <edegroot@postmedia.com> (http://mred9.com)",
@@ -32,6 +32,9 @@
 	"main": "./lib/timbits",
 	"bin": {
 		"timbits": "./bin/timbits"
+	},
+	"scripts": {
+		"test": "mocha"
 	},
 	"engines": { "node": "0.8.x", "npm": "1.1.x" }
 }
