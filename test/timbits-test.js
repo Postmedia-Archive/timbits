@@ -12,6 +12,8 @@ var timbits = require('../lib/timbits')
 var homeFolder = path.join(process.cwd(), "examples")
   , port = 8785
   , alltests = process.env.TIMBITS_TEST_WHICH === 'all';
+  
+process.env.NODE_ENV = 'test';
 
 // create test server
 var server = timbits.serve({
