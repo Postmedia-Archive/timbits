@@ -7,6 +7,7 @@
 	"contributors": [ 
 		{ "name": "Keith Benedict", "email": "kbenedict@postmedia.com" },
 		{ "name": "Stephen Veerman", "email": "sveerman@postmedia.com" },
+		{ "name": "Donnie Marges", "email": "dmarges@postmedia.com" },
 		{ "name": "Kevin Gamble", "email": "kgamble@postmedia.com" }
 	],
 	"dependencies": {
