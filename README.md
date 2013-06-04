@@ -132,7 +132,7 @@ There are a number of ways to run timbits, but the easiest approach during devel
 The server object can be configured during initialization as needed.  The following is a list of possible configuration parameters and their [default value]
 
 * appName - Friendly name of the timbits application ['Timbits']
-* engine - Default view engine ['coffee']
+* engine - Default view engine ['hjs']
 * base - A base path for nested servers.  e.g. '/my/nested/server' ['']
 * port - The server port to listen on if PORT or C9_PORT env labels are not present. [5678]
 * home - The physical path to the root project folder [process.cwd()]
@@ -143,12 +143,11 @@ The server object can be configured during initialization as needed.  The follow
 * json - Enables the built in json view for timbits via /[name]/json [true]
 * jsonp - Enables jsonp requests to json resources
 
-The following example shows how to run a nested application using the 'eco' view engine in place of Hogan and disables the automated test routes
+The following example shows how to run a nested application using the [coffeecup](https://github.com/gradus/coffeecup) view engine in place of Hogan and disables the automated test routes
 
 	var timbits = require('timbits');
-	var eco = require('eco');
-	var server = timbits.serve({appName: 'My Nested Timbits', engine: 'eco', base: '/nested/app', test: false});
-	server.register('.eco', eco);
+	var server = timbits.serve({appName: 'My Nested Timbits', engine: 'coffee', base: '/nested/app', test: false});
+	server.engine('coffee', require('coffeecup').__express);
 	console.log("Press Ctrl+C to Exit");
 
 ### Parameter declaration and validation
