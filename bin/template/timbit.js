@@ -8,6 +8,7 @@ var timbit = module.exports = new timbits.Timbit();
 
 // additional timbit implementation code follows...
 
+/*
 timbit.about = 'a description about this timbit';
 
 timbit.examples = [
@@ -28,9 +29,10 @@ timbit.params = {
     values: ['Coffee', 'Timbits']
   }
 };
+*/
 
 timbit.eat = function(req, res, context) {
-  var = {
+  var src = {
     uri: 'http://search.twitter.com/search.json?q=' + context.q
   };
   timbit.fetch(req, res, context, src);

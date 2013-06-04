@@ -9,6 +9,8 @@ var fs = require('fs')
 
 // configure optimist
 var optimist = require(path.join(__dirname, '..', 'node_modules', 'optimist'))
+  .alias('coffee', 'c')
+  .describe('c', 'language: Use coffee-script files')
   .alias('all', 'a')
   .describe('a', 'test: run all dynamic tests')
   .alias('R', 'reporter').string('R')
@@ -29,9 +31,9 @@ var optimist = require(path.join(__dirname, '..', 'node_modules', 'optimist'))
   .describe('b', 'test: bail after first test failure')
   .usage(
 "Timbits Command Help\n\n \
-timbits n[ew] [project]\n\ \
+timbits n[ew] [project] [-c|--coffee]\n\ \
   Creates new project template and subfolders\n\n \
-timbits g[enerate] [timbit]\n \
+timbits g[enerate] [timbit] [-c|--coffee]\n \
   Scaffolds a new timbit and default view\n\n \
 timbits s[erver] [filename]\n \
   Launches runjs with [server.js]\n\n \
@@ -71,16 +73,16 @@ function loadEnv() {
   }
 }
 
-function newProject(name) {
+function newProject(name, ext) {
   console.log("Creating project '" + name + "'");
   
-  var directories = ["timbits", "helpers", "views", "test"];
-  var files = ["server.js", "History.md", "README.md", "LICENSE"];
+  var directories = ["timbits", "views", "test"];
+  var files = ["History.md", "README.md", "LICENSE"];
   
   var project_home = path.join(process.cwd(), name);
   
   if(fs.existsSync(project_home)) {
-    console.log('ERROR! ' + project_home + ' already exists!');
+    console.error('\033[31mERROR! ' + project_home + ' already exists!\033[0m');
     return;
   }
   
@@ -102,12 +104,27 @@ function newProject(name) {
       path.join(project_home, files[i])
     );
   }
+
+  // copy server.js file
+  if (ext == 'js') {
+    console.log('Copying template file: server.js');
+    cp(
+      path.join(template, 'server.js'),
+      path.join(project_home, 'server.js')
+    );
+  } else {
+   console.log('Copying template file: server_coffee.js -> server.js');
+   cp(
+      path.join(template, 'server_coffee.js'),
+      path.join(project_home, 'server.js')
+   );
+  }
   
   // copy test template
-  console.log('Generating test template: ' + name + '-test.coffee');
+  console.log('Generating test template: ' + name + '-test.' + ext );
   cp(
-    path.join(template, 'test', 'timbits-test.js'),
-    path.join(project_home, 'test', name + '-test.js')
+    path.join(template, 'test', 'timbits-test.' + ext),
+    path.join(project_home, 'test', name + '-test.' + ext)
   );
   
   // create package file
@@ -156,32 +173,40 @@ function newProject(name) {
   
 }
 
-function generateTimbit(name) {
+function generateTimbit(name, ext) {
   console.log("Generating timbit '" + name + "'");
   if(
-    fs.existsSync(path.join('timbits', name + '.js')) ||
+    fs.existsSync(path.join('timbits', name + '.' + ext)) ||
     fs.existsSync(path.join('views', name))
   ) {
-    console.log('ERROR!  The timbit ' + name + ' may already exist!');
+    console.error('\033[31mERROR!  The timbit ' + name + ' may already exist!\033[0m');
+    return;
+  }
+
+  if (
+    ! fs.existsSync(path.join('timbits')) ||
+	! fs.existsSync(path.join('views'))
+  ) {
+    console.error('\033[31mERROR!  Current folder does not appear to be timbits project!\033[0m');
     return;
   }
   
   // create timbit
-  console.log('Creating timbits/' + name + '.js');
+  console.log('Creating timbits/' + name + '.' + ext);
   cp(
-    path.join(template, 'timbit.js'),
-    path.join('timbits', name + '.js')
+    path.join(template, 'timbit.' + ext),
+    path.join('timbits', name + '.' + ext)
   );
   
   // create default view
-  console.log('Creating views/' + name + '/default.coffee');
+  console.log('Creating views/' + name + '/default.hjs');
   fs.mkdirSync(
     path.join('views', name)
   );
   
   fs.writeFileSync(
-    path.join('views', name, 'default.coffee'),
-    "h1 '" + name + " Timbit'"
+    path.join('views', name, 'default.hjs'),
+    "<h1>Default {{name}} Timbit View</h1>"
   );
   
 }
@@ -225,24 +250,35 @@ function showHelp() {
 }
 
 var argv = optimist.argv;
+var ext;
 switch (argv._[0]) {
   case 'n':
   case 'new':
     if (argv._.length < 2) {
-      log.error('new project requires a name');
+      console.error('\033[31mnew project requires a name\033[0m');
       showHelp();
     } else {
-      newProject(argv._[1]);
+	  if ( argv['c'] || argv['coffee'] ) {
+		ext = 'coffee';
+	  } else {
+	    ext = 'js';
+	  }
+	  newProject(argv._[1], ext);
     }
     break;
     
   case 'g':
   case 'generate':
     if (argv._.length < 2) {
-      log.error('new timbit requires a name');
+      console.error('\033[31mnew timbit requires a name\033[0m');
       showHelp();
     } else {
-      generateTimbit(argv._[1]);
+      if ( argv['c'] || argv['coffee'] ) {
+	    ext = 'coffee';
+	  } else {
+	    ext = 'js';
+	  }
+	  generateTimbit(argv._[1], ext);
     }
     break;
     
