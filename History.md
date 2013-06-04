@@ -1,3 +1,13 @@
+0.7.0 / 2013-06-05
+==================
+  * 0.7.x series should be considered unstable.  stable version will be released as 0.8.x
+  * major rewrite of Timbits in JavaScript (formally CoffeeScript)
+  * generates JavaScript files by default (CoffeeScript is optional)
+  * default view engine is now Hogan (formally CoffeeKup)
+  * dynamic helpers are no longer supported
+  * now uses Winston for logging (formally coloured-log)
+  * updated documentation to reflect changes
+
 0.6.7 / 2012-11-28
 ==================
   * added trim function when processing environment key/value pairs, fixes issue on Windows when multiple environment variables are concatenated in same string.
