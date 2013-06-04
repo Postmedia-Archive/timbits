@@ -1,19 +1,21 @@
 {
 	"name": "timbits",
-	"description": "Widget framework based on Express and CoffeeScript",
-	"version": "0.6.7",
+	"description": "Widget framework based on Express",
+	"version": "0.7.0",
 	"homepage": "https://github.com/Postmedia/timbits",
 	"author": "Edward de Groot <edegroot@postmedia.com> (http://mred9.com)",
 	"contributors": [ 
 		{ "name": "Keith Benedict", "email": "kbenedict@postmedia.com" },
 		{ "name": "Stephen Veerman", "email": "sveerman@postmedia.com" },
+		{ "name": "Donnie Marges", "email": "dmarges@postmedia.com" },
 		{ "name": "Kevin Gamble", "email": "kgamble@postmedia.com" }
 	],
 	"dependencies": {
 		"coffee-script": "~1.3.3",
-		"coffeekup": "~0.3.1",
 		"coloured-log": "~0.9.7",
-		"express": "~2.5.11",
+		"express": "~3.1.0",
+		"hjs": "~0.0.4",
+		"hogan.js": "~2.0.0",
 		"pantry": "~0.4.0",
 		"request": "~2.11",
 		"optimist": "~0.3.4",
@@ -33,8 +35,7 @@
 		"timbits": "./bin/timbits"
 	},
 	"scripts": {
-		"build": "cake build",
-		"test": "mocha --reporter spec --compilers coffee:coffee-script"
+		"test": "mocha"
 	},
 	"engines": { "node": "0.8.x", "npm": "1.1.x" }
 }
