@@ -1,0 +1,8 @@
+<h1>Default {{name}} Timbit View</h1>
+<h2>Recent tweets for '{{q}}'</h2>
+
+<ul>
+{{#tweets.results}}
+  <li>{{text}}</li>
+{{/tweets.results}}
+</ul>
