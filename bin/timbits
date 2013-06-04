@@ -129,15 +129,27 @@ function newProject(name, ext) {
   
   // create package file
   console.log('Generating package.json: package.json');
-  var pkg = {
-    name: name,
-    description: 'Widgets built using Timbits',
-    version: '0.0.1',
-    dependencies: {
-      timbits: getPackage().version
-    }
-  };
-  
+  var pkg;
+  if ( ext == 'js' ) {
+    pkg = {
+      name: name,
+      description: 'Widgets built using Timbits',
+      version: '0.0.1',
+      dependencies: {
+        timbits: getPackage().version
+      }
+    };
+  } else {
+    pkg = {
+      name: name,
+      description: 'Widgets built using Timbits',
+      version: '0.0.1',
+      dependencies: {
+        timbits: getPackage().version,
+        'coffee-script': '~1.3.3'
+      }
+    };
+  }
   fs.writeFileSync(
     path.join(project_home, 'package.json'),
     JSON.stringify(pkg)
