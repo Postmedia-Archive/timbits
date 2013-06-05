@@ -19,7 +19,16 @@ Timbits is simplistic and finds most of it's power by running on top of some ver
 
 ## Changes
 
-We completed a significant rewrite of Timbits between version 0.6.7 and 0.7, and the changes are significant.  For those using pervious verions of Timbits, please read my blog post on this matter to get the details on the changes and why they were made.
+We completed a significant rewrite of Timbits between version 0.6.7 and 0.7, and the changes are significant.  For those using pervious verions of Timbits, here's a quick rundown of the changes.
+
+* major rewrite of Timbits in JavaScript (formally CoffeeScript)
+* generates JavaScript files by default (CoffeeScript is optional)
+* default view engine is now Hogan (formally CoffeeKup)
+* dynamic helpers are no longer supported
+* sessions are not longer enabled by default
+* now uses Winston for logging (formally coloured-log)
+
+I'll be posting a blog post on my [blog](http://mred9.com) providing more details on these changes and the reasoning behind them.
 
 ## Using
 
@@ -116,7 +125,7 @@ Once the request has been completed and the data added to the context, and no ca
 
 ### Command Line
 
-Create a new project, generate a timbit (and default view), or run the project with runjs
+Create a new project, generate a timbit (and default view), or run the project with runjs.  Run timbits -h for complete list of commands and options available.
 
 	timbits n[ew] [project]
 	timbits g[enerate] [timbit]
