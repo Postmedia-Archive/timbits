@@ -5,6 +5,7 @@
   * generates JavaScript files by default (CoffeeScript is optional)
   * default view engine is now Hogan (formally CoffeeKup)
   * dynamic helpers are no longer supported
+  * sessions are not longer enabled by default
   * now uses Winston for logging (formally coloured-log)
   * updated documentation to reflect changes
 
