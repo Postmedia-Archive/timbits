@@ -18,7 +18,7 @@ timbit.examples = [
     href: '/chocolate/?q=winning',
     caption: 'Winning - Default View'
   }, {
-    href: '/chocolate/alternate?q=winning&rpp=20',
+    href: '/chocolate/alternate-view?q=winning&rpp=20',
     caption: 'Winning - Alternate View'
   }
 ];
