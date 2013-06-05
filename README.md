@@ -30,6 +30,8 @@ We completed a significant rewrite of Timbits between version 0.6.7 and 0.7, and
 
 I'll be posting a blog post on my [blog](http://mred9.com) providing more details on these changes and the reasoning behind them.
 
+Please be aware that the 0.7.x series should be considered experimental and not for production use.  Once we've stabilized this rewrite it will be released as v0.8.x
+
 ## Using
 
 The structure of a Timbits application is fairly simple.  To start, you need a two lines in your main server.js file.  
@@ -152,7 +154,7 @@ The server object can be configured during initialization as needed.  The follow
 * json - Enables the built in json view for timbits via /[name]/json [true]
 * jsonp - Enables jsonp requests to json resources
 
-The following example shows how to run a nested application using the [coffeecup](https://github.com/gradus/coffeecup) view engine in place of Hogan and disables the automated test routes
+The following example shows how to run a nested application using the [coffeecup](https://github.com/gradus/coffeecup) view engine in place of Hogan and disables the automated test routes.
 
 	var timbits = require('timbits');
 	var server = timbits.serve({appName: 'My Nested Timbits', engine: 'coffee', base: '/nested/app', test: false});
@@ -259,21 +261,21 @@ Or (if you want to minimize typing)
 
 By default, the name of the default view is, well, default!  You do have the ability to specify something more descriptive if you so desire.  Simply set the defaultView property to whatever view name you'd like to use
 
-	# the name default is so booooring.  use my fancy view by default is instead
+	// the name default is so booooring.  use my fancy view by default is instead
 	timbit.defaultView = 'fancy';
 	
 ### Sharing of views
 
 If you have two or more timbits for which you would like to share views, simply set the viewBase property on the timbit to the name of the timbit who's views you'd like to utilize (see the Dutchie timbit as an example)
 
-	# this timbit should use the views from the chocolate timbit
+	// this timbit should use the views from the chocolate timbit
 	timbit.viewBase = 'chocolate';
 
 ### Downstream Caching
 
 There is a maxAge property that can set the number of seconds client can/should cache the response for.  If not set, the default value will come from the Timbits configuration, which if not set, is currently 60 seconds by default.  You can also override this value on a request by request basis by setting the context.maxAge value to whatever is appropriate.
 
-	# timbit should be cached for 5 minutes
+	// timbit should be cached for 5 minutes
 	timbit.maxAge = 300;
 	
 The maxAge value will be included in two response headers, the standard Cache-Control header as well as a special Edge-Control header (used by Akamai)
