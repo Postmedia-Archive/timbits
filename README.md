@@ -36,10 +36,11 @@ Please be aware that the 0.7.x series should be considered experimental, and not
 
 Projects using timbits prior to v0.7 based on CoffeeScript, and Coffeecup require a few changes in order to run. The instructions here provide the details required to get a simple timbit functional.  
 
-There are two specific modifications required, the first is to include a dependency for CoffeeScript in your timbits package.json file:
+There are two specific modifications required, the first is to include a dependency for CoffeeScript, and Coffeecup in your timbits package.json file:
 
 	"dependencies": {
 		"coffee-script": "~1.3.3",
+		"coffeecup": "~0.3.20",
 		..... additional dependencies here
 	}
 
