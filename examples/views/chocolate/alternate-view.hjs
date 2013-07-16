@@ -1,8 +1,8 @@
 <h1>Alternate {{name}} Timbit View</h1>
-<h2>Recent tweets for '{{q}}'</h2>
+<h2>Latest posts from '{{site}}'</h2>
 
 <ul>
-{{#tweets.results}}
-  <li><b>{{from_user}}: </b>{{text}}</li>
-{{/tweets.results}}
+{{#wordpress.posts}}
+  <li><b><a href="{{URL}}">{{title}}</a></b> - By {{author.name}}</li>
+{{/wordpress.posts}}
 </ul>
