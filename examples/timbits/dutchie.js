@@ -14,12 +14,16 @@ timbit.eat = function(req, res, context) {
   
   // specify the data source
   var src = {
-    uri: "http://search.twitter.com/search.json?q=" + context.q
+    uri: "http://public-api.wordpress.com/rest/v1/sites/" + context.site + "/posts?number=" + context.number
   };
+
+  if (context.tag) {
+    src.uri += "&tag=" + context.tag;
+  }
   
   // instead of using the fetch helper method, let's show how to use pantry directly
   timbits.pantry.fetch(src, function(error, results) {
-    context.tweets = results;
+    context.wordpress = results;
     timbit.render(req, res, context);
   });
 };
