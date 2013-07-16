@@ -1,3 +1,8 @@
+0.7.1 / 2013-07-16
+==================
+  * Dependency update to allow pantry v0.5.x
+  * Now uses Wordpress API instead of Twitter for examples
+
 0.7.0 / 2013-06-05
 ==================
   * 0.7.x series should be considered unstable.  stable version will be released as 0.8.x

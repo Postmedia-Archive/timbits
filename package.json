@@ -1,7 +1,7 @@
 {
 	"name": "timbits",
 	"description": "Widget framework based on Express",
-	"version": "0.7.0",
+	"version": "0.7.1",
 	"homepage": "https://github.com/Postmedia/timbits",
 	"author": "Edward de Groot <edegroot@postmedia.com> (http://mred9.com)",
 	"contributors": [ 
@@ -15,7 +15,7 @@
 		"express": "~3.2.6",
 		"hjs": "~0.0.4",
 		"hogan.js": "~2.0.0",
-		"pantry": "~0.4.0",
+		"pantry": "~0.5.0",
 		"request": "~2.11",
 		"optimist": "~0.3.4",
 		"run": "~1.0",
