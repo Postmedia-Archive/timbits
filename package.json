@@ -1,7 +1,7 @@
 {
 	"name": "timbits",
 	"description": "Widget framework based on Express",
-	"version": "0.7.1",
+	"version": "0.7.2",
 	"homepage": "https://github.com/Postmedia/timbits",
 	"author": "Edward de Groot <edegroot@postmedia.com> (http://mred9.com)",
 	"contributors": [ 
@@ -12,16 +12,17 @@
 	],
 	"dependencies": {
 		"winston": "~0.7.1",
-		"express": "~3.2.6",
-		"hjs": "~0.0.4",
-		"hogan.js": "~2.0.0",
-		"pantry": "~0.5.0",
-		"request": "~2.11",
+		"express": "~3.10.5",
+		"hjs": "~0.0.6",
+		"hogan.js": "~3.0.1",
+		"pantry": "~0.7.0",
+		"request": "~2.34",
 		"optimist": "~0.3.4",
-		"run": "~1.0",
-		"mocha": "~1.6",
-		"should": "~1.2",
-		"which": "~1.0.5"
+		"run": "~1.2",
+		"mocha": "~1.20.1",
+		"should": "~4.0.4",
+		"which": "~1.0.5",
+		"should-http": "~0.0.2"
 	},
 	"bugs": { "url": "https://github.com/Postmedia/timbits/issues"},
 	"licenses": [
@@ -36,6 +37,6 @@
 	"scripts": {
 		"test": "mocha"
 	},
-	"engines": { "node": "0.8.x", "npm": "1.1.x" }
+	"engines": { "node": ">=0.8.x <0.11", "npm": "1.x" }
 }
 

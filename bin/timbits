@@ -302,7 +302,7 @@ switch (argv._[0]) {
     
   case 't':
   case 'test':
-    options = ['--compilers', 'coffee:coffee-script', '--growl', '--colors'];
+    options = ['--growl', '--colors'];
     for (key in argv) {
       switch(key){
         case 'reporter':
@@ -316,6 +316,9 @@ switch (argv._[0]) {
         case 'debug':
         case 'bail':
           options.push('--' + key)
+          break;
+        case 'coffee':
+          options.push( '--compilers', 'coffee:coffee-script' );
           break;
       }
     }
