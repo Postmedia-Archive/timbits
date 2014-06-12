@@ -7,7 +7,10 @@ var timbits = require('../lib/timbits')
   , should = require('should')
   , path = require('path')
   , request = require('request')
-  
+
+// load hhtp extensions for should 
+require('should-http');
+ 
 // set testing environment
 var homeFolder = path.join(process.cwd(), "examples")
   , port = 8785

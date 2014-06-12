@@ -8,6 +8,9 @@ var timbits = require('../lib/timbits')
   , path = require('path')
   , request = require('request')
   
+// load hhtp extensions for should 
+require('should-http');
+
 // set testing environment
 var port = 8785
   , alltests = process.env.TIMBITS_TEST_WHICH === 'all';

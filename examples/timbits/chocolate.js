@@ -28,7 +28,7 @@ timbit.params = {
     description: 'The Wordpress site to query',
     required: true,
     strict: false,
-    values: ['sports.nationalpost.com', 'blog.windsorstar.com']
+    values: ['sports.nationalpost.com', 'o.canada.com']
   },
   tag: {
     description: 'Tag to filter by',
