@@ -223,7 +223,16 @@ function generateTimbit(name, ext) {
   
 }
 
+function startDebugServer(filename) {
+console.log("Starting server (" + filename + ")");
+  loadEnv();
 
+  spawn(localCmd('node debug'), [filename], {
+    stdio: [null, process.stdout, process.stderr],
+    env: process.env
+  });
+
+}
 
 function startServer(filename) {
   console.log("Starting server (" + filename + ")");
