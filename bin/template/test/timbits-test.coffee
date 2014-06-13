@@ -7,6 +7,9 @@ timbits = require 'timbits'
 should = require 'timbits/node_modules/should'
 request = require 'timbits/node_modules/request'
 
+# should http extensions
+require 'timbits/node_modules/should-http'
+
 port = 8785
 alltests = process.env.TIMBITS_TEST_WHICH is 'all'
 

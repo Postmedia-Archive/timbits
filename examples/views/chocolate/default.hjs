@@ -1,0 +1,8 @@
+<h1>Default {{name}} Timbit View</h1>
+<h2>Latest posts from '{{site}}'</h2>
+
+<ul>
+{{#wordpress.posts}}
+  <li>{{title}}</li>
+{{/wordpress.posts}}
+</ul>

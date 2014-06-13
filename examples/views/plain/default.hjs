@@ -1,0 +1,15 @@
+<h1 id="msg">
+  {{#retro}}Wazzzzzzup{{/retro}}
+  {{^retro}}Hello{{/retro}}
+  {{who}}
+</h1>
+{{#retro}}
+<script>
+  function blinkText() {
+    msg = document.getElementById('msg')
+    if (msg)
+      msg.style.visibility=(msg.style.visibility=='visible') ?'hidden':'visible';
+  }
+  setInterval('blinkText()',400)
+</script>
+{{/retro}}
