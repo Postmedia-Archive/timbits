@@ -26,7 +26,7 @@ var server = timbits.serve({
 });
 
 // helper function for testing requests
-function validateRequest(vpath, expect) {
+function validateRequest(method, vpath, expect) {
   expect = expect || 'html';
   
   describe(vpath, function() {
@@ -35,19 +35,36 @@ function validateRequest(vpath, expect) {
       test_msg = "should respond with status " + expect;
     
     it(test_msg, function(done) {
-      request("http://localhost:" + port + vpath, function(err, res) {
-        should.not.exist(err);
-        if (typeof expect === 'string') {
-          res.should.have.status(200);
-          if (expect === 'json')
-            res.should.be.json;
-          else
-            res.should.be.html;
-        } else {
-          res.should.have.status(expect);
-        }
-        done();
-      });
+      if (method=="GET") {
+        request("http://localhost:" + port + vpath, function(err, res) {
+          should.not.exist(err);
+          if (typeof expect === 'string') {
+            res.should.have.status(200);
+            if (expect === 'json')
+              res.should.be.json;
+            else
+              res.should.be.html;
+          } else {
+            res.should.have.status(expect);
+          }
+          done();
+        });
+      }
+      else if (method=="POST") {
+        request.post("http://localhost:" + port + vpath, function(err, res) {
+          should.not.exist(err);
+          if (typeof expect === 'string') {
+            res.should.have.status(200);
+            if (expect === 'json')
+              res.should.be.json;
+            else
+             res.should.be.html;
+          } else {
+            res.should.have.status(expect);
+          }
+          done();
+        });
+      }
     });
   });
 };
@@ -55,19 +72,19 @@ function validateRequest(vpath, expect) {
 describe('timbits', function() {
   
   describe('default resources', function() {
-    validateRequest('/timbits/help');
-    validateRequest('/timbits/json', 'json');
+    validateRequest('GET', '/timbits/help');
+    validateRequest('GET', '/timbits/json', 'json');
   });
   
   describe('individual help pages', function() {
     for (var name in timbits.box) {
-      validateRequest("/" + name + "/help");
+      validateRequest('GET', "/" + name + "/help");
     }
   });
   
   describe('individual test pages', function() {
     for (var name in timbits.box) {
-      validateRequest("/" + name + "/test");
+      validateRequest('GET', "/" + name + "/test");
     }
   });
   
@@ -76,19 +93,30 @@ describe('timbits', function() {
       
       timbit = timbits.box[name];
       
-      if (timbit.examples != null) {
+      // GET requests
+      if (timbit.examples != null && timbit.methods['GET']) {
         describe('specified examples for ' + name, function() {
           timbit.examples.forEach(function(example) {
-            validateRequest(example.href);
+            validateRequest('GET', example.href);
           });
         });
       }
-      
+      // Post Requests
+      if (timbit.examples != null && timbit.methods['POST']) {
+        describe('specified examples for ' + name, function() {
+          timbit.examples.forEach(function(example) {
+            validateRequest('POST', example.href);
+          });
+        });
+      }
       var dynatests = timbit.generateTests(alltests);
       if (dynatests.length) {
         describe("dynamic tests for " + name, function() {
           dynatests.forEach(function(href) {
-            validateRequest(href);
+            if (timbit.methods['GET'])
+              validateRequest('GET', href);
+            if (timbit.methods['POST'])
+              validateRequest('POST', href);
           });
         });
       }

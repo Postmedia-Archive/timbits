@@ -22,7 +22,7 @@ timbit = module.exports = new timbits.Timbit()
 timbit.eat = (req, res, context) ->
 	
 	src = {
-		uri: "http://search.twitter.com/search.json?q=#{context.q}"
+		uri: "http://jsonip.com/?q=#{context.q}"
 	}
 	
 	# use the helper method to @fetch the data

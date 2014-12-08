@@ -33,7 +33,7 @@ timbit.params = {
 
 timbit.eat = function(req, res, context) {
   var src = {
-    uri: 'http://search.twitter.com/search.json?q=' + context.q
+    uri: 'http://jsonip.com/?q=' + context.q
   };
   timbit.fetch(req, res, context, src);
 };
