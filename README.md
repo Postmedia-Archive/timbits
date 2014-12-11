@@ -117,6 +117,12 @@ The context object originates within Timbits, and will initially contain the fol
 
 It's important to note that it is possible to override the view, and/or the maxAge during the execution of the request if needed.
 
+Each timbit by default supports HTTP GET method, it is possible to support one of the alternativce standard HTTP methods as defined in [RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html), specifically we support "GET", "POST", "PUT", "HEAD", and "DELETE".  To specified the methods you want to allow (beyond "GET") define the methods as json properties in the timbit.methods property like this
+
+	timbit.methods = { 'get': false, 'post': true }
+
+Values are boolean, the methods are not case sensitive, you only need to specify the methods you wish to override from the default settings. Any request for your timbit with a method not specified will result in an HTTP 405 "Method Not Supported" error.
+
 Each route, querystring, and post parameter is also added to the context as a property.  So, if one included ?page=5 in the request url this value would be made available to you as context.page
 
 Within the eat method, the simplest of implementations will merely call the render method to, well, render the given view using the data found with the context.  The render method takes the same three parameters originally passed into the eat method.  Within the render method Timbits will pass the context to the view rendering engine so that those values can be 
@@ -139,15 +145,15 @@ The fetch method will automatically add the retrieved resource to context.data b
 
 	// specify the data source
 	var src = {
-	  name: 'tweets',
-	  uri: "http://search.twitter.com/search.json?q=" + context.q + "&rpp=" + context.rpp
+	  name: 'ip',
+	  uri: "http://jsonip.com?q=" + context.q + "&rpp=" + context.rpp
 	};
 
 	// use the helper method to fetch the data
 	// timbit.fetch will call timbit.render once we have the data
 	timbit.fetch(req, res, context, src);
 	
-Be aware that if (using the example above) context.tweets already exists, timbits will transform context.tweets into an array (if it isn't already), and append the retrieved resource to the array.
+Be aware that if (using the example above) context.ip already exists, timbits will transform context.ip into an array (if it isn't already), and append the retrieved resource to the array.
 
 Once the request has been completed, the data added to the context, and no callback is specified, the fetch method will then call the render method for you.  If you need to request some additional resources, or perhaps further manipulate the resource once it's been fetched, simply tack on the optional callback parameter, and implement your follow up code.  Timbits will pass on the req, res, and context parameters to the callback.  Just be sure to call the render method once you're done.
 

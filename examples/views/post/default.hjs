@@ -1,0 +1,5 @@
+<h1>HTTP Post Timbit Example</h1>
+<div>Send a post request with content in the body, the content is shown below the line
+  <hr />
+  {{body}}
+</div>
