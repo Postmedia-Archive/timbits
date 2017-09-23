@@ -257,7 +257,7 @@ There is also a master test page located at /timbits/test which will execute tes
 
 Although not overly sophisticated, it will ensure your definitions, examples, and views are valid and compile properly.  It is also useful for remote monitoring of production systems.
 
-Additional functional testing can, and should be implemented via a testing library, such as [mocha](http://visionmedia.github.com/mocha/)
+Additional functional testing can, and should be implemented via a testing library, such as [mocha](https://mochajs.org/)
 
 By default, only a limited number of tests are executed, but you can run through a much larger set of tests by appending /all to the test path.  This will generate a much more thorough list of test urls using every possible combination of required parameters, and their sample values, along with each possible sample value for optional parameters.
 
